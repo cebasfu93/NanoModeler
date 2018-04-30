@@ -30,7 +30,7 @@ def check_mol2(fname):
         sys.exit("Keyword '@<TRIPOS>RESIDUECONNECT' not found in mol2 file.")
 
     N_lig_file=len(mol2)
-    found_ATOM=0
+    found_ATOM=False
     atoms = []
     names = []
     types = []
@@ -40,9 +40,8 @@ def check_mol2(fname):
                 break
             atoms.append(mol2[i].split())
             names.append(mol2[i].split()[1])
-            types.append(mol2[i].split()[5])
         elif "@<TRIPOS>ATOM" in mol2[i]:
-            found_ATOM = 1
+            found_ATOM = True
     print("{} atoms were found in the mol2 file...".format(len(atoms)))
 
     print("Checking if columns 3, 4, and 5 correspond to floating numbers...")

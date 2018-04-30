@@ -27,7 +27,7 @@ import subunits
 print("Importing collections...")
 import collections
 print("Importing NP_builder...")
-from NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
+from NP_builder import init_lig_mol2, init_core_xyz, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
 print("Importing staples...")
 from staples import load_gro, load_top, get_gro_ndx, get_lig_info, make_blocks, make_staples, classify_staples, write_bonds, write_angles, write_topology, staple_to_residues, print_pdb
 print("Importing checking functions...")
@@ -46,7 +46,6 @@ for i in VAR:
 print("\n\nCreating folder...")
 os.mkdir("TMP")
 
-shutil.copyfile(VAR["CORE"], "TMP/"+VAR["CORE"])
 print("Copying ligand1 file...")
 shutil.copyfile(VAR["LIG1_FILE"], "TMP/"+VAR["LIG1_FILE"])
 print("Checking ligand1 mol2 file...")
@@ -66,8 +65,8 @@ if two_lig:
 else:
     xyz_lig2, names_lig2, anchor_ndx2, res_lig2 = [], [], [], []
 
-print("Initializing metallic core...")
-xyz_core, names_core = init_core_pdb(VAR["CORE"])
+print("Initializing core...")
+xyz_core, names_core = init_core_xyz(VAR["COREDIR"]+"/"+VAR["CORE"])
 
 print("Running PCA for ligand1...")
 xyz_pillars1 = get_ligand_pill(xyz_lig1, anchor_ndx1)
@@ -79,7 +78,7 @@ else:
 
 N_S = len(names_core[names_core=='ST'])
 
-xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, VAR["COREANCHOR"], float(VAR["LIG1_FRAC"]), int(VAR["RSEED"]), VAR["MORPHOLOGY"])
+xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, float(VAR["LIG1_FRAC"]), int(VAR["RSEED"]), VAR["MORPHOLOGY"])
 
 xyz_stones1 = get_stones(xyz_anchors1, xyz_pillars1)
 if two_lig:
@@ -102,9 +101,9 @@ if two_lig:
     os.system("parmchk2 -i {} -f mol2 -o {} -a y".format("TMP/"+VAR["LIG2_FILE"], "TMP/"+VAR["LIG2_FILE"][:-5]+".frcmod"))
 
 print("Writing tleap input file...")
-write_leap("TMP/"+VAR["LEAPFILE"]+".in", two_lig)
+write_leap("TMP/TLeap.in", two_lig)
 print("Running tleap...")
-os.system("tleap -sf {}.in > {}.log".format("TMP/"+VAR["LEAPFILE"], "TMP/"+VAR["LEAPFILE"]))
+os.system("tleap -sf TMP/TLeap.in > TMP/TLeap.log")
 
 print("Running acpype...")
 os.system("python {}/acpype.py -p {} -x {} -r".format(VAR["DEPENDS"], "TMP/"+VAR["NAME"]+".prmtop", "TMP/"+VAR["NAME"]+".inpcrd -b " + VAR["NAME"] + " -c user > acpype.log"))

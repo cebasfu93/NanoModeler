@@ -4,74 +4,48 @@ import random
 from scipy.spatial import distance
 from sklearn.decomposition import PCA
 
-def change_names(names_core_func):
-    #Changes the name of the original atoms in the core for AU, and the staples for ST. This names are required for the rest of LAMPIT
-    for i in range(len(names_core_func)):
-        if(names_core_func[i]=="Au"):
-            names_core_func[i]='AU'
-        elif (names_core_func[i]=="S"):
-            names_core_func[i]='ST'
-    return names_core_func
-
-def init_lig_mol2(ligand_fname):
+def init_lig_mol2(fname):
     #Imports ligand mol2 file. Returns xyz coordinates, names, and index corresponding to the anchor
-    lig_file=np.genfromtxt(ligand_fname, delimiter='\n', dtype='str')
-    N_lig_file=len(lig_file)
+    mol2=np.genfromtxt(fname, delimiter='\n', dtype='str')
+    N_lig_file=len(mol2)
     found_ATOM=0
     names_lig_func=[]
     xyz_lig_func=[]
     res_lig_func=[]
     for i in range(N_lig_file):
-        if "@<TRIPOS>BOND" in lig_file[i]:
-            fin = i
-            found_ATOM = 0
-        elif found_ATOM == 1:
-            at_file=lig_file[i].split()
+        if found_ATOM:
+            if "@<TRIPOS>" in mol2[i]:
+                break
+            at_file = mol2[i].split()
             names_lig_func.append(at_file[1])
             xyz_lig_func.append(at_file[2:5])
             res_lig_func.append(at_file[7])
-        elif "@<TRIPOS>ATOM" in lig_file[i]:
-            ini = i+1
-            found_ATOM = 1
-        elif "@<TRIPOS>RESIDUECONNECT" in lig_file[i]:
-            xyz_lig_func, names_lig_func = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func)
-            anchor_ndx_func = np.where(names_lig_func==lig_file[i+1].split()[1])[0][0]
+        elif "@<TRIPOS>ATOM" in mol2[i]:
+            found_ATOM = True
+
+    xyz_lig_func, names_lig_func, res_lig_func = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func), np.array(res_lig_func)
+    for i in range(N_lig_file):
+        if "@<TRIPOS>RESIDUECONNECT" in mol2[i]:
+            anchor_ndx_func = np.where(names_lig_func==mol2[i+1].split()[1])[0][0]
 
     anchor_pos = np.copy(xyz_lig_func)[anchor_ndx_func,:]
-    resid = at_file[7]
+
     #Moves the ligand so that the anchor is in (0,0,0)
     for i in range(len(xyz_lig_func[:,0])):
         xyz_lig_func[i,:] = xyz_lig_func[i,:] - anchor_pos
     return xyz_lig_func, names_lig_func, anchor_ndx_func, res_lig_func
 
-def init_core_pdb(core_fname):
+def init_core_xyz(fname):
     #Imports core pdb file. Centers the core in (0,0,0) and returns xyz coordinates and names
-    core_file=np.genfromtxt(core_fname, delimiter='\n', dtype=str)
-    first=1
-    N_core_func=0
-    for i in range(len(core_file)):
-        if "ATOM" in core_file[i] or "HETATM" in core_file[i]:
-            N_core_func+=1
-            if first==1:
-                ini=i
-                first=0
-    core_file=core_file[ini:  ini+N_core_func]
-    names_core_func=[]
-    xyz_core_func=np.zeros((N_core_func,3))
-    for i in range(N_core_func):
-        at_file=core_file[i].split()
-        names_core_func.append(at_file[2])
-        xyz_core_func[i,:]=at_file[5:8]
-    xyz_core_func=np.array(xyz_core_func)
+    fxyz=np.genfromtxt(fname, delimiter='\n', dtype=str, skip_header=1)
+    names_core_func = []
+    xyz_core_func = []
+    for i in range(len(fxyz)):
+        at_act=fxyz[i].split()
+        names_core_func.append(at_act[0])
+        xyz_core_func.append(at_act[1:4])
+    xyz_core_func=np.array(xyz_core_func, dtype='float')
     names_core_func=np.array(names_core_func)
-
-    names_core_func=change_names(names_core_func)
-
-    COM=np.average(xyz_core_func[names_core_func=='AU',:], axis=0)
-
-    print("Centering core in origin...")
-    for i in range(len(xyz_core_func[:,0])):
-        xyz_core_func[i,:]=xyz_core_func[i,:]-COM
     return xyz_core_func, names_core_func
 
 def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
@@ -82,6 +56,7 @@ def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
     var1 = pca.explained_variance_[0]/np.sum(pca.explained_variance_)*100
 
     print("PCA1 explains: {:.1f}% of the points' variance...".format(var1))
+    print("Consider this is a measure on how linear the input ligand is. The lower this value, the more likely it will be to get clashes in the final structure.")
 
     #Randomly takes 2 other atoms in the ligand and project their positions in PCA1
     random.seed(666)
@@ -93,9 +68,9 @@ def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
         pillars_func = np.vstack((pillars_func, np.dot(xyz_lig_func[i], pca1) * pca1))
     return pillars_func
 
-def assign_morph(xyz_core_func, names_core_func, name_anchor_func, frac_lig1_func, rseed_func, morph_func):
+def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func):
     #Distributes all the anchors in lig1 and lig2 dependending in the specified morphology
-    xyz_anchors_func = xyz_core_func[names_core_func==name_anchor_func,:]
+    xyz_anchors_func = xyz_core_func[names_core_func=='C',:]
     N_anchors = len(xyz_anchors_func)
     for_lig1 = round(N_anchors*frac_lig1_func)
     indexes = list(range(N_anchors))
@@ -218,10 +193,10 @@ def write_pdb_block(atname_func, res_name_func, xyz_func, resnum, atnum, out_fil
     coords=open(out_filename, 'a')
     coords.write('ATOM'.ljust(6))
     coords.write(str(atnum).rjust(5))
-    coords.write('  '+str(atname_func).ljust(3))
+    coords.write(' ' + str(atname_func).ljust(4))
     coords.write(' '+str(res_name_func).ljust(3))
     coords.write('  '+str(resnum).rjust(4))
-    coords.write('    '+ str(round(xyz_func[0],3)).rjust(8))
+    coords.write('    ' + str(round(xyz_func[0],3)).rjust(8))
     coords.write(str(round(xyz_func[1],3)).rjust(8))
     coords.write(str(round(xyz_func[2],3)).rjust(8)+"\n")
     coords.close()

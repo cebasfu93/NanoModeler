@@ -1,23 +1,16 @@
 VAR = {
 "NAME": "test",             #Name of the project
 "LIG1_FILE" : "LF1.mol2",   #Name of the mol2 of ligand1 (must be in the working directory)
-"LIG1_NAME" : "LF1",        #Residue name for ligand1
-"LIG1_OLD" : "F00",
 "LIG1_FRAC" : 1.0,          #Fraction of ligand1 to place
 
 "LIG2_FILE" : "LF2.mol2",   #Name of the mol2 of ligand2 (must be in the working directory)
-"LIG2_NAME" : "LF2",        #Residue name for ligand1
-"LIG2_OLD" : "F00",
 "MORPHOLOGY" : "random",    #Morphology to distribute ligands1 and 2. random and janus are allowed
 "RSEED" : 666,              #Random seed for random morphology
 
-"CORE" : "au144SR60.pdb",
-"CORENAME" : "AU",
-"STAPLENAME" : "S",
-"COREANCHOR" : "C",
-"LEAPFILE" : "TLeap",
+"CORE" : "au144SR60_NM.xyz",
 
-"DEPENDS" : "/DATA/SoftwareSFU/IN-HOUSE/LAMPIT/DEPENDENCIES"
+"COREDIR" : "/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/CORES",
+"DEPENDS" : "/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES"
 }
 
 def write_leap(fname, two_lig_func):

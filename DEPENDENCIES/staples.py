@@ -3,7 +3,7 @@ from scipy.spatial import distance
 import subunits
 import collections
 
-signature = "NanoModeler"
+signature = " NanoModeler"
 
 def angle(a, b, c):
     #Calculates the angle formed by a-b-c
@@ -208,18 +208,18 @@ def write_bonds(staples_list, fname, xyz_sys_func, names_sys_func, types_sys_fun
                     zero = 0.233
                 else:
                     zero = 0.241
-                bonds.write(str(s.S[j]+1).rjust(6)+str(near_Au[k]+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ; "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_Au[k]]+signature+"\n")
+                bonds.write(str(s.S[j]+1).rjust(6)+str(near_Au[k]+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[s.S[j]]+" - "+names_sys_func[near_Au[k]]+signature+"\n")
 
             #S - C bonds
             near_C = s.C[D_S_C[j].argsort()[0]]
             if types_sys_func[near_C] == 'CT':
                 cons = 99113.0
                 zero = 0.184
-                bonds.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ; "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+signature+"\n")
+                bonds.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+signature+"\n")
             elif types_sys_func[near_C] == 'CA':
                 cons = 198321.6
                 zero = 0.175
-                bonds.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ; "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+" m\n")
+                bonds.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+" m\n")
             else:
                 print("Unrecognized bond type")
 
@@ -245,7 +245,7 @@ def write_angles(staples_list, fname, xyz_sys_func, names_sys_func, types_sys_fu
                     zero = 100.0
             else:
                 print("There is an unsupported Au-S-Au bond")
-            angles.write(str(near_Au[0]+1).rjust(6)+str(s.S[j]+1).rjust(7)+str(near_Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ; "+names_sys_func[near_Au[0]]+" - "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_Au[1]]+signature+"\n")
+            angles.write(str(near_Au[0]+1).rjust(6)+str(s.S[j]+1).rjust(7)+str(near_Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_Au[0]]+" - "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_Au[1]]+signature+"\n")
 
             #Au - S - C angles
             near_C = s.C[D_S_C[j].argsort()[0]]
@@ -256,7 +256,7 @@ def write_angles(staples_list, fname, xyz_sys_func, names_sys_func, types_sys_fu
                         zero = 106.8
                     else:
                         zero = 111.6
-                    angles.write(str(near_Au[k]+1).rjust(6)+str(s.S[j]+1).rjust(7)+str(near_C+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ; "+names_sys_func[near_Au[k]]+" - "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+signature+"\n")
+                    angles.write(str(near_Au[k]+1).rjust(6)+str(s.S[j]+1).rjust(7)+str(near_C+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_Au[k]]+" - "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+signature+"\n")
 
             #S - C - H angles
             D_C_H = distance.cdist([xyz_sys_func[near_C]], xyz_sys_func[s.H])
@@ -265,7 +265,7 @@ def write_angles(staples_list, fname, xyz_sys_func, names_sys_func, types_sys_fu
             zero = 107.0
             for k in range(len(near_H)):
                 if types_sys_func[near_H[k]] == "HC":
-                    angles.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(near_H[k]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ; "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+" - "+names_sys_func[near_H[k]]+signature+"\n")
+                    angles.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(near_H[k]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+" - "+names_sys_func[near_H[k]]+signature+"\n")
                 else:
                     print("There are no parameters for angles involving this kind of hydrogen atoms")
 
@@ -275,7 +275,7 @@ def write_angles(staples_list, fname, xyz_sys_func, names_sys_func, types_sys_fu
         zero = 172.4
         for j in range(len(s.Au_l)):
             near_S = s.S[D_Aul_S[j].argsort()[0:2]]
-            angles.write(str(near_S[0]+1).rjust(6)+str(s.Au_l[j]+1).rjust(7)+str(near_S[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ; "+names_sys_func[near_S[0]]+" - "+names_sys_func[s.Au_l[j]]+" - "+names_sys_func[near_S[1]]+signature+"\n")
+            angles.write(str(near_S[0]+1).rjust(6)+str(s.Au_l[j]+1).rjust(7)+str(near_S[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_S[0]]+" - "+names_sys_func[s.Au_l[j]]+" - "+names_sys_func[near_S[1]]+signature+"\n")
 
 def write_topology(fname, bonds, angles):
     #Copies the previous topology file writen by acpype.py and inserts the new bond and angles at the beggining of their respective sections
