@@ -2,8 +2,8 @@ log = open("NanoModeler.log", "w")
 log.write("WELCOME TO NANOMODELER\n")
 log.write("Importing sys library...\n")
 import sys
-sys.stdout = log
-sys.stderr = log
+#sys.stdout = log
+#sys.stderr = log
 print("Importing numpy library...")
 import numpy as np
 print("Importing random library...")
@@ -13,13 +13,9 @@ from scipy.spatial import distance
 print("Importing sklearn library...")
 from sklearn.decomposition import PCA
 print("Importing argparse library...")
-import argparse
-print("Importing os library...")
 import os
 print("Importing shutil library...")
 import shutil
-print("Importing subprocess library...")
-import subprocess
 print("Importing default variables...")
 from defaults import VAR, write_leap
 print("Looking for folder with dependencies...")
@@ -34,6 +30,9 @@ print("Importing NP_builder...")
 from NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
 print("Importing staples...")
 from staples import load_gro, load_top, get_gro_ndx, get_lig_info, make_blocks, make_staples, classify_staples, write_bonds, write_angles, write_topology, staple_to_residues, print_pdb
+print("Importing checking functions...")
+from check import check_mol2, check_VAR
+check_VAR(VAR)
 
 print("Importing input options...\n \n")
 inp=np.genfromtxt(sys.argv[1], dtype="str")
@@ -50,19 +49,22 @@ os.mkdir("TMP")
 shutil.copyfile(VAR["CORE"], "TMP/"+VAR["CORE"])
 print("Copying ligand1 file...")
 shutil.copyfile(VAR["LIG1_FILE"], "TMP/"+VAR["LIG1_FILE"])
+print("Checking ligand1 mol2 file...")
+check_mol2("TMP/"+VAR["LIG1_FILE"])
 if not VAR["LIG2_FILE"] == "XXX.mol2":
     print("Copying ligand2 file...")
     shutil.copyfile(VAR["LIG2_FILE"], "TMP/"+VAR["LIG2_FILE"])
-
+    print("Checking ligand2 mol2 file...")
+    check_mol2("TMP/"+VAR["LIG2_FILE"])
 ##############################NP_builder########################
 
 print("Initializing ligand1...")
-xyz_lig1, names_lig1, anchor_ndx1 = init_lig_mol2(VAR["LIG1_FILE"])
+xyz_lig1, names_lig1, anchor_ndx1, res_lig1 = init_lig_mol2(VAR["LIG1_FILE"])
 if two_lig:
     print("Initializing ligand2...")
-    xyz_lig2, names_lig2, anchor_ndx2 = init_lig_mol2("LIG2_FILE")
+    xyz_lig2, names_lig2, anchor_ndx2, res_lig2 = init_lig_mol2("LIG2_FILE")
 else:
-    xyz_lig2, names_lig2, anchor_ndx2 = [], [], []
+    xyz_lig2, names_lig2, anchor_ndx2, res_lig2 = [], [], [], []
 
 print("Initializing metallic core...")
 xyz_core, names_core = init_core_pdb(VAR["CORE"])
@@ -86,10 +88,10 @@ else:
     xyz_stones2 = []
 
 print("Coating nanoparticle...")
-xyz_coated_NP, names_coated_NP = coat_NP(xyz_core, names_core, float(VAR["LIG1_FRAC"]), xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2)
+xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, float(VAR["LIG1_FRAC"]), xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2)
 
 print("Writing pdb of the coated nanoparticle...")
-print_NP_pdb(xyz_coated_NP, names_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, float(VAR["LIG1_FRAC"]), VAR["LIG1_NAME"], VAR["LIG2_NAME"], "TMP/"+VAR["NAME"]+".pdb")
+print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, float(VAR["LIG1_FRAC"]), "TMP/"+VAR["NAME"]+".pdb")
 
 ################################################################
 
@@ -169,8 +171,11 @@ for i in bye:
     os.remove(i)
 shutil.rmtree("TMP")
 
+print("Compressing files to output...")
 print("NANOMODELER terminated normally. Que gracias.")
-
 log.close()
 shutil.copyfile("NanoModeler.log", VAR["NAME"]+"/NanoModeler.log")
 os.remove("NanoModeler.log")
+
+os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
+#shutil.rmtree(VAR["NAME"])
