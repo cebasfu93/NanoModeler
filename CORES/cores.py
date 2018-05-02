@@ -164,15 +164,18 @@ def write_pdb(xyz_sys, names_sys, staples, fname):
 
     for i in range(N_staples):
         st_act = staples[i]
-        for j in range(len(st_act.Au_l)):
-            write_pdb_block("AUL", st_act.tipo, xyz_sys[st_act.Au_l[j]], res, at, fname)
-            at+=1
         for j in range(len(st_act.Au_s)):
             write_pdb_block("AUS", st_act.tipo, xyz_sys[st_act.Au_s[j]], res, at, fname)
+            at+=1
+        for j in range(len(st_act.Au_l)):
+            write_pdb_block("AUL", st_act.tipo, xyz_sys[st_act.Au_l[j]], res, at, fname)
             at+=1
         for j in range(len(st_act.S)):
             write_pdb_block("ST", st_act.tipo, xyz_sys[st_act.S[j]], res, at, fname)
             at+=1
+        res+=1
+    for i in range(N_staples):
+        st_act = staples[i]
         for j in range(len(st_act.C)):
             write_pdb_block("C", st_act.tipo, xyz_sys[st_act.C[j]], res, at, fname)
             at+=1
