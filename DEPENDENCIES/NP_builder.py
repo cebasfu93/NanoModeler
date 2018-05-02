@@ -117,7 +117,7 @@ def get_stones(xyz_anchorsi_func, xyz_pillarsi_func):
 
 def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
     n_clash_iter = 100
-    thresh = 0.5
+    thresh = 1.0
     D_clash = distance.cdist(trans_lig_tmp, xyz_coated_tmp)
     clash_dis = np.min(D_clash)
     theta = 0
@@ -134,6 +134,7 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
             trans_lig_try[k,:] = rot_mat(trans_lig_tmp[k,:], unit_u, theta)
         D_clash = distance.cdist(trans_lig_try, xyz_coated_tmp)
         if np.min(D_clash) > clash_dis:
+            print("good")
             clash_dis = np.min(D_clash)
             trans_lig_best = trans_lig_try
         if theta >= 6.28:
@@ -177,7 +178,7 @@ def coat_NP(xyz_core_func, names_core_func, frac_lig1_func, xyz_lig1_func, names
             trans_matrix=affine_matrix_from_points(xyz_pillars2_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
             trans_lig=np.dot(trans_matrix, xyz_lig2_func_conv).T[:,:3]
 
-            trans_lig = solve_clashes(xyz_coated_func, trans_lig, xyz_stones2_func[i,0,:])
+            trans_lig = solve_clashes(xyz_coated_func, trans_lig, xyz_stones2_func[i,0,:], len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1)
 
             xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
             names_coated_func=np.append(names_coated_func, names_lig2_func, axis=0)
