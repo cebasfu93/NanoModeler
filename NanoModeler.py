@@ -29,7 +29,7 @@ import subunits
 print("Importing collections...")
 import collections
 print("Importing NP_builder...")
-from NP_builder import init_lig_mol2, init_core_xyz, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
+from NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
 print("Importing staples...")
 from staples import load_gro, load_top, get_gro_ndx, get_lig_info, make_blocks, make_staples, classify_staples, write_bonds, write_angles, write_topology, staple_to_residues, print_pdb
 print("Importing checking functions...")
@@ -68,7 +68,7 @@ else:
     xyz_lig2, names_lig2, anchor_ndx2, res_lig2 = [], [], [], []
 
 print("Initializing core...")
-xyz_core, names_core = init_core_xyz(VAR["COREDIR"]+"/"+VAR["CORE"])
+xyz_core, names_core, res_core, resID_core = init_core_pdb(VAR["COREDIR"]+"/"+VAR["CORE"])
 
 print("Running PCA for ligand1...")
 xyz_pillars1 = get_ligand_pill(xyz_lig1, anchor_ndx1)
@@ -89,10 +89,10 @@ else:
     xyz_stones2 = []
 
 print("Coating nanoparticle...")
-xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, float(VAR["LIG1_FRAC"]), xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2)
+xyz_coated_NP, names_coated_NP, res_coated_NP, resID_core = coat_NP(xyz_core, names_core, res_core, resID_core, float(VAR["LIG1_FRAC"]), xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2)
 
 print("Writing pdb of the coated nanoparticle...")
-print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, float(VAR["LIG1_FRAC"]), "TMP/"+VAR["NAME"]+".pdb")
+print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, resID_core, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, float(VAR["LIG1_FRAC"]), "TMP/"+VAR["NAME"]+".pdb")
 
 ################################################################
 
