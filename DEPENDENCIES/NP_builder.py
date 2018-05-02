@@ -52,18 +52,15 @@ def init_core_pdb(fname):
     names_core_func = []
     res_core_func = []
     xyz_core_func = []
-    resID_func = []
     for i in range(len(pdb)):
         at_act=pdb[i]
         names_core_func.append(at_act[12:16].strip())
         res_core_func.append(at_act[17:20].strip())
         xyz_core_func.append([at_act[30:38], at_act[38:46], at_act[46:54]])
-        resID_func.append(at_act[22:26])
     xyz_core_func = np.array(xyz_core_func, dtype="float")
     names_core_func = np.array(names_core_func)
     res_core_func = np.array(res_core_func)
-    resID_func = np.array(resID_func, dtype='int')
-    return xyz_core_func, names_core_func, res_core_func, resID_func
+    return xyz_core_func, names_core_func, res_core_func
 
 def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
     #Runs a PCA and takes the first eigenvector as the best fitting line.
@@ -140,7 +137,6 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
             trans_lig_try[k,:] = rot_mat(trans_lig_tmp[k,:], unit_u, theta)
         D_clash = distance.cdist(trans_lig_try, xyz_coated_tmp)
         if np.min(D_clash) > clash_dis:
-            print("good")
             clash_dis = np.min(D_clash)
             trans_lig_best = trans_lig_try
         if theta >= 6.28:
@@ -152,7 +148,7 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
 
     return trans_lig_best
 
-def coat_NP(xyz_core_func, names_core_func, res_core_func, resID_core_func, frac_lig1_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func):
+def coat_NP(xyz_core_func, names_core_func, frac_lig1_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func):
     #Merges xyz coordinates and names of the core and the ligands into one coated NP
     keep_rows=[]
     for i in range(len(names_core_func)):
@@ -161,8 +157,12 @@ def coat_NP(xyz_core_func, names_core_func, res_core_func, resID_core_func, frac
 
     xyz_coated_func=xyz_core_func[keep_rows,:]
     names_coated_func=names_core_func[keep_rows]
-    res_coated_func=res_core_func[keep_rows]
-    resID_core_func = resID_core_func[keep_rows]
+    res_coated_func=names_core_func[keep_rows]
+    res_coated_func[np.where(names_coated_func=="AUL")[0]]="AU"
+    res_coated_func[np.where(names_coated_func=="AUS")[0]]="AU"
+    names_coated_func[np.where(names_coated_func=="AUL")[0]]="AU"
+    names_coated_func[np.where(names_coated_func=="AUS")[0]]="AU"
+
 
     #Transforms and appends rototranslated ligand 1
     xyz_lig1_func_conv=np.insert(xyz_lig1_func, 3, 1, axis=1).T
@@ -190,9 +190,9 @@ def coat_NP(xyz_core_func, names_core_func, res_core_func, resID_core_func, frac
             xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
             names_coated_func=np.append(names_coated_func, names_lig2_func, axis=0)
             res_coated_func=np.append(res_coated_func, res_lig2_func, axis=0)
-    return xyz_coated_func, names_coated_func, res_coated_func, resID_core_func
+    return xyz_coated_func, names_coated_func, res_coated_func
 
-def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, resID_core_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, frac_lig1_func, out_fname):
+def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, frac_lig1_func, out_fname):
     N_at_lig1 = len(xyz_lig1_func[:,0])
     if frac_lig1_func < 1.0:
         N_at_lig2 = len(xyz_lig2_func[:,0])
@@ -206,18 +206,16 @@ def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, resID_core
     N_tot_lig2 = N_lig2 * N_at_lig2
     N_core = len(xyz_coated_func) - N_lig1*N_at_lig1 - N_lig2*N_at_lig2
 
-    at=1
-    res=1
+    at=0
+    res=0
     output=open(out_fname, "w")
     #Writes the core
     for i in range(N_core):
+        at+=1
+        res+=1
         at_name_act=names_coated_func[i]
         r_name_act=res_coated_func[i]
         write_pdb_block(at_name_act, r_name_act, xyz_coated_func[i,:], res, at, out_fname)
-        at+=1
-        if resID_core_func[(i+1)%len(resID_core_func)] != resID_core_func[i]:
-            res+=1
-    res-=1
 
     #Writes ligand 1
     lig_atoms=0

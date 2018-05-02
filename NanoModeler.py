@@ -68,7 +68,7 @@ else:
     xyz_lig2, names_lig2, anchor_ndx2, res_lig2 = [], [], [], []
 
 print("Initializing core...")
-xyz_core, names_core, res_core, resID_core = init_core_pdb(VAR["COREDIR"]+"/"+VAR["CORE"])
+xyz_core, names_core, res_core = init_core_pdb(VAR["COREDIR"]+"/"+VAR["CORE"])
 
 print("Running PCA for ligand1...")
 xyz_pillars1 = get_ligand_pill(xyz_lig1, anchor_ndx1)
@@ -89,10 +89,10 @@ else:
     xyz_stones2 = []
 
 print("Coating nanoparticle...")
-xyz_coated_NP, names_coated_NP, res_coated_NP, resID_core = coat_NP(xyz_core, names_core, res_core, resID_core, float(VAR["LIG1_FRAC"]), xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2)
+xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, float(VAR["LIG1_FRAC"]), xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2)
 
 print("Writing pdb of the coated nanoparticle...")
-print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, resID_core, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, float(VAR["LIG1_FRAC"]), "TMP/"+VAR["NAME"]+".pdb")
+print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, float(VAR["LIG1_FRAC"]), "TMP/"+VAR["NAME"]+".pdb")
 
 ################################################################
 
