@@ -8,6 +8,8 @@ print("Importing numpy library...")
 import numpy as np
 print("Importing random library...")
 import random
+print("Importing math library...")
+import math
 print("Importing scipy library...")
 from scipy.spatial import distance
 print("Importing sklearn library...")

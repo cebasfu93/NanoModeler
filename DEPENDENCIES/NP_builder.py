@@ -4,6 +4,17 @@ import random
 from scipy.spatial import distance
 from sklearn.decomposition import PCA
 
+def rot_mat(p, u, t):
+    ct = math.cos(t)
+    st = math.sin(t)
+    x = u[0]
+    y = u[1]
+    z = u[2]
+    rot = np.array([[ct + x**2*(1-ct), x*y*(1-ct)-z*st, x*z*(1-ct)+y*st], \
+    [x*y*(1-ct)+z*st, ct+y**2*(1-ct), y*z*(1-ct)-x*st],\
+    [x*z*(1-ct)-y*st, y*z*(1-ct)+x*st, ct+z**2*(1-ct)]])
+    return np.dot(rot, p)
+
 def init_lig_mol2(fname):
     #Imports ligand mol2 file. Returns xyz coordinates, names, and index corresponding to the anchor
     mol2=np.genfromtxt(fname, delimiter='\n', dtype='str')
@@ -104,6 +115,36 @@ def get_stones(xyz_anchorsi_func, xyz_pillarsi_func):
             xyz_stones[i,j,:]=xyz_anchorsi_func[i,:]*scaling
     return xyz_stones
 
+def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
+    n_clash_iter = 100
+    thresh = 0.5
+    D_clash = distance.cdist(trans_lig_tmp, xyz_coated_tmp)
+    clash_dis = np.min(D_clash)
+    theta = 0
+    trans_lig_best = trans_lig_tmp
+    if clash_dis < thresh:
+        print("Clashes were found while placing residue {}...".format(resnum))
+        print("Trying to solve the clashes...")
+
+    while clash_dis < thresh:
+        theta += 2*math.pi/n_clash_iter
+        trans_lig_try = trans_lig_tmp
+        unit_u = xyz_stone_act/np.linalg.norm(xyz_stone_act)
+        for k in range(len(trans_lig_tmp)):
+            trans_lig_try[k,:] = rot_mat(trans_lig_tmp[k,:], unit_u, theta)
+        D_clash = distance.cdist(trans_lig_try, xyz_coated_tmp)
+        if np.min(D_clash) > clash_dis:
+            clash_dis = np.min(D_clash)
+            trans_lig_best = trans_lig_try
+        if theta >= 6.28:
+            print("It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...".format(resnum, clash_dis/10))
+            print("Revise the final geometry...")
+            break
+        if clash_dis > thresh:
+            print("Nanomodeler solved the clashed because she/he is awesome...")
+
+    return trans_lig_best
+
 def coat_NP(xyz_core_func, names_core_func, frac_lig1_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func):
     #Merges xyz coordinates and names of the core and the ligands into one coated NP
     keep_rows=[]
@@ -122,9 +163,12 @@ def coat_NP(xyz_core_func, names_core_func, frac_lig1_func, xyz_lig1_func, names
         trans_matrix=affine_matrix_from_points(xyz_pillars1_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
         trans_lig=np.dot(trans_matrix, xyz_lig1_func_conv).T[:,:3]
 
+        trans_lig = solve_clashes(xyz_coated_func, trans_lig, xyz_stones1_func[i,0,:], len(keep_rows)+i+1)
+
         xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
         names_coated_func=np.append(names_coated_func, names_lig1_func, axis=0)
         res_coated_func=np.append(res_coated_func, res_lig1_func, axis=0)
+
     #Transforms and appends rototranslated ligand 2
     if frac_lig1_func < 1.0:
         xyz_lig2_func_conv=np.insert(xyz_lig2_func, 3, 1, axis=1).T
@@ -132,6 +176,8 @@ def coat_NP(xyz_core_func, names_core_func, frac_lig1_func, xyz_lig1_func, names
             xyz_stones_now = xyz_stones2_func[i,:,:]
             trans_matrix=affine_matrix_from_points(xyz_pillars2_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
             trans_lig=np.dot(trans_matrix, xyz_lig2_func_conv).T[:,:3]
+
+            trans_lig = solve_clashes(xyz_coated_func, trans_lig, xyz_stones2_func[i,0,:])
 
             xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
             names_coated_func=np.append(names_coated_func, names_lig2_func, axis=0)
