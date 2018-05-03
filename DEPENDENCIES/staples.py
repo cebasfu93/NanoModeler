@@ -1,48 +1,10 @@
 import numpy as np
+import sys
 from scipy.spatial import distance
 import subunits
 import collections
 
 signature = " NanoModeler"
-
-def angle(a, b, c):
-    #Calculates the angle formed by a-b-c
-    ba = a - b
-    bc = c - b
-    cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
-    angle = np.arccos(cosine_angle)
-    return angle
-
-def get_lig_info(lig_mol2):
-    #Reads the mol2 file of a ligand and returns the names and types of the connecting C atoms and their hydrogen atoms
-    mol2_file = np.genfromtxt(lig_mol2, delimiter = "\n", dtype='str')
-    found_ATOM = 0
-    found_CONNECT = 0
-    names = []
-    types = []
-    xyz = []
-    for line in mol2_file:
-        if "@<TRIPOS>ATOM" in line:
-            found_ATOM = 1
-        elif "@<TRIPOS>BOND" in line:
-            found_ATOM = 0
-        elif found_ATOM == 1:
-            line = str(line).split()
-            xyz.append(line[2:5])
-            names.append(line[1])
-            types.append(line[5])
-        elif "@<TRIPOS>RESIDUECONNECT" in line:
-            found_CONNECT = 1
-        elif found_CONNECT == 1:
-            xyz = np.array(xyz).astype('float')
-            names = np.array(names)
-            types = np.array(types)
-            ndx_C = np.where(names == str(line).split()[1])[0][0]
-            dists = distance.cdist([xyz[ndx_C]], xyz)
-            ndx_Hs = np.argsort(dists[0])[1:3]
-            break
-
-    return names[ndx_C], types[ndx_C], names[ndx_Hs], types[ndx_Hs]
 
 def load_gro(gro_fname):
     #Loads the gro file written by NP_builder.py and return the coordinates and names of the atoms in the system
@@ -60,6 +22,7 @@ def load_top(top_fname):
     #Loads the topology of the system writen by acpype.py and returns the types of the atoms
     top_file = np.genfromtxt(top_fname, dtype='str', delimiter = "\n")
     types = []
+    residues = []
     for i in range(len(top_file)):
         if "[ atoms ]" in top_file[i]:
             ini = i + 2
@@ -67,7 +30,8 @@ def load_top(top_fname):
             fin = i
     for i in range(ini, fin):
         types.append(top_file[i].split()[1])
-    return types
+        residues.append(top_file[i].split()[3])
+    return np.array(types), np.array(residues)
 
 def get_gro_ndx(names_array, search_object):
     #Returns he indexes of the atoms with a given name
@@ -77,119 +41,27 @@ def get_gro_ndx(names_array, search_object):
             ndx.append(i)
     return np.array(ndx)
 
-def make_blocks(ind_AU, ind_ST, ind_C, ind_H, xyz_sys_func, ndx_ST_func):
-    #By calculating distances to the S and C atoms, it decides the components of each block and stores them in a list
-    D_ST_AU = distance.cdist(xyz_sys_func[ind_ST], xyz_sys_func[ind_AU])
-    D_ST_C = distance.cdist(xyz_sys_func[ind_ST], xyz_sys_func[ind_C])
-    blocks = []
-    for i in range(len(ndx_ST_func)):
-        near_Au = D_ST_AU[i].argsort()[0:2]
-        near_C = D_ST_C[i].argsort()[0]
-        D_C_H = distance.cdist(np.array([xyz_sys_func[ind_C[near_C]]]), xyz_sys_func[ind_H])
-        near_Hs = D_C_H[0].argsort()[0:2]
+def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_anchor_func, res_anchor_func):
+    ndx_C = np.where(np.logical_and(names_sys_func==name_anchor_func, res_sys_func==res_anchor_func))[0]
+    type_anchor_func = types_sys_func[ndx_C]
+    print("Checking if the assigned atom type for the anchors is supported...")
+    if not (type_anchor_func[0]=="CT" or type_anchor_func[0]=="CA"):
+        sys.exit("One of the anchors was assigned an unsupported atom type. Those supported are CT and CA.")
+    N_anch = len(ndx_C)
 
-        blocks.append(subunits.Block(ndx_S=ind_ST[i], ndx_Au=ind_AU[near_Au], ndx_C=ind_C[near_C], ndx_H=ind_H[near_Hs]))
-    return blocks
-
-def make_staples(blocks_list):
-    #Given a list of blocks, it finds which blocks share gold atoms and merge them in staples
-    N_blocks = len(blocks_list)
-    staples_ndx = []
-    #Looks for blocks sharing atoms
-    for i in range(N_blocks):
-        ndx_tmp = []
-        for j in range(N_blocks):
-            if not set(blocks_list[i].Au).isdisjoint(blocks_list[j].Au):
-                ndx_tmp.append(j)
-        staples_ndx.append((ndx_tmp))
-    staples_ndx = [list(x) for x in set(tuple(x) for x in staples_ndx)] #Takes the unique lists within the list
-
-    #Merge the respective blocks into staples
-    staples = []
-    for i in range(len(staples_ndx)):
-        blocks_S = np.array([])
-        blocks_Au = np.array([])
-        blocks_C = np.array([])
-        blocks_H = np.array([])
-        for j in range(len(staples_ndx[i])):
-            block_act = blocks_list[staples_ndx[i][j]]
-            blocks_S = np.append(blocks_S, block_act.S)
-            blocks_Au = np.append(blocks_Au, block_act.Au)
-            blocks_C = np.append(blocks_C, block_act.C)
-            blocks_H = np.append(blocks_H, block_act.H)
-        blocks_Au_l = [item for item, count in collections.Counter(blocks_Au).items() if count > 1]
-        blocks_S = np.unique(blocks_S)
-        blocks_Au = np.unique(blocks_Au)
-        blocks_C = np.unique(blocks_C)
-        blocks_H = np.unique(blocks_H)
-
-        staples.append(subunits.Staple(tipo='UNK', ndx_S=blocks_S, ndx_Au=blocks_Au, ndx_Au_l=blocks_Au_l, ndx_C=blocks_C, ndx_H=blocks_H))
-    return staples
-
-def classify_staples(staples_list):
-    #Depending in the number of sulphur and gold atoms in each staple, it clssifies it. For STC and STV it calculates the angle Aul-S-Aul and with an tolerance of +/-9 degrees, the staple is classified
-    for i in range(len(staples_list)):
-        staple_act = staples_list[i]
-        N_S = len(staple_act.S)
-        N_Au = len(staple_act.Au)
-        if N_S == 1 and N_Au == 2:
-            staple_act.change_tipo('STP')
-        elif N_S == 2 and N_Au == 3:
-            staple_act.change_tipo('STR')
-        elif N_S == 3 and N_Au == 4:
-            D_S_Aul = distance.cdist(xyz_sys[staple_act.S], xyz_sys[staple_act.Au_l])
-            for j in range (len(staple_act.S)):
-                near_Au = staple_act.S[D_Aul_S[j].argsort()[0:2]]
-                if np.all(np.in1d(near_Au, staple_act.Au_l)):
-                    angle = angle(xyz_sys[near_Au[0]], xyz_sys[staple_act.S[j]], xyz_sys[near_Au[1]])
-                    if angle <= 109.0 and angle >= 91.0:
-                        staple_act.change_tipo('STC')
-                    elif angle <= 128.2 and angle >= 110.2:
-                        staple_act.change_tipo('STV')
-                    else:
-                        print("Unrecognized staple")
-        else:
-            print("Unrecognized staple")
-    return staples_list
-
-def staple_to_residues(staples_list):
-    #Converts a list of staples into a lsit of residues as defined in subunits.py
-    residues = []
-    for i in range(len(staples_list)):
-        sta = staples_list[i]
-        restype = sta.tipo
-        ndx = np.concatenate((sta.S, sta.Au, sta.C, sta.H)).astype('int')
-        residues.append(subunits.Residue(restype=restype, ndx=ndx))
-    return residues
-
-def print_pdb(residues_list, out_fname):
-    #Writes a pdb file with only the staples and each one with their resID and restype
-    at=0
-    resnum = 0
-    for i in range(len(residues_list)):
-        res_act = residues_list[i]
-        ndx = res_act.ndx
-        resnum += 1
-        for j in range(len(ndx)):
-            at+=1
-            write_pdb_block(names_sys[ndx[j]], res_act.restype, xyz_sys[ndx[j]], resnum, at, out_fname)
-    output=open(out_fname, 'a')
-    output.write('END')
-    output.close()
-
-def write_pdb_block(atname_func, res_name_func, xyz_func, resnum, atnum, out_filename):
-    #Writes one line of a generic pdb file
-    xyz_func=np.round(xyz_func*10., decimals=4)
-    coords=open(out_filename, 'a')
-    coords.write('ATOM'.ljust(6))
-    coords.write(str(atnum).rjust(5))
-    coords.write('  '+str(atname_func).ljust(3))
-    coords.write(' '+str(res_name_func).ljust(3))
-    coords.write('  '+str(resnum).rjust(4))
-    coords.write('    '+ str(xyz_func[0]).rjust(8))
-    coords.write(str(xyz_func[1]).rjust(8))
-    coords.write(str(xyz_func[2]).rjust(8)+"\n")
-    coords.close()
+    D_C_all = distance.cdist(xyz_sys_func[ndx_C], xyz_sys_func)
+    if type_anchor_func[0]=="CT":
+        print("Looking for closest hydrogen atoms to anchors...")
+        ndx_H = np.zeros((N_anch, 2))
+        for i in range(N_anch):
+            D_sort = np.argsort(D_C_all[i,:])
+            ndx_H[i,0] = D_sort[1]
+            ndx_H[i,1] = D_sort[2]
+        if not np.all(types_sys_func[ndx_H.flatten()]=="HC"):
+            sys.exit("There are no parameters for the hydrogen atoms next to the anchor, or the atoms next to the anchor are not hydrogen atoms. The hydrogens next to CT anchor must be HC...")
+    elif type_anchor_func[0]=="CA":
+        ndx_H = np.array([])
+    return ndx_C, ndx_H
 
 def write_bonds(staples_list, fname, xyz_sys_func, names_sys_func, types_sys_func):
     #Goes through the S atoms of every staple, looks for the closest Au and C atoms, and assign bond parameters
