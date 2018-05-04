@@ -33,14 +33,6 @@ def load_top(top_fname):
         residues.append(top_file[i].split()[3])
     return np.array(types), np.array(residues)
 
-def get_gro_ndx(names_array, search_object):
-    #Returns he indexes of the atoms with a given name
-    ndx = []
-    for i in range(len(names_array)):
-        if search_object == str(names_array[i]):
-            ndx.append(i)
-    return np.array(ndx)
-
 def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_anchor_func, res_anchor_func):
     ndx_C = np.where(np.logical_and(names_sys_func==name_anchor_func, res_sys_func==res_anchor_func))[0]
     type_anchor_func = types_sys_func[ndx_C]
@@ -57,97 +49,101 @@ def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_an
             D_sort = np.argsort(D_C_all[i,:])
             ndx_H[i,0] = D_sort[1]
             ndx_H[i,1] = D_sort[2]
-        if not np.all(types_sys_func[ndx_H.flatten()]=="HC"):
+        if not np.all(types_sys_func[ndx_H.flatten().astype("int")]=="HC"):
             sys.exit("There are no parameters for the hydrogen atoms next to the anchor, or the atoms next to the anchor are not hydrogen atoms. The hydrogens next to CT anchor must be HC...")
     elif type_anchor_func[0]=="CA":
         ndx_H = np.array([])
     return ndx_C, ndx_H
 
-def write_bonds(staples_list, fname, xyz_sys_func, names_sys_func, types_sys_func):
+def make_blocks(xyz_core_func, names_core_func, xyz_sys_func, ndx_C_func, ndx_H_func):
+    all_Au = np.append(np.where(names_core_func=="AUS")[0], np.where(names_core_func=="AUL")[0])
+    all_S = np.where(names_core_func=="ST")[0]
+    blocks = []
+    D_C_CORE = distance.cdist(xyz_sys_func[ndx_C_func], xyz_core_func)
+    for i in range(len(ndx_C_func)):
+        ndx_S = all_S[np.argsort(D_C_CORE[i, all_S])[0]]
+        ndx_Au = all_Au[np.argsort(D_C_CORE[i, all_Au])[0:2]]
+        tipos_Au = names_core_func[ndx_Au]
+        if np.any(np.logical_and(tipos_Au != "AUS", tipos_Au != "AUL")):
+            sys.exit("There was a problem recognizing if some gold atoms where type AUL or AUS.")
+        blocks.append(subunits.Block(ndx_S=ndx_S, ndx_Au=ndx_Au, ndx_C=ndx_C_func[i], ndx_H=ndx_H_func[i], types_Au=tipos_Au))
+    return blocks
+
+def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
     #Goes through the S atoms of every staple, looks for the closest Au and C atoms, and assign bond parameters
     bonds = open(fname, 'w')
     func_type = str(1)
-    for i in range(len(staples_list)):
-        s = staples_list[i]
-        D_S_Au = distance.cdist(xyz_sys_func[s.S], xyz_sys_func[s.Au])
-        D_S_C = distance.cdist(xyz_sys_func[s.S], xyz_sys_func[s.C])
-        for j in range(len(s.S)):
-            #S - Au bonds
-            near_Au = s.Au[D_S_Au[j].argsort()[0:2]]
-            cons = 62730
-            for k in range(len(near_Au)):
-                if near_Au[k] in s.Au_l:
-                    zero = 0.233
-                else:
-                    zero = 0.241
-                bonds.write(str(s.S[j]+1).rjust(6)+str(near_Au[k]+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[s.S[j]]+" - "+names_sys_func[near_Au[k]]+signature+"\n")
+    for i in range(len(blocks_list)):
+        b = blocks_list[i]
 
-            #S - C bonds
-            near_C = s.C[D_S_C[j].argsort()[0]]
-            if types_sys_func[near_C] == 'CT':
-                cons = 99113.0
-                zero = 0.184
-                bonds.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+signature+"\n")
-            elif types_sys_func[near_C] == 'CA':
-                cons = 198321.6
-                zero = 0.175
-                bonds.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+" m\n")
-            else:
-                print("Unrecognized bond type")
+        #S - Au bonds
+        cons = 62730
+        for j in range(2):
+            if b.typesAu[j]=="AUL":
+                zero = 0.233
+            elif b.typesAu[j]=="AUS":
+                zero = 0.241
+            bonds.write(str(b.S+1).rjust(6)+str(b.Au[j]+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.Au[j]]+signature+"\n")
 
-def write_angles(staples_list, fname, xyz_sys_func, names_sys_func, types_sys_func):
+        #S - C bonds
+        if len(b.H) == 2:
+            cons = 99113.0
+            zero = 0.184
+        elif len(b.H) == 0:
+            cons = 198321.6
+            zero = 0.175
+        else:
+            sys.exit("There is something wrong with the anchors' hydrogen indexing.")
+        bonds.write(str(b.S+1).rjust(6)+str(b.C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.C]+signature+"\n")
+
+def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, res_core_func):
     #Goes through every staple and wirtes the parameters for the angles involving S atoms. Then a particular case is used for the S-Aul-S bond
     angles = open(fname, 'w')
     func_type = str(1)
-    for i in range(len(staples_list)):
-        s = staples_list[i]
-        D_S_Au = distance.cdist(xyz_sys_func[s.S], xyz_sys_func[s.Au])
-        D_S_C = distance.cdist(xyz_sys_func[s.S], xyz_sys_func[s.C])
-        for j in range(len(s.S)):
-            #Au - S - Au angles
-            near_Au = s.Au[D_S_Au[j].argsort()[0:2]]
-            cons = 460.24
-            if ((near_Au[0] in s.Au_l) and (near_Au[1] not in s.Au_l) or (near_Au[0] not in s.Au_l) and (near_Au[1] in s.Au_l)):
-                zero = 91.3
-            elif ((near_Au[0] in s.Au_l) and (near_Au[1] in s.Au_l)):
-                if s.tipo == "STV":
-                    cons = 1460.24
-                    zero = 119.2
-                elif s.tipo == "STC":
-                    zero = 100.0
+    for i in range(len(blocks_list)):
+        b = blocks_list[i]
+
+        #AuL - S - AuL
+        print("Writing AuL - S - AuL angles...")
+        if np.all(b.typesAu == "AUL"):
+            if np.all(res_core_func[b.Au]=="STV"):
+                cons = 1460.24
+                zero = 119.2
+            elif np.all(res_core_func[b.Au]=="STC"):
+                cons = 460.24
+                zero = 100.0
             else:
-                print("There is an unsupported Au-S-Au bond")
-            angles.write(str(near_Au[0]+1).rjust(6)+str(s.S[j]+1).rjust(7)+str(near_Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_Au[0]]+" - "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_Au[1]]+signature+"\n")
+                sys.exit("There was a problem recognizing the staple type when trying to write an Au - S - Au angle.")
+            angles.write(str(b.Au[0]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[0]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.Au[1]]+signature+"\n")
 
-            #Au - S - C angles
-            near_C = s.C[D_S_C[j].argsort()[0]]
-            if types_sys_func[near_C] == "CT":
-                cons = 146.37
-                for k in range(len(near_Au)):
-                    if near_Au[k] in s.Au_l:
-                        zero = 106.8
-                    else:
-                        zero = 111.6
-                    angles.write(str(near_Au[k]+1).rjust(6)+str(s.S[j]+1).rjust(7)+str(near_C+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_Au[k]]+" - "+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+signature+"\n")
+        #AuL - S - AuS
+        print("Writing AuL - S - AuS angles...")
+        elif np.any(b.typesAu == "AUS"):
+            cons = 460.240
+            zero = 91.3
+            angles.write(str(b.Au[0]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[0]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.Au[1]]+signature+"\n")
 
-            #S - C - H angles
-            D_C_H = distance.cdist([xyz_sys_func[near_C]], xyz_sys_func[s.H])
-            near_H = s.H[D_C_H[0].argsort()[0:2]]
+        #Au - S -  C
+        print("Writing Au - S - C angles...")
+        for j in range(2):
+            cons = 146.370
+            if b.typesAu[j] == "AUL":
+                zero = 106.8
+            elif b.types_Au[j] == "AUS":
+                zero = 111.6
+            angles.write(str(b.Au[j]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.C+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[j]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.C]+signature+"\n")
+
+        #S - C - H
+        print("Writing S - C - H angles...")
+        if len(b.H) == 2:
             cons = 418.40
             zero = 107.0
-            for k in range(len(near_H)):
-                if types_sys_func[near_H[k]] == "HC":
-                    angles.write(str(s.S[j]+1).rjust(6)+str(near_C+1).rjust(7)+str(near_H[k]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[s.S[j]]+" - "+names_sys_func[near_C]+" - "+names_sys_func[near_H[k]]+signature+"\n")
-                else:
-                    print("There are no parameters for angles involving this kind of hydrogen atoms")
+            angles.write(str(b.S+1).rjust(6)+str(b.C+1).rjust(7)+str(b.H[0]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.C]+" - "+names_sys_func[b.H[0]]+signature+"\n")
+            angles.write(str(b.S+1).rjust(6)+str(b.C+1).rjust(7)+str(b.H[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.C]+" - "+names_sys_func[b.H[1]]+signature+"\n")
 
-        #Aul - S - Aul angles
-        D_Aul_S = distance.cdist(xyz_sys_func[s.Au_l], xyz_sys_func[s.S])
-        cons = 460.240
-        zero = 172.4
-        for j in range(len(s.Au_l)):
-            near_S = s.S[D_Aul_S[j].argsort()[0:2]]
-            angles.write(str(near_S[0]+1).rjust(6)+str(s.Au_l[j]+1).rjust(7)+str(near_S[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_S[0]]+" - "+names_sys_func[s.Au_l[j]]+" - "+names_sys_func[near_S[1]]+signature+"\n")
+        #S - AuL - S
+        print("Writing S - AuL - AuS angles...")
+        
 
 def write_topology(fname, bonds, angles):
     #Copies the previous topology file writen by acpype.py and inserts the new bond and angles at the beggining of their respective sections

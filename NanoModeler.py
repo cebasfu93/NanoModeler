@@ -31,7 +31,7 @@ import collections
 print("Importing NP_builder...")
 from NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
 print("Importing staples...")
-from staples import load_gro, load_top, get_ndxs, write_bonds, write_angles, write_topology
+from staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
 print("Importing checking functions...")
 from check import check_mol2, check_VAR
 check_VAR(VAR)
@@ -125,11 +125,13 @@ if two_lig:
 else:
     ndx_C2, ndx_H2 = [], []
 
+blocks = make_blocks(xyz_core, names_core, xyz_sys, ndx_C1, ndx_H1)
+if two_lig:
+    blocks.append(make_blocks(xyz_core, names_core, xyz_sys, ndx_C2, ndx_H2))
 
-
-print("Writing final file...")
-write_bonds(staples, "TMP/bonds.top", xyz_sys, names_sys, types_sys)
-write_angles(staples, "TMP/angles.top", xyz_sys, names_sys, types_sys)
+print("Writing final topology file...")
+write_bonds(blocks, "TMP/bonds.top", xyz_sys, names_sys)
+write_angles(blocks, "TMP/angles.top", xyz_sys, names_sys, res_core)
 write_topology("TMP/"+VAR["NAME"]+".top", "TMP/bonds.top", "TMP/angles.top")
 #############################################################
 
