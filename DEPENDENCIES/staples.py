@@ -60,9 +60,10 @@ def make_blocks(xyz_core_func, names_core_func, xyz_sys_func, ndx_C_func, ndx_H_
     all_S = np.where(names_core_func=="ST")[0]
     blocks = []
     D_C_CORE = distance.cdist(xyz_sys_func[ndx_C_func], xyz_core_func)
+    D_S_Au = distance.cdist(xyz_sys_func[all_S], xyz_sys_func[all_Au])
     for i in range(len(ndx_C_func)):
         ndx_S = all_S[np.argsort(D_C_CORE[i, all_S])[0]]
-        ndx_Au = all_Au[np.argsort(D_C_CORE[i, all_Au])[0:2]]
+        ndx_Au = all_Au[np.argsort(D_S_Au[i])[0:2]]
         tipos_Au = names_core_func[ndx_Au]
         if np.any(np.logical_and(tipos_Au != "AUS", tipos_Au != "AUL")):
             sys.exit("There was a problem recognizing if some gold atoms where type AUL or AUS.")
@@ -95,16 +96,17 @@ def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
         else:
             sys.exit("There is something wrong with the anchors' hydrogen indexing.")
         bonds.write(str(b.S+1).rjust(6)+str(b.C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.C]+signature+"\n")
+    bonds.close()
 
 def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, res_core_func):
     #Goes through every staple and wirtes the parameters for the angles involving S atoms. Then a particular case is used for the S-Aul-S bond
     angles = open(fname, 'w')
     func_type = str(1)
+    Au_taken = []
     for i in range(len(blocks_list)):
         b = blocks_list[i]
 
         #AuL - S - AuL
-        print("Writing AuL - S - AuL angles...")
         if np.all(b.typesAu == "AUL"):
             if np.all(res_core_func[b.Au]=="STV"):
                 cons = 1460.24
@@ -117,24 +119,21 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, res_core_func
             angles.write(str(b.Au[0]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[0]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.Au[1]]+signature+"\n")
 
         #AuL - S - AuS
-        print("Writing AuL - S - AuS angles...")
-        elif np.any(b.typesAu == "AUS"):
+        if np.any(b.typesAu == "AUS"):
             cons = 460.240
             zero = 91.3
             angles.write(str(b.Au[0]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[0]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.Au[1]]+signature+"\n")
 
         #Au - S -  C
-        print("Writing Au - S - C angles...")
         for j in range(2):
             cons = 146.370
             if b.typesAu[j] == "AUL":
                 zero = 106.8
-            elif b.types_Au[j] == "AUS":
+            elif b.typesAu[j] == "AUS":
                 zero = 111.6
             angles.write(str(b.Au[j]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.C+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[j]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.C]+signature+"\n")
 
         #S - C - H
-        print("Writing S - C - H angles...")
         if len(b.H) == 2:
             cons = 418.40
             zero = 107.0
@@ -142,8 +141,18 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, res_core_func
             angles.write(str(b.S+1).rjust(6)+str(b.C+1).rjust(7)+str(b.H[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.C]+" - "+names_sys_func[b.H[1]]+signature+"\n")
 
         #S - AuL - S
-        print("Writing S - AuL - AuS angles...")
-        
+        all_S = np.where(names_sys_func=="ST")[0]
+        for j in range(2):
+            if b.typesAu[j] == "AUL" and b.Au[j] not in Au_taken:
+                Au_taken.append(b.Au[j])
+                cons = 460.240
+                zero = 172.4
+
+                D_AuL_S = distance.cdist([xyz_sys_func[b.Au[j]]], xyz_sys_func[all_S])
+                near_S = all_S[np.argsort(D_AuL_S[0])[0:2]]
+                angles.write(str(near_S[0]+1).rjust(6)+str(b.Au[j]+1).rjust(7)+str(near_S[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_S[0]]+" - "+names_sys_func[b.Au[j]]+" - "+names_sys_func[near_S[1]]+signature+"\n")
+
+    angles.close()
 
 def write_topology(fname, bonds, angles):
     #Copies the previous topology file writen by acpype.py and inserts the new bond and angles at the beggining of their respective sections
