@@ -8,14 +8,14 @@ signature = " NanoModeler"
 
 def load_gro(gro_fname):
     #Loads the gro file written by NP_builder.py and return the coordinates and names of the atoms in the system
-    gro_file = np.genfromtxt(gro_fname, dtype='str', skip_header=2, skip_footer=1)
+    gro_file = np.genfromtxt(gro_fname, dtype='str', skip_header=2, skip_footer=1, delimiter="\n")
     xyz = []
     names = []
     resids = []
     for line in gro_file:
-        xyz.append(line[4:7])
-        names.append(line[2])
-        resids.append(line[1])
+        xyz.append([line[-24:-16],line[-16:-8], line[-8:]])
+        names.append(line[-34:-29].strip())
+        resids.append(line[-39:-34].strip())
     return np.array(xyz).astype('float'), np.array(names)
 
 def load_top(top_fname):
