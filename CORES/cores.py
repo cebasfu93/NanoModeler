@@ -4,7 +4,7 @@ from scipy.spatial import distance
 import math
 import subunits
 
-def angle(a, b, c):
+def calc_angle(a, b, c):
     #Calculates the angle formed by a-b-c
     ba = a - b
     bc = c - b
@@ -29,6 +29,46 @@ def penalty(p, S_xyz, Au_xyz):
     D_S = np.abs((D_S-1.8)/1.8)
     #print(angles, np.sum(angles), D_S)
     return float(np.sum(angles)+D_S)
+
+def read_Au25SR18(fname):
+    gro = np.genfromtxt(fname, dtype='str', delimiter="\n", skip_header=2, skip_footer=1)
+    xyz = []
+    names= []
+    for i in range(len(gro)):
+        if "Au" in gro[i]:
+            xyz.append([gro[i][-24:-16],gro[i][-16:-8], gro[i][-8:]])
+            names.append('AU')
+    for i in range(len(gro)):
+        if "S" in gro[i]:
+            xyz.append([gro[i][-24:-16],gro[i][-16:-8], gro[i][-8:]])
+            names.append('ST')
+    for i in range(len(gro)):
+        if "CT1" in gro[i]:
+            xyz.append([gro[i][-24:-16],gro[i][-16:-8], gro[i][-8:]])
+            names.append('C')
+    xyz = center(xyz)*10
+    names = np.array(names, dtype='str')
+    return xyz, names
+
+def read_Au102SR44(fname):
+    gro = np.genfromtxt(fname, dtype='str', delimiter="\n", skip_header=2, skip_footer=1)
+    xyz = []
+    names= []
+    for i in range(len(gro)):
+        if "Au" in gro[i]:
+            xyz.append([gro[i][-24:-16],gro[i][-16:-8], gro[i][-8:]])
+            names.append('AU')
+    for i in range(len(gro)):
+        if "S" in gro[i]:
+            xyz.append([gro[i][-24:-16],gro[i][-16:-8], gro[i][-8:]])
+            names.append('ST')
+    for i in range(len(gro)):
+        if "CZ" in gro[i]:
+            xyz.append([gro[i][-24:-16],gro[i][-16:-8], gro[i][-8:]])
+            names.append('C')
+    xyz = center(xyz)*10
+    names = np.array(names, dtype='str')
+    return xyz, names
 
 def read_Au144SR60(fname):
     pdb=np.genfromtxt(fname, delimiter='\n', dtype=str)
@@ -109,32 +149,57 @@ def classify_staples(xyz_sys, names_sys):
     for i in range(N_blocks):
         taken = False
         for j in range(len(ganchos)):
-            if any(x in blocks[i].Au for x in ganchos[j].Au):
+            if any(x in ganchos[j].Au for x in blocks[i].Au):
                 ganchos[j].add(blocks[i].S, blocks[i].Au, blocks[i].C)
                 taken = True
         if not taken:
             ganchos.append(subunits.Gancho(ndx_S=blocks[i].S, ndx_Au=blocks[i].Au, ndx_C=blocks[i].C))
 
     N_ganchos = len(ganchos)
+
+    new_ganchos = []
+    newg_act = 0
+    newg_old = 0
+    for i in range(N_ganchos):
+        taken = False
+        for j in range(N_ganchos):
+            if j<i:
+                for k in range(len(ganchos[j].Au)):
+                    if ganchos[j].Au[k] in ganchos[i].Au:
+                        taken = True
+                        newg_old = j
+
+        if not taken:
+            new_ganchos.append(ganchos[i])
+            newg_act+=1
+        elif taken:
+            new_ganchos[newg_old].add(ganchos[newg_act].S, ganchos[newg_act].Au, ganchos[newg_act].C)
+            newg_act+=1
+
+    N_ganchos = len(new_ganchos)
+
     staples = []
     for i in range(N_ganchos):
-        staples.append(subunits.Staple(ndx_S=ganchos[i].S, ndx_Au=ganchos[i].Au, ndx_C=ganchos[i].C))
+        staples.append(subunits.Staple(ndx_S=new_ganchos[i].S, ndx_Au=new_ganchos[i].Au, ndx_C=new_ganchos[i].C))
+        #staples.append(subunits.Staple(ndx_S=ganchos[i].S, ndx_Au=ganchos[i].Au, ndx_C=ganchos[i].C))
 
     #Depending in the number of sulphur and gold atoms in each staple, it clssifies it. For STC and STV it calculates the angle Aul-S-Aul and with an tolerance of +/-9 degrees, the staple is classified
     for i in range(len(staples)):
         staple_act = staples[i]
         N_S = len(staple_act.S)
         N_Au = len(staple_act.Au)
+        #print(N_S, N_Au)
         if N_S == 1 and N_Au == 2:
             staple_act.change_tipo('STP')
         elif N_S == 2 and N_Au == 3:
             staple_act.change_tipo('STR')
         elif N_S == 3 and N_Au == 4:
-            D_S_Aul = distance.cdist(xyz_sys[staple_act.S], xyz_sys[staple_act.Au_l])
+            D_S_Au = distance.cdist(xyz_sys[staple_act.S], xyz_sys[staple_act.Au])
             for j in range(len(staple_act.S)):
-                near_Au = staple_act.S[D_S_Aul[j].argsort()[0:2]]
+                near_Au = staple_act.Au[D_S_Au[j].argsort()[0:2]]
                 if np.all(np.in1d(near_Au, staple_act.Au_l)):
-                    angle = angle(xyz_sys[near_Au[0]], xyz_sys[staple_act.S[j]], xyz_sys[near_Au[1]])
+                    angle = calc_angle(xyz_sys[near_Au[0]], xyz_sys[staple_act.S[j]], xyz_sys[near_Au[1]])
+                    #print(angle)
                     if angle <= 109.0 and angle >= 91.0:
                         staple_act.change_tipo('STC')
                     elif angle <= 128.2 and angle >= 110.2:
@@ -202,9 +267,25 @@ def print_xyz(coords, nombres, fname):
         fxyz.write("{}\t\t{:.3f}   {:.3f}   {:.3f}\n".format(nombres[i], coords[i,0], coords[i,1], coords[i,2]))
     fxyz.close()
 
-xyz_Au144SR60, names_Au144SR60 = read_Au144SR60("au144SR60.pdb")
-staples_Au144SR60 = classify_staples(xyz_Au144SR60, names_Au144SR60)
-write_pdb(xyz_Au144SR60, names_Au144SR60, staples_Au144SR60, "au144SR60_NM.pdb")
+#AU25SR18
+#xyz_Au25SR18, names_Au25SR18 = read_Au25SR18("AU25SR18/au25_pet18.gro")
+#staples_Au25SR18 = classify_staples(xyz_Au25SR18, names_Au25SR18)
+#write_pdb(xyz_Au25SR18, names_Au25SR18, staples_Au25SR18, "au25SR18_NM.pdb")
+
+#AU38SR24
+#xyz_Au38SR24, names_Au38SR24 = read_Au25SR18("AU38SR24/au38_pet24.gro")
+#staples_Au38SR24 = classify_staples(xyz_Au38SR24, names_Au38SR24)
+#write_pdb(xyz_Au38SR24, names_Au38SR24, staples_Au38SR24, "au38SR24_NM.pdb")
+
+#AU102SR44
+xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
+staples_Au102SR44 = classify_Au102SR44(xyz_Au102SR44, names_Au102SR44)
+write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
+
+#AU144SR60
+#xyz_Au144SR60, names_Au144SR60 = read_Au144SR60("AU144SR60/au144SR60.pdb")
+#staples_Au144SR60 = classify_staples(xyz_Au144SR60, names_Au144SR60)
+#write_pdb(xyz_Au144SR60, names_Au144SR60, staples_Au144SR60, "au144SR60_NM.pdb")
 #print_xyz(xyz_Au144SR60, names_Au144SR60, "au144SR60_NM")
 
 #xyz_Au314SR96, names_Au314SR96 = fix_Au314SH96("au314SH96.xyz")
