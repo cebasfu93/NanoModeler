@@ -40,6 +40,7 @@ print("Importing input options...\n \n")
 inp=np.genfromtxt(sys.argv[1], dtype="str")
 for i in range(len(inp)):
     VAR[inp[i][0]] = inp[i][1]
+
 two_lig = float(VAR["LIG1_FRAC"]) < 1.0
 print("Imported options:")
 for i in VAR:
@@ -48,6 +49,7 @@ for i in VAR:
 print("\n\nCreating folder...")
 os.mkdir("TMP")
 
+print("One ligand was found...")
 print("Copying ligand1 file...")
 shutil.copyfile(VAR["LIG1_FILE"], "TMP/"+VAR["LIG1_FILE"])
 print("Checking ligand1 mol2 file...")
@@ -58,8 +60,7 @@ if two_lig:
     shutil.copyfile(VAR["LIG2_FILE"], "TMP/"+VAR["LIG2_FILE"])
     print("Checking ligand2 mol2 file...")
     check_mol2("TMP/"+VAR["LIG2_FILE"])
-else:
-    print("One ligand was found...")
+
 ##############################NP_builder########################
 
 print("Initializing ligand1...")

@@ -1,11 +1,11 @@
 VAR = {
 "NAME": "test",             #Name of the project
 "LIG1_FILE" : "LF1.mol2",   #Name of the mol2 of ligand1 (must be in the working directory)
-"CAP1" : []
+"CAP1" : "N",
 "LIG1_FRAC" : 1.0,          #Fraction of ligand1 to place
 
 "LIG2_FILE" : "LF2.mol2",   #Name of the mol2 of ligand2 (must be in the working directory)
-"CAP2" : []
+"CAP2" : "N",
 "MORPHOLOGY" : "random",    #Morphology to distribute ligands1 and 2. random and janus are allowed
 "RSEED" : 666,              #Random seed for random morphology
 

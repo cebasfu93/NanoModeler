@@ -1,10 +1,10 @@
 NAME		    test
 LIG1_FILE	  LF1.mol2
-CAP1        []
+CAP1        N
 LIG1_FRAC	  1.0
 
 LIG2_FILE	  XXX.mol2
-CAP2        []
+CAP2        N
 MORPHOLOGY	random
 RSEED		    666
 

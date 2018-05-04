@@ -17,7 +17,6 @@ def rot_mat(p, u, t):
 
 def init_lig_mol2(fname, cap):
     #Imports ligand mol2 file. Returns xyz coordinates, names, and index corresponding to the anchor
-    cap = np.array(cap, dtype="int")-1
     mol2=np.genfromtxt(fname, delimiter='\n', dtype='str')
     N_lig_file=len(mol2)
     found_ATOM=0
@@ -32,13 +31,20 @@ def init_lig_mol2(fname, cap):
             at_file = mol2[i].split()
             names_lig_func.append(at_file[1])
             xyz_lig_func.append(at_file[2:5])
-            resID.append(at_file[6])
+            resID_func.append(at_file[6])
             res_lig_func.append(at_file[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
             found_ATOM = True
 
-    xyz_lig_func, names_lig_func, res_lig_func, resID = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func), np.array(res_lig_func), np.array(resID_func, dtype="int")
-    xyz_lig_func, names_lig_func, res_lig_func = np.delete(xyz_lig_func, cap, axis=0), np.delete(names_lig_func, cap), np.delete(res_lig_func, cap), np.delete(resID_func, cap)
+    xyz_lig_func, names_lig_func, res_lig_func, resID_func = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func), np.array(res_lig_func), np.array(resID_func, dtype="int")
+
+    if cap=="N":
+        print("There are no capping atoms in the structure...")
+    else:
+        cap = np.array(cap.split(","), dtype="int")-1
+        print(cap)
+        print("Removing capping atoms...")
+        xyz_lig_func, names_lig_func, res_lig_func, resID_func = np.delete(xyz_lig_func, cap, axis=0), np.delete(names_lig_func, cap), np.delete(res_lig_func, cap), np.delete(resID_func, cap)
 
     for i in range(N_lig_file):
         if "@<TRIPOS>RESIDUECONNECT" in mol2[i]:
@@ -149,8 +155,6 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
             print("It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...".format(resnum, clash_dis/10))
             print("Revise the final geometry...")
             break
-        if clash_dis > thresh:
-            print("Nanomodeler solved the clashed because she/he is awesome...")
 
     return trans_lig_best
 
