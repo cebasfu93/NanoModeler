@@ -135,7 +135,7 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
         print("Clashes were found while placing residue {}...".format(resnum))
         print("Trying to solve the clashes...")
 
-    while clash_dis < thresh:
+    while theta < 6.28:
         theta += 2*math.pi/n_clash_iter
         trans_lig_try = trans_lig_tmp
         unit_u = xyz_stone_act/np.linalg.norm(xyz_stone_act)
@@ -145,7 +145,7 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
         if np.min(D_clash) > clash_dis:
             clash_dis = np.min(D_clash)
             trans_lig_best = trans_lig_try
-        if theta >= 6.28:
+        if theta >= 6.28 and clash_dis < thresh:
             print("It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...".format(resnum, clash_dis/10))
             print("Revise the final geometry...")
             break
