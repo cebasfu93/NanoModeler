@@ -15,13 +15,15 @@ def rot_mat(p, u, t):
     [x*z*(1-ct)-y*st, y*z*(1-ct)+x*st, ct+z**2*(1-ct)]])
     return np.dot(rot, p)
 
-def init_lig_mol2(fname):
+def init_lig_mol2(fname, cap):
     #Imports ligand mol2 file. Returns xyz coordinates, names, and index corresponding to the anchor
+    cap = np.array(cap, dtype="int")-1
     mol2=np.genfromtxt(fname, delimiter='\n', dtype='str')
     N_lig_file=len(mol2)
     found_ATOM=0
     names_lig_func=[]
     xyz_lig_func=[]
+    resID_func = []
     res_lig_func=[]
     for i in range(N_lig_file):
         if found_ATOM:
@@ -30,21 +32,25 @@ def init_lig_mol2(fname):
             at_file = mol2[i].split()
             names_lig_func.append(at_file[1])
             xyz_lig_func.append(at_file[2:5])
+            resID.append(at_file[6])
             res_lig_func.append(at_file[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
             found_ATOM = True
 
-    xyz_lig_func, names_lig_func, res_lig_func = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func), np.array(res_lig_func)
+    xyz_lig_func, names_lig_func, res_lig_func, resID = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func), np.array(res_lig_func), np.array(resID_func, dtype="int")
+    xyz_lig_func, names_lig_func, res_lig_func = np.delete(xyz_lig_func, cap, axis=0), np.delete(names_lig_func, cap), np.delete(res_lig_func, cap), np.delete(resID_func, cap)
+
     for i in range(N_lig_file):
         if "@<TRIPOS>RESIDUECONNECT" in mol2[i]:
-            anchor_ndx_func = np.where(names_lig_func==mol2[i+1].split()[1])[0][0]
+            name_anchor_func = mol2[i+1].split()[1]
+            anchor_ndx_func = np.where(np.logical_and(names_lig_func==name_anchor_func, resID_func==int(mol2[i+1].split()[0])))[0][0]
+            res_anchor_func = res_lig_func[anchor_ndx_func]
 
     anchor_pos = np.copy(xyz_lig_func)[anchor_ndx_func,:]
-
     #Moves the ligand so that the anchor is in (0,0,0)
     for i in range(len(xyz_lig_func[:,0])):
         xyz_lig_func[i,:] = xyz_lig_func[i,:] - anchor_pos
-    return xyz_lig_func, names_lig_func, anchor_ndx_func, res_lig_func
+    return xyz_lig_func, names_lig_func, anchor_ndx_func, name_anchor_func, res_anchor_func, res_lig_func
 
 def init_core_pdb(fname):
     #Imports core pdb file. Centers the core in (0,0,0) and returns xyz coordinates and names

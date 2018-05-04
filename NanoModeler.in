@@ -1,12 +1,14 @@
 NAME		    test
 LIG1_FILE	  LF1.mol2
+CAP1        []
 LIG1_FRAC	  1.0
 
 LIG2_FILE	  XXX.mol2
+CAP2        []
 MORPHOLOGY	random
 RSEED		    666
 
-CORE		    au144SR60_NM.xyz
+CORE		    au144SR60_NM.pdb
 
 COREDIR     /DATA/SoftwareSFU/IN-HOUSE/NanoModeler/CORES
 DEPENDS     /DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES

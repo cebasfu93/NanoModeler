@@ -52,18 +52,21 @@ print("Copying ligand1 file...")
 shutil.copyfile(VAR["LIG1_FILE"], "TMP/"+VAR["LIG1_FILE"])
 print("Checking ligand1 mol2 file...")
 check_mol2("TMP/"+VAR["LIG1_FILE"])
-if not VAR["LIG2_FILE"] == "XXX.mol2":
+if two_lig:
+    print("Two ligands were found...")
     print("Copying ligand2 file...")
     shutil.copyfile(VAR["LIG2_FILE"], "TMP/"+VAR["LIG2_FILE"])
     print("Checking ligand2 mol2 file...")
     check_mol2("TMP/"+VAR["LIG2_FILE"])
+else:
+    print("One ligand was found...")
 ##############################NP_builder########################
 
 print("Initializing ligand1...")
-xyz_lig1, names_lig1, anchor_ndx1, name_anchor1, res_anchor1, res_lig1 = init_lig_mol2(VAR["LIG1_FILE"])
+xyz_lig1, names_lig1, anchor_ndx1, name_anchor1, res_anchor1, res_lig1 = init_lig_mol2(VAR["LIG1_FILE"], VAR["CAP1"])
 if two_lig:
     print("Initializing ligand2...")
-    xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2("LIG2_FILE")
+    xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2("LIG2_FILE", VAR["CAP2"])
 else:
     xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = [], [], [], [], [], []
 
@@ -119,8 +122,10 @@ xyz_sys, names_sys = load_gro("TMP/"+VAR["NAME"]+".gro")
 print("Reading top file of the unlinked nanoparticle...")
 types_sys, res_sys = load_top("TMP/"+VAR["NAME"]+".top")
 
+print("Looking for anchoring carbon atoms for ligand1 and their hydrogens if applicable...")
 ndx_C1, ndx_H1 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor1, res_anchor1)
 if two_lig:
+    print("Looking for anchoring carbon atoms for ligand2 and their hydrogens if applicable...")
     ndx_C2, ndx_H2 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor2, res_anchor2)
 else:
     ndx_C2, ndx_H2 = [], []
@@ -129,9 +134,11 @@ blocks = make_blocks(xyz_core, names_core, xyz_sys, ndx_C1, ndx_H1)
 if two_lig:
     blocks.append(make_blocks(xyz_core, names_core, xyz_sys, ndx_C2, ndx_H2))
 
-print("Writing final topology file...")
+print("Writing bonds parameters...")
 write_bonds(blocks, "TMP/bonds.top", xyz_sys, names_sys)
+print("Writing angles parameters...")
 write_angles(blocks, "TMP/angles.top", xyz_sys, names_sys, res_core)
+print("Writing final topology file...")
 write_topology("TMP/"+VAR["NAME"]+".top", "TMP/bonds.top", "TMP/angles.top")
 #############################################################
 
