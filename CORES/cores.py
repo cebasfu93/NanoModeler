@@ -92,7 +92,7 @@ def read_Au144SR60(fname):
     names = np.array(names, dtype='str')
     return xyz, names
 
-def read_Au314SH96(fname):
+def read_Au314S96(fname):
     fxyz = np.genfromtxt(fname, delimiter='\n', dtype=str, skip_header=2)
     N_fxyz = len(fxyz)
     xyz = []
@@ -125,6 +125,32 @@ def read_Au314SH96(fname):
         sol = optimize.basinhopping(penalty, x0, minimizer_kwargs=dic, stepsize=0.2, niter=10).x
         xyz = np.vstack((xyz, sol))
         names = np.append(names, "C")
+    return xyz, names
+
+def read_Au314SH96(fname):
+    fxyz = np.genfromtxt(fname, skip_header=1, dtype=str)
+    xyz = []
+    names = []
+    N_xyz = len(fxyz)
+    for i in range(N_xyz):
+        if fxyz[i,0] == "Au":
+            xyz.append(fxyz[i,1:])
+            names.append("AU")
+        elif fxyz[i,0] == "S":
+            xyz.append(fxyz[i,1:])
+            names.append("ST")
+        #elif fxyz[i,0] == "H":
+            #xyz.append(fxyz[i,1:])
+            #names.append("C")
+    xyz = center(xyz)
+    for i in range(len(xyz)):
+        if names[i] == "ST":
+            norm = np.linalg.norm(xyz[i])
+            xyz = np.vstack((xyz, xyz[i]*(norm+1.83)/norm))
+            names.append("C")
+
+    xyz = center(xyz)
+    names = np.array(names)
     return xyz, names
 
 def classify_staples(xyz_sys, names_sys):
@@ -278,9 +304,9 @@ def print_xyz(coords, nombres, fname):
 #write_pdb(xyz_Au38SR24, names_Au38SR24, staples_Au38SR24, "au38SR24_NM.pdb")
 
 #AU102SR44
-xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
-staples_Au102SR44 = classify_Au102SR44(xyz_Au102SR44, names_Au102SR44)
-write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
+#xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
+#staples_Au102SR44 = classify_Au102SR44(xyz_Au102SR44, names_Au102SR44)
+#write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
 
 #AU144SR60
 #xyz_Au144SR60, names_Au144SR60 = read_Au144SR60("AU144SR60/au144SR60.pdb")
@@ -288,5 +314,8 @@ write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
 #write_pdb(xyz_Au144SR60, names_Au144SR60, staples_Au144SR60, "au144SR60_NM.pdb")
 #print_xyz(xyz_Au144SR60, names_Au144SR60, "au144SR60_NM")
 
-#xyz_Au314SR96, names_Au314SR96 = fix_Au314SH96("au314SH96.xyz")
-#print_xyz(xyz_Au314SR96, names_Au314SR96, "au314SR96_NM")
+
+#AU314SR96
+xyz_Au314SR96, names_Au314SR96 = read_Au314SH96("AU314SR96/au314SH96.xyz")
+staples_Au314SR96 = classify_staples(xyz_Au314SR96, names_Au314SR96)
+write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
