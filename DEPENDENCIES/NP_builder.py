@@ -94,7 +94,7 @@ def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
         pillars_func = np.vstack((pillars_func, np.dot(xyz_lig_func[i], pca1) * pca1))
     return pillars_func
 
-def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func):
+def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func, first_func):
     #Distributes all the anchors in lig1 and lig2 dependending in the specified morphology
     xyz_anchors_func = xyz_core_func[names_core_func=='C',:]
     N_anchors = len(xyz_anchors_func)
@@ -108,10 +108,35 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
         lig2_ndx = indexes[for_lig1:]
     elif morph_func == "janus":
         print("Assigning a janus distribution for the ligands...")
-        seed = xyz_anchors_func[0]
-        D_seed_anch = distance.cdist([seed], xyz_anchors_func)
-        lig1_ndx = D_seed_anch[0].argsort()[:for_lig1]
+        bottom = xyz_anchors_func[np.argsort(xyz_anchors_func[:,2])[0]]
+        D_bottom_anch = distance.cdist([bottom], xyz_anchors_func)
+        lig1_ndx = D_bottom_anch[0].argsort()[:for_lig1]
         lig2_ndx = list(set(indexes) - set(lig1_ndx))
+    elif morph_func == "stripe":
+        print("Assigning a striped distribution for the ligands...")
+        max_Z = np.max(xyz_anchors_func[:,2])+0.00001
+        min_Z = np.min(xyz_anchors_func[:,2])
+        dZ = (max_Z - min_Z)/stripes_func
+        lig1_ndx = []
+        lig2_ndx = []
+        if first_func == 1:
+            print("The stripes will be generated from the bottom up starting with ligand 1...")
+            firstOne = True
+        elif first_func == 2:
+            print("The stripes will be generated from the bottom up starting with ligand 2...")
+            firstOne = False
+        for i in range(N_anchors):
+            if firstOne:
+                if (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 0:
+                    lig1_ndx.append(i)
+                elif (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 1:
+                    lig2_ndx.append(i)
+            else:
+                if (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 0:
+                    lig2_ndx.append(i)
+                elif (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 1:
+                    lig1_ndx.append(i)        
+
     xyz_anchors1_func=xyz_anchors_func[lig1_ndx]
     xyz_anchors2_func=xyz_anchors_func[lig2_ndx]
     return xyz_anchors1_func, xyz_anchors2_func

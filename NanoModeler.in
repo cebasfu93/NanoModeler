@@ -7,8 +7,10 @@ LIG2_FILE	  XXX.mol2
 CAP2        N
 MORPHOLOGY	random
 RSEED		    666
+STRIPES     1
+FIRST       1
 
-CORE		    au144SR60_NM.pdb
+CORE		    au314SR96_NM.pdb
 
 COREDIR     /DATA/SoftwareSFU/IN-HOUSE/NanoModeler/CORES
 DEPENDS     /DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES

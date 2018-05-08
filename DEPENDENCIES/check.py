@@ -5,8 +5,12 @@ def check_VAR(VAR):
     print("Checking presence of second ligand...")
     if VAR["LIG1_FRAC"] < 0 or VAR["LIG1_FRAC"] > 1.0:
         sys.exit("LIG1_FRAC must be between 0 and 1")
-    if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["LIG1_FRAC"] >= 0 and VAR["LIG1_FRAC"] <= 1.0:
-        sys.exit("Unsupported morphology. So far we support 'random' and 'janus' coatings")
+    if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe" and VAR["LIG1_FRAC"] >= 0 and VAR["LIG1_FRAC"] <= 1.0:
+        sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings")
+    if VAR["STRIPES"] < 1:
+        sys.exit("The number of stripes must be at least one")
+    if VAR["FIRST"] != 1 and VAR["FIRST"] != 2:
+        sys.exit("The first ligand to place in the striped morphology bust be either 1 (for ligand 1) or 2 (for ligand 2)")
 
 def check_mol2(fname):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')

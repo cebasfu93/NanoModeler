@@ -84,7 +84,7 @@ else:
 
 N_S = len(names_core[names_core=='ST'])
 
-xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, float(VAR["LIG1_FRAC"]), int(VAR["RSEED"]), VAR["MORPHOLOGY"])
+xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, float(VAR["LIG1_FRAC"]), int(VAR["RSEED"]), VAR["MORPHOLOGY"], VAR["STRIPES"], VAR["FIRST"])
 
 xyz_stones1 = get_stones(xyz_anchors1, xyz_pillars1)
 if two_lig:

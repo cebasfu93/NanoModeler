@@ -6,8 +6,10 @@ VAR = {
 
 "LIG2_FILE" : "LF2.mol2",   #Name of the mol2 of ligand2 (must be in the working directory)
 "CAP2" : "N",
-"MORPHOLOGY" : "random",    #Morphology to distribute ligands1 and 2. random and janus are allowed
+"MORPHOLOGY" : "random",    #Morphology to distribute ligands1 and 2. random, janus, and stripe are allowed
 "RSEED" : 666,              #Random seed for random morphology
+"STRIPES" : 1,              #Number of stripes for stripe morphology
+"FIRST"   : 1,              #Ligand (1 or 2) to be put first in the stripe morphology
 
 "CORE" : "au144SR60_NM.pdb",
 
