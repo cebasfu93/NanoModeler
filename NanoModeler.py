@@ -41,7 +41,14 @@ inp=np.genfromtxt(sys.argv[1], dtype="str")
 for i in range(len(inp)):
     VAR[inp[i][0]] = inp[i][1]
 
-two_lig = float(VAR["LIG1_FRAC"]) < 1.0
+if (VAR["MORPHOLOGY"] == "stripe"):
+    if int(VAR["STRIPES"]) == 1:
+        two_lig = False
+    else:
+        two_lig = True
+else:
+    two_lig = (float(VAR["LIG1_FRAC"]) < 1.0)
+
 print("Imported options:")
 for i in VAR:
     print(i.ljust(20) + VAR[i].ljust(50))
@@ -84,7 +91,7 @@ else:
 
 N_S = len(names_core[names_core=='ST'])
 
-xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, float(VAR["LIG1_FRAC"]), int(VAR["RSEED"]), VAR["MORPHOLOGY"], VAR["STRIPES"], VAR["FIRST"])
+xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, float(VAR["LIG1_FRAC"]), int(VAR["RSEED"]), VAR["MORPHOLOGY"], int(VAR["STRIPES"]))
 
 xyz_stones1 = get_stones(xyz_anchors1, xyz_pillars1)
 if two_lig:
@@ -93,10 +100,10 @@ else:
     xyz_stones2 = []
 
 print("Coating nanoparticle...")
-xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, float(VAR["LIG1_FRAC"]), xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2)
+xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2)
 
 print("Writing pdb of the coated nanoparticle...")
-print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, float(VAR["LIG1_FRAC"]), "TMP/"+VAR["NAME"]+".pdb")
+print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, "TMP/"+VAR["NAME"]+".pdb")
 
 ################################################################
 

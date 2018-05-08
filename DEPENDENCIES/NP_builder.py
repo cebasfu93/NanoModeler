@@ -94,7 +94,7 @@ def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
         pillars_func = np.vstack((pillars_func, np.dot(xyz_lig_func[i], pca1) * pca1))
     return pillars_func
 
-def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func, first_func):
+def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func):
     #Distributes all the anchors in lig1 and lig2 dependending in the specified morphology
     xyz_anchors_func = xyz_core_func[names_core_func=='C',:]
     N_anchors = len(xyz_anchors_func)
@@ -119,23 +119,11 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
         dZ = (max_Z - min_Z)/stripes_func
         lig1_ndx = []
         lig2_ndx = []
-        if first_func == 1:
-            print("The stripes will be generated from the bottom up starting with ligand 1...")
-            firstOne = True
-        elif first_func == 2:
-            print("The stripes will be generated from the bottom up starting with ligand 2...")
-            firstOne = False
         for i in range(N_anchors):
-            if firstOne:
-                if (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 0:
-                    lig1_ndx.append(i)
-                elif (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 1:
-                    lig2_ndx.append(i)
-            else:
-                if (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 0:
-                    lig2_ndx.append(i)
-                elif (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 1:
-                    lig1_ndx.append(i)        
+            if (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 0:
+                lig1_ndx.append(i)
+            elif (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 1:
+                lig2_ndx.append(i)
 
     xyz_anchors1_func=xyz_anchors_func[lig1_ndx]
     xyz_anchors2_func=xyz_anchors_func[lig2_ndx]
@@ -183,7 +171,7 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
 
     return trans_lig_best
 
-def coat_NP(xyz_core_func, names_core_func, frac_lig1_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func):
+def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func):
     #Merges xyz coordinates and names of the core and the ligands into one coated NP
     keep_rows=[]
     for i in range(len(names_core_func)):
@@ -213,7 +201,7 @@ def coat_NP(xyz_core_func, names_core_func, frac_lig1_func, xyz_lig1_func, names
         res_coated_func=np.append(res_coated_func, res_lig1_func, axis=0)
 
     #Transforms and appends rototranslated ligand 2
-    if frac_lig1_func < 1.0:
+    if xyz_lig2_func.size!=0:
         xyz_lig2_func_conv=np.insert(xyz_lig2_func, 3, 1, axis=1).T
         for i in range(len(xyz_stones2_func[:,0,0])):
             xyz_stones_now = xyz_stones2_func[i,:,:]
@@ -227,9 +215,9 @@ def coat_NP(xyz_core_func, names_core_func, frac_lig1_func, xyz_lig1_func, names
             res_coated_func=np.append(res_coated_func, res_lig2_func, axis=0)
     return xyz_coated_func, names_coated_func, res_coated_func
 
-def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, frac_lig1_func, out_fname):
+def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, out_fname):
     N_at_lig1 = len(xyz_lig1_func[:,0])
-    if frac_lig1_func < 1.0:
+    if xyz_lig2_func.size!=0:
         N_at_lig2 = len(xyz_lig2_func[:,0])
     else:
         N_at_lig2 = 0

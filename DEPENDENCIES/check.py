@@ -9,8 +9,6 @@ def check_VAR(VAR):
         sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings")
     if VAR["STRIPES"] < 1:
         sys.exit("The number of stripes must be at least one")
-    if VAR["FIRST"] != 1 and VAR["FIRST"] != 2:
-        sys.exit("The first ligand to place in the striped morphology bust be either 1 (for ligand 1) or 2 (for ligand 2)")
 
 def check_mol2(fname):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')

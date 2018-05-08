@@ -1,14 +1,14 @@
 NAME		    test
 LIG1_FILE	  LF1.mol2
 CAP1        N
-LIG1_FRAC	  1.0
 
-LIG2_FILE	  XXX.mol2
+LIG2_FILE	  LF2.mol2
 CAP2        N
-MORPHOLOGY	random
+
+MORPHOLOGY	stripe
+LIG1_FRAC	  1.0
 RSEED		    666
-STRIPES     1
-FIRST       1
+STRIPES     4
 
 CORE		    au314SR96_NM.pdb
 
