@@ -67,7 +67,7 @@ print("Initializing ligand1...")
 xyz_lig1, names_lig1, anchor_ndx1, name_anchor1, res_anchor1, res_lig1 = init_lig_mol2(VAR["LIG1_FILE"], VAR["CAP1"])
 if two_lig:
     print("Initializing ligand2...")
-    xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2("LIG2_FILE", VAR["CAP2"])
+    xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2(VAR["LIG2_FILE"], VAR["CAP2"])
 else:
     xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = [], [], [], [], [], []
 
@@ -133,7 +133,7 @@ else:
 
 blocks = make_blocks(xyz_core, names_core, xyz_sys, ndx_C1, ndx_H1)
 if two_lig:
-    blocks.append(make_blocks(xyz_core, names_core, xyz_sys, ndx_C2, ndx_H2))
+    blocks = blocks + make_blocks(xyz_core, names_core, xyz_sys, ndx_C2, ndx_H2)
 
 print("Writing bonds parameters...")
 write_bonds(blocks, "TMP/bonds.top", xyz_sys, names_sys)
