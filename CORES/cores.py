@@ -68,8 +68,6 @@ def read_Au68SR34(fname):
 
     xyz = center(xyz)
     names = np.array(names)
-    print(xyz)
-    print(names)
     return xyz, names
 
 def read_Au102SR44(fname):
@@ -209,7 +207,7 @@ def classify_staples(xyz_sys, names_sys):
                     angle = calc_angle(xyz_sys[near_Au[0]], xyz_sys[staple_act.S[j]], xyz_sys[near_Au[1]])
                     print(angle)
                     #if angle <= 109.0 and angle >= 91.0:
-                    if angle <= 109.0 and angle >= 89.0:
+                    if angle <= 109.0 and angle >= 87.0:
                         staple_act.change_tipo('STV')
                     elif angle <= 128.2 and angle >= 110.2:
                         staple_act.change_tipo('STC')
@@ -218,8 +216,6 @@ def classify_staples(xyz_sys, names_sys):
         else:
             print("Unrecognized staple")
     print(len(staples))
-    #for s in staples:
-    #    print(vars(s))
     return staples
 
 def write_pdb(xyz_sys, names_sys, staples, fname):
@@ -300,11 +296,11 @@ write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I1_NM.pdb")
 xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I2.xyz")
 staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
 write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I2_NM.pdb")
-"""
 
 xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I3.xyz")
 staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
 write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I3_NM.pdb")
+"""
 
 xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I4.xyz")
 staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
