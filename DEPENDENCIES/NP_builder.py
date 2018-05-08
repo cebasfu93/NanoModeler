@@ -3,6 +3,7 @@ from  transformations import *
 import random
 from scipy.spatial import distance
 from sklearn.decomposition import PCA
+import math
 
 def rot_mat(p, u, t):
     ct = math.cos(t)
@@ -14,6 +15,9 @@ def rot_mat(p, u, t):
     [x*y*(1-ct)+z*st, ct+y**2*(1-ct), y*z*(1-ct)-x*st],\
     [x*z*(1-ct)-y*st, y*z*(1-ct)+x*st, ct+z**2*(1-ct)]])
     return np.dot(rot, p)
+
+def phi(xyz):
+    return math.acos(xyz[2]/np.linalg.norm(xyz))
 
 def init_lig_mol2(fname, cap):
     #Imports ligand mol2 file. Returns xyz coordinates, names, and index corresponding to the anchor
@@ -114,15 +118,14 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
         lig2_ndx = list(set(indexes) - set(lig1_ndx))
     elif morph_func == "stripe":
         print("Assigning a striped distribution for the ligands...")
-        max_Z = np.max(xyz_anchors_func[:,2])+0.00001
-        min_Z = np.min(xyz_anchors_func[:,2])
-        dZ = (max_Z - min_Z)/stripes_func
+        phis = np.arccos(np.divide(xyz_anchors_func[:,2], np.linalg.norm(xyz_anchors_func, axis=1)))
+        dphi = (math.pi+0.00001)/stripes_func
         lig1_ndx = []
         lig2_ndx = []
         for i in range(N_anchors):
-            if (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 0:
+            if phi(xyz_anchors_func[i])//dphi%2 == 0:
                 lig1_ndx.append(i)
-            elif (xyz_anchors_func[i,2]-min_Z)//dZ%2 == 1:
+            elif phi(xyz_anchors_func[i])//dphi%2 == 1:
                 lig2_ndx.append(i)
 
     xyz_anchors1_func=xyz_anchors_func[lig1_ndx]
