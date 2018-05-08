@@ -50,24 +50,29 @@ def read_Au25SR18(fname):
     names = np.array(names, dtype='str')
     return xyz, names
 
-def read_Au68SR34(fname):
-    fxyz = np.genfromtxt(fname, skip_header=1, dtype="str")
+def read_Au36CP24(fname):
+    fxyz = np.genfromtxt(fname, skip_header=1, dtype=str)
     xyz = []
+    xyz_C = []
     names = []
     N_xyz = len(fxyz)
     for i in range(N_xyz):
-        if fxyz[i,0]=="Au":
+        if fxyz[i,0] == "Au":
             xyz.append(fxyz[i,1:])
             names.append("AU")
-        elif fxyz[i,0]=="S":
+        elif fxyz[i,0] == "S":
             xyz.append(fxyz[i,1:])
             names.append("ST")
-        elif fxyz[i,0]=="H":
-            xyz.append(fxyz[i,1:])
-            names.append("C")
-
-    xyz = center(xyz)
+        elif fxyz[i,0] == "C":
+            xyz_C.append(fxyz[i,1:])
+    xyz, xyz_C = np.array(xyz, dtype='float'), np.array(xyz_C, dtype='float')
     names = np.array(names)
+    D_ST_C = distance.cdist(xyz[np.where(names=="ST")[0]], xyz_C)
+    for i in range(len(D_ST_C)):
+        xyz = np.vstack((xyz, xyz_C[np.argsort(D_ST_C[i,:])[0]]))
+        names = np.append(names, "C")
+    xyz = center(xyz)
+    print(len(xyz), len(names))
     return xyz, names
 
 def read_Au102SR44(fname):
@@ -89,6 +94,78 @@ def read_Au102SR44(fname):
     xyz = center(xyz)*10
     names = np.array(names, dtype='str')
     return xyz, names
+
+def read_A133L52(fname):
+    txt = np.genfromtxt(fname, dtype='str', delimiter="\n")
+    letters = []
+    xyz = []
+    names = []
+    xs, ys, zs = [], [], []
+    ini = 0
+
+    for i in range(len(txt)):
+        if "A17" in txt[i]:
+            ini = i
+            break
+        if "A"in txt[i]:
+            xyz.append([float(txt[i+1]), float(txt[i+2]), float(txt[i+3])])
+            names.append('AU')
+
+    X, Y, Z = False, False, False
+    for i in range(ini, len(txt)):
+        if "A" in txt[i]:
+            names.append("AU")
+        elif "S" in txt[i]:
+            names.append("ST")
+        elif "C" in txt[i]:
+            names.append("C")
+        elif "x" not in txt[i] and "y" not in txt[i] and "z" not in txt[i]:
+            if X:
+                xs.append(txt[i])
+            elif Y:
+                ys.append(txt[i])
+            elif Z:
+                zs.append(txt[i])
+
+        elif "x" in txt[i]:
+            X, Y, Z = True, False, False
+        elif "y" in txt[i]:
+            X, Y, Z = False, True, False
+        elif "z" in txt[i]:
+            X, Y, Z = False, False, True
+
+    for i in range(len(xs)):
+        new_coord = [xs[i], ys[i], zs[i]]
+        xyz = np.vstack((xyz, new_coord))
+    xyz = np.array(xyz, dtype='float')
+    xyz[:,0]=xyz[:,0]*30.14
+    xyz[:,1]=xyz[:,1]*30.44
+    xyz[:,2]=xyz[:,2]*43.69
+    names = np.array(names)
+
+    for i in range(len(xyz)):
+        if xyz[i,1]<4:
+            xyz[i,1] = xyz[i,1] + 30.44
+
+    where_S = np.where(names=="ST")[0]
+    where_C = np.where(names=="C")[0]
+    new_xyz = xyz[np.where(names=="AU")[0]]
+    new_names = []
+    N_AU = len(new_xyz)
+    for i in range(N_AU):
+        new_names.append("AU")
+    new_xyz = np.vstack((new_xyz, xyz[where_S]))
+    for i in range(len(where_S)):
+        new_names.append("ST")
+    D_S_C = distance.cdist(xyz[where_S], xyz[where_C])
+    for i in range(len(D_S_C)):
+        new_xyz = np.vstack((new_xyz, xyz[where_C[np.argsort(D_S_C[i])[0]]]))
+        new_names.append("C")
+
+
+    #new_xyz = center(new_xyz)
+    new_names = np.array(new_names)
+    return new_xyz, new_names
 
 def read_Au144SR60(fname):
     pdb=np.genfromtxt(fname, delimiter='\n', dtype=str)
@@ -278,17 +355,22 @@ def print_xyz(coords, nombres, fname):
         fxyz.write("{}\t\t{:.3f}   {:.3f}   {:.3f}\n".format(nombres[i], coords[i,0], coords[i,1], coords[i,2]))
     fxyz.close()
 """
-#AU25SR18 (61 atoms)
+#AU25SR18 (61 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 xyz_Au25SR18, names_Au25SR18 = read_Au25SR18("AU25SR18/au25_pet18.gro")
 staples_Au25SR18 = classify_staples(xyz_Au25SR18, names_Au25SR18)
 write_pdb(xyz_Au25SR18, names_Au25SR18, staples_Au25SR18, "au25SR18_NM.pdb")
 
-#AU38SR24 (86 atoms)
+#AU36SR24 (84 atoms, Das/Jin, J. Phys. Chem. A, 2015)
+xyz_Au36SR24, names_Au36SR24 = read_Au36CP24("AU36SR24/Au36CP24.xyz")
+staples_Au36SR24 = classify_staples(xyz_Au36SR24, names_Au36SR24)
+write_pdb(xyz_Au36SR24, names_Au36SR24, staples_Au36SR24, "au36SR24_NM.pdb")
+
+#AU38SR24 (86 atoms, Pohjolainen/Hakkinen, JCTC, 2016... Qian/Jin, JACS, 2010)
 xyz_Au38SR24, names_Au38SR24 = read_Au25SR18("AU38SR24/au38_pet24.gro")
 staples_Au38SR24 = classify_staples(xyz_Au38SR24, names_Au38SR24)
 write_pdb(xyz_Au38SR24, names_Au38SR24, staples_Au38SR24, "au38SR24_NM.pdb")
 
-#AU68SR34 (136 atoms)
+#AU68SR34 (136 atoms, Xu/Gao, J. Phys. Chem C, 2015)
 xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I1.xyz")
 staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
 write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I1_NM.pdb")
@@ -300,25 +382,30 @@ write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I2_NM.pdb")
 xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I3.xyz")
 staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
 write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I3_NM.pdb")
-"""
 
 xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I4.xyz")
 staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
 write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I4_NM.pdb")
 
-#AU102SR44 (190 atoms)
+#AU102SR44 (190 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 #xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
 #staples_Au102SR44 = classify_staples(xyz_Au102SR44, names_Au102SR44)
 #write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
-"""
-#AU144SR60 (264 atoms)
+
+#AU133SR52 (237 atoms, Zeng/Jin, Sci. Adv, 2015)
+xyz_Au133SR52, names_Au133SR52 = read_A133L52("AU133SR52/Au133SR52.txt")
+staples_Au133SR52 = classify_staples(xyz_Au133SR52, names_Au133SR52)
+write_pdb(xyz_Au133SR52, names_Au133SR52, staples_Au133SR52,"au133SR52_NM.pdb")
+print_xyz(xyz_Au133SR52, names_Au133SR52, "test")
+
+#AU144SR60 (264 atoms, Lopez-Acevedo/Hakkinen, J. Phys. Chem. C. Lett, 2009)
 xyz_Au144SR60, names_Au144SR60 = read_Au144SR60("AU144SR60/au144SR60.pdb")
 staples_Au144SR60 = classify_staples(xyz_Au144SR60, names_Au144SR60)
 write_pdb(xyz_Au144SR60, names_Au144SR60, staples_Au144SR60, "au144SR60_NM.pdb")
 #print_xyz(xyz_Au144SR60, names_Au144SR60, "au144SR60_NM")
 
 
-#AU314SR96 (506 atoms)
+#AU314SR96 (506 atoms, Malola/Hakkinen, ACS Nano, 2013)
 xyz_Au314SR96, names_Au314SR96 = read_Au314SH96("AU314SR96/au314SH96.xyz")
 staples_Au314SR96 = classify_staples(xyz_Au314SR96, names_Au314SR96)
 write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
