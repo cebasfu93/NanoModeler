@@ -163,7 +163,7 @@ def read_A133L52(fname):
         new_names.append("C")
 
 
-    #new_xyz = center(new_xyz)
+    new_xyz = center(new_xyz)
     new_names = np.array(new_names)
     return new_xyz, new_names
 
@@ -391,13 +391,12 @@ write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I4_NM.pdb")
 #xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
 #staples_Au102SR44 = classify_staples(xyz_Au102SR44, names_Au102SR44)
 #write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
-
+"""
 #AU133SR52 (237 atoms, Zeng/Jin, Sci. Adv, 2015)
 xyz_Au133SR52, names_Au133SR52 = read_A133L52("AU133SR52/Au133SR52.txt")
 staples_Au133SR52 = classify_staples(xyz_Au133SR52, names_Au133SR52)
 write_pdb(xyz_Au133SR52, names_Au133SR52, staples_Au133SR52,"au133SR52_NM.pdb")
-print_xyz(xyz_Au133SR52, names_Au133SR52, "test")
-
+"""
 #AU144SR60 (264 atoms, Lopez-Acevedo/Hakkinen, J. Phys. Chem. C. Lett, 2009)
 xyz_Au144SR60, names_Au144SR60 = read_Au144SR60("AU144SR60/au144SR60.pdb")
 staples_Au144SR60 = classify_staples(xyz_Au144SR60, names_Au144SR60)
