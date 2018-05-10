@@ -67,7 +67,10 @@ def make_blocks(xyz_core_func, names_core_func, xyz_sys_func, ndx_C_func, ndx_H_
         tipos_Au = names_core_func[ndx_Au]
         if np.any(np.logical_and(tipos_Au != "AUS", tipos_Au != "AUL")):
             sys.exit("There was a problem recognizing if some gold atoms where type AUL or AUS.")
-        blocks.append(subunits.Block(ndx_S=ndx_S, ndx_Au=ndx_Au, ndx_C=ndx_C_func[i], ndx_H=ndx_H_func[i], types_Au=tipos_Au))
+        if ndx_H_func:
+            blocks.append(subunits.Block(ndx_S=ndx_S, ndx_Au=ndx_Au, ndx_C=ndx_C_func[i], ndx_H=ndx_H_func[i], types_Au=tipos_Au))
+        else:
+            blocks.append(subunits.Block(ndx_S=ndx_S, ndx_Au=ndx_Au, ndx_C=ndx_C_func[i], ndx_H=[], types_Au=tipos_Au))
     return blocks
 
 def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
@@ -76,7 +79,7 @@ def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
     func_type = str(1)
     for i in range(len(blocks_list)):
         b = blocks_list[i]
-
+        #print(vars(b))
         #S - Au bonds
         cons = 62730
         for j in range(2):

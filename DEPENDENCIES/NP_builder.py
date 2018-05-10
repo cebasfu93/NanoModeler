@@ -204,7 +204,7 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
         res_coated_func=np.append(res_coated_func, res_lig1_func, axis=0)
 
     #Transforms and appends rototranslated ligand 2
-    if xyz_lig2_func.size!=0:
+    if len(xyz_lig2_func)!=0:
         xyz_lig2_func_conv=np.insert(xyz_lig2_func, 3, 1, axis=1).T
         for i in range(len(xyz_stones2_func[:,0,0])):
             xyz_stones_now = xyz_stones2_func[i,:,:]
@@ -220,7 +220,7 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
 
 def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, out_fname):
     N_at_lig1 = len(xyz_lig1_func[:,0])
-    if xyz_lig2_func.size!=0:
+    if len(xyz_lig2_func)!=0:
         N_at_lig2 = len(xyz_lig2_func[:,0])
     else:
         N_at_lig2 = 0
