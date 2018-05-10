@@ -46,7 +46,6 @@ def init_lig_mol2(fname, cap):
         print("There are no capping atoms in the structure...")
     else:
         cap = np.array(cap.split(","), dtype="int")-1
-        print(cap)
         print("Removing capping atoms...")
         xyz_lig_func, names_lig_func, res_lig_func, resID_func = np.delete(xyz_lig_func, cap, axis=0), np.delete(names_lig_func, cap), np.delete(res_lig_func, cap), np.delete(resID_func, cap)
 
