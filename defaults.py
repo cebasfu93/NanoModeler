@@ -16,17 +16,26 @@ VAR = {
 "DEPENDS" : "/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES"
 }
 
+import numpy as np
+def read_resname(lig_fname):
+    mol2 = np.genfromtxt(lig_fname, delimiter="\n", dtype='str')
+    for i in range(len(mol2)):
+        if "@<TRIPOS>ATOM" in mol2[i]:
+            resname = mol2[i+1].split()[7]
+    return resname
+
 def write_leap(fname, two_lig_func):
     msj = "source leaprc.gaff \n\n"
     msj += "loadamberparams " + "TMP/"+VAR["LIG1_FILE"][:-5]+".frcmod\n"
-    msj += VAR["LIG1_FILE"][:-5] + " = loadmol3 " + "TMP/"+VAR["LIG1_FILE"]+"\n"
-    msj += "check " + VAR["LIG1_FILE"][:-5] + "\n"
-    msj += "saveoff " + VAR["LIG1_FILE"][:-5] + " " + "TMP/"+VAR["LIG1_FILE"][:-5]+".lib\n\n"
+
+    msj += read_resname(VAR["LIG1_FILE"]) + " = loadmol3 " + "TMP/"+VAR["LIG1_FILE"]+"\n"
+    msj += "check " + read_resname(VAR["LIG1_FILE"]) + "\n"
+    msj += "saveoff " + read_resname(VAR["LIG1_FILE"]) + " " + "TMP/"+VAR["LIG1_FILE"][:-5]+".lib\n\n"
     if two_lig_func:
         msj += "loadamberparams " + "TMP/"+VAR["LIG2_FILE"][:-5]+".frcmod\n"
-        msj += VAR["LIG2_FILE"][:-5] + " = loadmol3 " + "TMP/"+VAR["LIG2_FILE"]+"\n"
-        msj += "check " + VAR["LIG2_FILE"][:-5] + "\n"
-        msj += "saveoff " + VAR["LIG2_FILE"][:-5] + " " + "TMP/"+VAR["LIG2_FILE"][:-5]+".lib\n\n"
+        msj += read_resname(VAR["LIG2_FILE"]) + " = loadmol3 " + "TMP/"+VAR["LIG2_FILE"]+"\n"
+        msj += "check " + read_resname(VAR["LIG2_FILE"]) + "\n"
+        msj += "saveoff " + read_resname(VAR["LIG2_FILE"]) + " " + "TMP/"+VAR["LIG2_FILE"][:-5]+".lib\n\n"
 
     msj += "loadamberparams " + VAR["DEPENDS"]+"/AU.frcmod\n"
     msj += "loadamberparams " + VAR["DEPENDS"]+"/ST.frcmod\n"
