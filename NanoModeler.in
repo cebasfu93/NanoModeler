@@ -1,16 +1,13 @@
 NAME		    test
-LIG1_FILE	  LF1.mol2
+LIG1_FILE	  TCA.mol2
 CAP1        N
 
 LIG2_FILE	  LF2.mol2
 CAP2        N
 
-MORPHOLOGY	stripe
-LIG1_FRAC	  1.0
+MORPHOLOGY	janus
+LIG1_FRAC	  0.5
 RSEED		    666
 STRIPES     4
 
-CORE		    au314SR96_NM.pdb
-
-COREDIR     /DATA/SoftwareSFU/IN-HOUSE/NanoModeler/CORES
-DEPENDS     /DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES
+CORE		    au25SR18_NM.pdb
