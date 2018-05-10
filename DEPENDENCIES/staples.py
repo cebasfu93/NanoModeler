@@ -67,7 +67,7 @@ def make_blocks(xyz_core_func, names_core_func, xyz_sys_func, ndx_C_func, ndx_H_
         tipos_Au = names_core_func[ndx_Au]
         if np.any(np.logical_and(tipos_Au != "AUS", tipos_Au != "AUL")):
             sys.exit("There was a problem recognizing if some gold atoms where type AUL or AUS.")
-        if ndx_H_func:
+        if len(ndx_H_func)!=0:
             blocks.append(subunits.Block(ndx_S=ndx_S, ndx_Au=ndx_Au, ndx_C=ndx_C_func[i], ndx_H=ndx_H_func[i], types_Au=tipos_Au))
         else:
             blocks.append(subunits.Block(ndx_S=ndx_S, ndx_Au=ndx_Au, ndx_C=ndx_C_func[i], ndx_H=[], types_Au=tipos_Au))
