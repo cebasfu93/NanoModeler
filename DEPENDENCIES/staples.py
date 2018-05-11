@@ -75,7 +75,6 @@ def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
     func_type = str(1)
     for i in range(len(blocks_list)):
         b = blocks_list[i]
-        #print(vars(b))
         #S - Au bonds
         cons = 62730
         for j in range(2):
