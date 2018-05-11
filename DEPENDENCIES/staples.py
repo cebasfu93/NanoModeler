@@ -44,11 +44,7 @@ def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_an
     D_C_all = distance.cdist(xyz_sys_func[ndx_C], xyz_sys_func)
     if type_anchor_func[0]=="CT":
         print("Looking for closest hydrogen atoms to anchors...")
-        ndx_H = np.zeros((N_anch, 2))
-        for i in range(N_anch):
-            D_sort = np.argsort(D_C_all[i,:])
-            ndx_H[i,0] = D_sort[1]
-            ndx_H[i,1] = D_sort[2]
+        ndx_H = np.argsort(D_C_all)[:,1:3]
         if not np.all(types_sys_func[ndx_H.flatten().astype("int")]=="HC"):
             sys.exit("There are no parameters for the hydrogen atoms next to the anchor, or the atoms next to the anchor are not hydrogen atoms. The hydrogens next to CT anchor must be HC...")
     elif type_anchor_func[0]=="CA":

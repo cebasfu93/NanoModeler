@@ -14,7 +14,7 @@ def rot_mat(p, u, t):
     rot = np.array([[ct + x**2*(1-ct), x*y*(1-ct)-z*st, x*z*(1-ct)+y*st], \
     [x*y*(1-ct)+z*st, ct+y**2*(1-ct), y*z*(1-ct)-x*st],\
     [x*z*(1-ct)-y*st, y*z*(1-ct)+x*st, ct+z**2*(1-ct)]])
-    return np.dot(rot, p)
+    return np.dot(rot, p.T).T
 
 def phi(xyz):
     return math.acos(xyz[2]/np.linalg.norm(xyz))
@@ -120,6 +120,8 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
             elif phi(xyz_anchors_func[i])//dphi%2 == 1:
                 lig2_ndx.append(i)
 
+    print("The nanoparticle will have {} of ligand 1...".format(len(lig1_ndx)))
+    print("The nanoparticle will have {} of ligand 2...".format(len(lig2_ndx)))
     xyz_anchors1_func=xyz_anchors_func[lig1_ndx]
     xyz_anchors2_func=xyz_anchors_func[lig2_ndx]
     return xyz_anchors1_func, xyz_anchors2_func
@@ -145,7 +147,9 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
     clash_dis = np.min(D_clash)
     theta = 0
     trans_lig_best = trans_lig_tmp
+    CLASH = False
     if clash_dis < thresh:
+        CLASH = True
         print("Clashes were found while placing residue {}...".format(resnum))
         print("Trying to solve the clashes...")
 
@@ -153,8 +157,7 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
         theta += 2*math.pi/n_clash_iter
         trans_lig_try = trans_lig_tmp
         unit_u = xyz_stone_act/np.linalg.norm(xyz_stone_act)
-        for k in range(len(trans_lig_tmp)):
-            trans_lig_try[k,:] = rot_mat(trans_lig_tmp[k,:], unit_u, theta)
+        trans_lig_try = rot_mat(trans_lig_tmp, unit_u, theta)
         D_clash = distance.cdist(trans_lig_try, xyz_coated_tmp)
         if np.min(D_clash) > clash_dis:
             clash_dis = np.min(D_clash)
@@ -162,7 +165,8 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
         if theta >= 6.28 and clash_dis < thresh:
             print("It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...".format(resnum, clash_dis/10))
             print("Revise the final geometry...")
-            break
+        if theta >= 6.28 and clash_dis > thresh and CLASH:
+            print("The clash was solved, i.e., the minimum distance between atoms is at least {} nm...".format(thresh/10))
 
     return trans_lig_best
 
