@@ -1,12 +1,12 @@
 NAME		    test
-LIG1_FILE	  TCA.mol2
-CAP1        N
+LIG1_FILE	  LIG2_CAP.mol2
+CAP1        	1,2,3,4
 
-LIG2_FILE	  LF2.mol2
+LIG2_FILE	  LIG3.mol2
 CAP2        N
 
-MORPHOLOGY	janus
-LIG1_FRAC	  0.5
+MORPHOLOGY	random
+LIG1_FRAC	 1.0
 RSEED		    666
 STRIPES     4
 

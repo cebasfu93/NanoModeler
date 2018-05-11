@@ -36,6 +36,7 @@ def load_top(top_fname):
 def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_anchor_func, res_anchor_func):
     ndx_C = np.where(np.logical_and(names_sys_func==name_anchor_func, res_sys_func==res_anchor_func))[0]
     type_anchor_func = types_sys_func[ndx_C]
+
     print("Checking if the assigned atom type for the anchors is supported...")
     if not (type_anchor_func[0]=="CT" or type_anchor_func[0]=="CA"):
         sys.exit("One of the anchors was assigned an unsupported atom type. Those supported are CT and CA.")

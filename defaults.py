@@ -1,7 +1,7 @@
 VAR = {
 "NAME": "test",             #Name of the project
 "LIG1_FILE" : "LF1.mol2",   #Name of the mol2 of ligand1 (must be in the working directory)
-"CAP1" : "N",
+"CAP1" : "N",		    #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas	
 
 "LIG2_FILE" : "LF2.mol2",   #Name of the mol2 of ligand2 (must be in the working directory)
 "CAP2" : "N",
