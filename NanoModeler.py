@@ -2,8 +2,8 @@ log = open("NanoModeler.log", "w")
 log.write("WELCOME TO NANOMODELER\n")
 log.write("Importing sys library...\n")
 import sys
-#sys.stdout = log
-#sys.stderr = log
+sys.stdout = log
+sys.stderr = log
 print("Importing numpy library...")
 import numpy as np
 print("Importing random library...")
@@ -173,4 +173,4 @@ shutil.copyfile("NanoModeler.log", VAR["NAME"]+"/NanoModeler.log")
 os.remove("NanoModeler.log")
 
 os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
-#shutil.rmtree(VAR["NAME"])
+shutil.rmtree(VAR["NAME"])
