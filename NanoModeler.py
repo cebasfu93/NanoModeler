@@ -173,4 +173,4 @@ shutil.copyfile("NanoModeler.log", VAR["NAME"]+"/NanoModeler.log")
 os.remove("NanoModeler.log")
 
 os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
-shutil.rmtree(VAR["NAME"])
+#shutil.rmtree(VAR["NAME"])

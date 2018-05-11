@@ -2,11 +2,11 @@ NAME		    test
 LIG1_FILE	  LIG2_CAP.mol2
 CAP1        	1,2,3,4
 
-LIG2_FILE	  LIG3.mol2
-CAP2        N
+LIG2_FILE	  LIG3_CAP.mol2
+CAP2        1,2,3,4
 
-MORPHOLOGY	random
-LIG1_FRAC	 1.0
+MORPHOLOGY	stripe
+LIG1_FRAC	 0.8
 RSEED		    666
 STRIPES     4
 
