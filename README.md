@@ -1,4 +1,4 @@
-NanoModeler v0.0
+NanoModeler v0.1
 
 Known bugs:
 -None. NanoModeler is perfect.
