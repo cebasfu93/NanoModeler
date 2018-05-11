@@ -13,17 +13,22 @@ def check_VAR(VAR):
 def check_mol2(fname):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
 
+    found_MOLECULE = False
     found_ATOM = False
     found_BOND = False
     found_CONNECT = False
     for i in mol2:
-        if "@<TRIPOS>ATOM" in i:
+        if "@<TRIPOS>MOLECULE" in i:
+            found_MOLECULE = True
+        elif "@<TRIPOS>ATOM" in i:
             found_ATOM = True
         elif "@<TRIPOS>BOND" in i:
             found_BOND = True
         elif "@<TRIPOS>RESIDUECONNECT" in i:
             found_CONNECT = True
 
+    if not found_MOLECULE:
+        sys.exit("Keyword '@<TRIPOS>MOLECULE' not found in mol2 file.")
     if not found_ATOM:
         sys.exit("Keyword '@<TRIPOS>ATOM' not found in mol2 file.")
     if not found_BOND:

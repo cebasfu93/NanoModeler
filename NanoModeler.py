@@ -28,6 +28,8 @@ print("Importing subunits...")
 import subunits
 print("Importing collections...")
 import collections
+print("Importing rewrite_mol2...")
+from rewrite_mol2 import rewrite_mol2
 print("Importing NP_builder...")
 from NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
 print("Importing staples...")
@@ -57,14 +59,14 @@ print("\n\nCreating folder...")
 os.mkdir("TMP")
 
 print("One ligand was found...")
-print("Copying ligand1 file...")
-shutil.copyfile(VAR["LIG1_FILE"], "TMP/"+VAR["LIG1_FILE"])
+print("Rewriting ligand1 file...")
+rewrite_mol2(VAR["LIG1_FILE"], VAR["CAP1"], "TMP/"+VAR["LIG1_FILE"])
 print("Checking ligand1 mol2 file...")
 check_mol2("TMP/"+VAR["LIG1_FILE"])
 if two_lig:
     print("Two ligands were found...")
-    print("Copying ligand2 file...")
-    shutil.copyfile(VAR["LIG2_FILE"], "TMP/"+VAR["LIG2_FILE"])
+    print("Rewriting ligand2 file...")
+    rewrite_mol2(VAR["LIG2_FILE"], VAR["CAP2"], "TMP/"+VAR["LIG2_FILE"])
     print("Checking ligand2 mol2 file...")
     check_mol2("TMP/"+VAR["LIG2_FILE"])
 
@@ -171,4 +173,4 @@ shutil.copyfile("NanoModeler.log", VAR["NAME"]+"/NanoModeler.log")
 os.remove("NanoModeler.log")
 
 os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
-#shutil.rmtree(VAR["NAME"])
+shutil.rmtree(VAR["NAME"])
