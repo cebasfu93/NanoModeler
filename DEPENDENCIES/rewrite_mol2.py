@@ -8,7 +8,7 @@ def rewrite_mol2(fname, cap, oname):
         print("There are no capping atoms...")
         cap="0"
     else:
-        print("Capping atoms {} will be removed...")
+        print("Capping atoms {} will be removed...".format(cap))
     ATOM=False
     BOND=False
     atoms = []
