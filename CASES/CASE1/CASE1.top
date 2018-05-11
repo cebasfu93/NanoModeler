@@ -1,4 +1,4 @@
-; CASE1_GMX.top created by acpype (Rev: 401) on Thu May 10 15:56:12 2018
+; CASE1_GMX.top created by acpype (Rev: 401) on Fri May 11 12:31:55 2018
 
 [ defaults ]
 ; nbfunc        comb-rule       gen-pairs       fudgeLJ fudgeQQ

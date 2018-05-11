@@ -1,0 +1,10 @@
+NAME		    CASE2
+LIG1_FILE	  LIG1.mol2
+
+LIG2_FILE	  LIG2.mol2
+
+MORPHOLOGY	random
+LIG1_FRAC	 0.5
+RSEED		    666
+
+CORE		    au38SR24_NM.pdb

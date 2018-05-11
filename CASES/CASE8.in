@@ -1,0 +1,11 @@
+NAME		    CASE8
+LIG1_FILE	  LIG2_CAP.mol2
+CAP1        	1,2,3,4
+
+LIG2_FILE	  LIG3_CAP.mol2
+CAP2        1,2,3,4
+
+MORPHOLOGY	stripe
+STRIPES     4
+
+CORE		    au133SR52_NM.pdb

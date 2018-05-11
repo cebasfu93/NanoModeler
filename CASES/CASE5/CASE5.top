@@ -1,4 +1,4 @@
-; CASE5_GMX.top created by acpype (Rev: 401) on Thu May 10 15:59:35 2018
+; CASE5_GMX.top created by acpype (Rev: 401) on Fri May 11 12:40:14 2018
 
 [ defaults ]
 ; nbfunc        comb-rule       gen-pairs       fudgeLJ fudgeQQ
@@ -42,85 +42,85 @@
     19   AU    19    AU    AU   19     0.000000    196.96700 ; qtot 0.000
     20   AU    20    AU    AU   20     0.000000    196.96700 ; qtot 0.000
     21   AU    21    AU    AU   21     0.000000    196.96700 ; qtot 0.000
-    22   AU    22    AU    AU   22     0.000000    196.96700 ; qtot 0.000
+    22   ST    22    ST    ST   22     0.000000     32.06000 ; qtot 0.000
     23   ST    23    ST    ST   23     0.000000     32.06000 ; qtot 0.000
-    24   ST    24    ST    ST   24     0.000000     32.06000 ; qtot 0.000
+    24   AU    24    AU    AU   24     0.000000    196.96700 ; qtot 0.000
     25   AU    25    AU    AU   25     0.000000    196.96700 ; qtot 0.000
     26   AU    26    AU    AU   26     0.000000    196.96700 ; qtot 0.000
-    27   AU    27    AU    AU   27     0.000000    196.96700 ; qtot 0.000
+    27   ST    27    ST    ST   27     0.000000     32.06000 ; qtot 0.000
     28   ST    28    ST    ST   28     0.000000     32.06000 ; qtot 0.000
-    29   ST    29    ST    ST   29     0.000000     32.06000 ; qtot 0.000
+    29   AU    29    AU    AU   29     0.000000    196.96700 ; qtot 0.000
     30   AU    30    AU    AU   30     0.000000    196.96700 ; qtot 0.000
     31   AU    31    AU    AU   31     0.000000    196.96700 ; qtot 0.000
-    32   AU    32    AU    AU   32     0.000000    196.96700 ; qtot 0.000
+    32   ST    32    ST    ST   32     0.000000     32.06000 ; qtot 0.000
     33   ST    33    ST    ST   33     0.000000     32.06000 ; qtot 0.000
-    34   ST    34    ST    ST   34     0.000000     32.06000 ; qtot 0.000
+    34   AU    34    AU    AU   34     0.000000    196.96700 ; qtot 0.000
     35   AU    35    AU    AU   35     0.000000    196.96700 ; qtot 0.000
     36   AU    36    AU    AU   36     0.000000    196.96700 ; qtot 0.000
-    37   AU    37    AU    AU   37     0.000000    196.96700 ; qtot 0.000
+    37   ST    37    ST    ST   37     0.000000     32.06000 ; qtot 0.000
     38   ST    38    ST    ST   38     0.000000     32.06000 ; qtot 0.000
-    39   ST    39    ST    ST   39     0.000000     32.06000 ; qtot 0.000
+    39   AU    39    AU    AU   39     0.000000    196.96700 ; qtot 0.000
     40   AU    40    AU    AU   40     0.000000    196.96700 ; qtot 0.000
     41   AU    41    AU    AU   41     0.000000    196.96700 ; qtot 0.000
-    42   AU    42    AU    AU   42     0.000000    196.96700 ; qtot 0.000
+    42   ST    42    ST    ST   42     0.000000     32.06000 ; qtot 0.000
     43   ST    43    ST    ST   43     0.000000     32.06000 ; qtot 0.000
-    44   ST    44    ST    ST   44     0.000000     32.06000 ; qtot 0.000
+    44   AU    44    AU    AU   44     0.000000    196.96700 ; qtot 0.000
     45   AU    45    AU    AU   45     0.000000    196.96700 ; qtot 0.000
     46   AU    46    AU    AU   46     0.000000    196.96700 ; qtot 0.000
-    47   AU    47    AU    AU   47     0.000000    196.96700 ; qtot 0.000
+    47   ST    47    ST    ST   47     0.000000     32.06000 ; qtot 0.000
     48   ST    48    ST    ST   48     0.000000     32.06000 ; qtot 0.000
-    49   ST    49    ST    ST   49     0.000000     32.06000 ; qtot 0.000
+    49   AU    49    AU    AU   49     0.000000    196.96700 ; qtot 0.000
     50   AU    50    AU    AU   50     0.000000    196.96700 ; qtot 0.000
     51   AU    51    AU    AU   51     0.000000    196.96700 ; qtot 0.000
-    52   AU    52    AU    AU   52     0.000000    196.96700 ; qtot 0.000
+    52   ST    52    ST    ST   52     0.000000     32.06000 ; qtot 0.000
     53   ST    53    ST    ST   53     0.000000     32.06000 ; qtot 0.000
-    54   ST    54    ST    ST   54     0.000000     32.06000 ; qtot 0.000
+    54   AU    54    AU    AU   54     0.000000    196.96700 ; qtot 0.000
     55   AU    55    AU    AU   55     0.000000    196.96700 ; qtot 0.000
     56   AU    56    AU    AU   56     0.000000    196.96700 ; qtot 0.000
-    57   AU    57    AU    AU   57     0.000000    196.96700 ; qtot 0.000
+    57   ST    57    ST    ST   57     0.000000     32.06000 ; qtot 0.000
     58   ST    58    ST    ST   58     0.000000     32.06000 ; qtot 0.000
-    59   ST    59    ST    ST   59     0.000000     32.06000 ; qtot 0.000
+    59   AU    59    AU    AU   59     0.000000    196.96700 ; qtot 0.000
     60   AU    60    AU    AU   60     0.000000    196.96700 ; qtot 0.000
     61   AU    61    AU    AU   61     0.000000    196.96700 ; qtot 0.000
-    62   AU    62    AU    AU   62     0.000000    196.96700 ; qtot 0.000
+    62   ST    62    ST    ST   62     0.000000     32.06000 ; qtot 0.000
     63   ST    63    ST    ST   63     0.000000     32.06000 ; qtot 0.000
-    64   ST    64    ST    ST   64     0.000000     32.06000 ; qtot 0.000
+    64   AU    64    AU    AU   64     0.000000    196.96700 ; qtot 0.000
     65   AU    65    AU    AU   65     0.000000    196.96700 ; qtot 0.000
     66   AU    66    AU    AU   66     0.000000    196.96700 ; qtot 0.000
-    67   AU    67    AU    AU   67     0.000000    196.96700 ; qtot 0.000
+    67   ST    67    ST    ST   67     0.000000     32.06000 ; qtot 0.000
     68   ST    68    ST    ST   68     0.000000     32.06000 ; qtot 0.000
-    69   ST    69    ST    ST   69     0.000000     32.06000 ; qtot 0.000
+    69   AU    69    AU    AU   69     0.000000    196.96700 ; qtot 0.000
     70   AU    70    AU    AU   70     0.000000    196.96700 ; qtot 0.000
     71   AU    71    AU    AU   71     0.000000    196.96700 ; qtot 0.000
     72   AU    72    AU    AU   72     0.000000    196.96700 ; qtot 0.000
-    73   AU    73    AU    AU   73     0.000000    196.96700 ; qtot 0.000
+    73   ST    73    ST    ST   73     0.000000     32.06000 ; qtot 0.000
     74   ST    74    ST    ST   74     0.000000     32.06000 ; qtot 0.000
     75   ST    75    ST    ST   75     0.000000     32.06000 ; qtot 0.000
-    76   ST    76    ST    ST   76     0.000000     32.06000 ; qtot 0.000
+    76   AU    76    AU    AU   76     0.000000    196.96700 ; qtot 0.000
     77   AU    77    AU    AU   77     0.000000    196.96700 ; qtot 0.000
     78   AU    78    AU    AU   78     0.000000    196.96700 ; qtot 0.000
     79   AU    79    AU    AU   79     0.000000    196.96700 ; qtot 0.000
-    80   AU    80    AU    AU   80     0.000000    196.96700 ; qtot 0.000
+    80   ST    80    ST    ST   80     0.000000     32.06000 ; qtot 0.000
     81   ST    81    ST    ST   81     0.000000     32.06000 ; qtot 0.000
     82   ST    82    ST    ST   82     0.000000     32.06000 ; qtot 0.000
-    83   ST    83    ST    ST   83     0.000000     32.06000 ; qtot 0.000
+    83   AU    83    AU    AU   83     0.000000    196.96700 ; qtot 0.000
     84   AU    84    AU    AU   84     0.000000    196.96700 ; qtot 0.000
     85   AU    85    AU    AU   85     0.000000    196.96700 ; qtot 0.000
-    86   AU    86    AU    AU   86     0.000000    196.96700 ; qtot 0.000
-    87   AU    87    AU    AU   87     0.000000    196.96700 ; qtot 0.000
-    88   ST    88    ST    ST   88     0.000000     32.06000 ; qtot 0.000
-    89   ST    89    ST    ST   89     0.000000     32.06000 ; qtot 0.000
-    90   ST    90    ST    ST   90     0.000000     32.06000 ; qtot 0.000
-    91   AU    91    AU    AU   91     0.000000    196.96700 ; qtot 0.000
-    92   AU    92    AU    AU   92     0.000000    196.96700 ; qtot 0.000
+    86   ST    86    ST    ST   86     0.000000     32.06000 ; qtot 0.000
+    87   ST    87    ST    ST   87     0.000000     32.06000 ; qtot 0.000
+    88   AU    88    AU    AU   88     0.000000    196.96700 ; qtot 0.000
+    89   AU    89    AU    AU   89     0.000000    196.96700 ; qtot 0.000
+    90   AU    90    AU    AU   90     0.000000    196.96700 ; qtot 0.000
+    91   ST    91    ST    ST   91     0.000000     32.06000 ; qtot 0.000
+    92   ST    92    ST    ST   92     0.000000     32.06000 ; qtot 0.000
     93   AU    93    AU    AU   93     0.000000    196.96700 ; qtot 0.000
-    94   ST    94    ST    ST   94     0.000000     32.06000 ; qtot 0.000
-    95   ST    95    ST    ST   95     0.000000     32.06000 ; qtot 0.000
-    96   AU    96    AU    AU   96     0.000000    196.96700 ; qtot 0.000
-    97   AU    97    AU    AU   97     0.000000    196.96700 ; qtot 0.000
+    94   AU    94    AU    AU   94     0.000000    196.96700 ; qtot 0.000
+    95   AU    95    AU    AU   95     0.000000    196.96700 ; qtot 0.000
+    96   ST    96    ST    ST   96     0.000000     32.06000 ; qtot 0.000
+    97   ST    97    ST    ST   97     0.000000     32.06000 ; qtot 0.000
     98   AU    98    AU    AU   98     0.000000    196.96700 ; qtot 0.000
     99   AU    99    AU    AU   99     0.000000    196.96700 ; qtot 0.000
-   100   ST   100    ST    ST  100     0.000000     32.06000 ; qtot 0.000
+   100   AU   100    AU    AU  100     0.000000    196.96700 ; qtot 0.000
    101   ST   101    ST    ST  101     0.000000     32.06000 ; qtot 0.000
    102   ST   102    ST    ST  102     0.000000     32.06000 ; qtot 0.000
    103   CT   103   LF2    C1  103    -0.019000     12.01000 ; qtot -0.019
@@ -1452,108 +1452,108 @@
 
 [ bonds ]
 ;   ai     aj funct   r             k
-    33     22   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33     20   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33    103   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    33     22   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33     21   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33    142   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    28     27   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    28     25   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    28    181   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    23     27   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    23     26   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    23    220   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    33     32   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33     30   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33    259   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    33     32   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33     31   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33    298   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    38     37   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    38     35   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    38    337   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    38     37   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    38     36   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    38    376   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    43     42   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    43     40   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    43    415   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    43     42   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    43     41   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    43    454   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    53     47   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42     21   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42     19   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42    103   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    22     21   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    22     20   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    22    142   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    42     26   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42     24   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42    181   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    32     26   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    32     25   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    32    220   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    37     31   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    37     29   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    37    259   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    37     31   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    37     30   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    37    298   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    42     36   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42     34   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42    337   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    42     36   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42     35   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42    376   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    42     41   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42     39   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42    415   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    42     41   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42     40   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42    454   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    53     46   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
     53     45   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
     53    493   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    53     47   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    53     46   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    53    532   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    53     52   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    53     50   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    53    571   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    53     52   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    53     51   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    53    610   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    58     57   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    58     55   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    58    649   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    58     57   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    58     56   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    58    688   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    63     62   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63     46   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63     44   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63    532   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    58     51   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    58     50   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    58    571   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    58     51   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    58     49   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    58    610   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    63     56   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63     55   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63    649   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    63     56   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63     54   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63    688   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    63     61   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
     63     60   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
     63    727   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    63     62   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    63     61   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63     61   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63     59   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
     63    766   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    68     67   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    68     66   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
     68     65   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
     68    805   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    48     67   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    48     66   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    48    844   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    53     72   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    53     70   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    53    883   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    38     73   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    38     71   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    38    922   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    34     72   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    34     73   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    34    961   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    58     79   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    58     77   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    58   1000   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    33     80   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33     78   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    33   1039   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    54     80   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    54     79   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    54   1078   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    63     86   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    63     84   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    63   1117   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    23     87   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    23     85   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    23   1156   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    63     87   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    63     86   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    63   1195   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    68     93   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    68     91   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    68   1234   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    28     93   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    28     92   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    28   1273   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    48     98   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    48     96   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    48   1312   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    43     99   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    43     97   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
-    43   1351   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
-    43     98   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    43     99   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
-    43   1390   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    63     66   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63     64   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63    844   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    73     71   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    73     70   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    73    883   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    63     72   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63     69   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    63    922   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    73     71   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    73     72   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    73    961   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    42     78   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42     76   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    42   1000   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    81     79   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    81     77   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    81   1039   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    81     79   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    81     78   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    81   1078   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    81     85   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    81     83   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    81   1117   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    81     85   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    81     84   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    81   1156   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    32     90   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    32     88   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    32   1195   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    48     90   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    48     89   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    48   1234   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    27     95   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    27     93   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    27   1273   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    53     95   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    53     94   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    53   1312   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    73    100   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    73     98   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    73   1351   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
+    73    100   1    2.3300e-01    6.2730e+04 ;	ST - AU NanoModeler
+    73     99   1    2.4100e-01    6.2730e+04 ;	ST - AU NanoModeler
+    73   1390   1    1.8400e-01    9.9113e+04 ;	ST - C1 NanoModeler
    103    104   1    1.0970e-01    2.7665e+05 ;     C1 - H1    
    103    105   1    1.0970e-01    2.7665e+05 ;     C1 - H2    
    103    106   1    1.5380e-01    2.5179e+05 ;     C1 - C2    
@@ -6116,195 +6116,194 @@
 
 [ angles ]
 ;   ai     aj     ak    funct   theta         cth
-    22     33     20      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    22     33    103      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    20     33    103      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    33    103    104      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    33    103    105      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    23     22     24      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    22     33     21      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    22     33    142      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    21     33    142      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    33    142    144      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    33    142    143      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    27     28     25      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    27     28    181      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    25     28    181      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    28    181    183      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    28    181    182      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    28     27     29      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    27     23     26      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    27     23    220      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    26     23    220      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    23    220    222      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    23    220    221      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    32     33     30      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    32     33    259      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    30     33    259      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    33    259    260      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    33    259    261      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    34     32     33      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    32     33     31      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    32     33    298      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    31     33    298      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    33    298    300      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    33    298    299      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    37     38     35      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    37     38    337      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    35     38    337      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    38    337    338      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    38    337    339      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    39     37     38      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    37     38     36      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    37     38    376      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    36     38    376      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    38    376    377      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    38    376    378      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    42     43     40      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    42     43    415      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    40     43    415      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    43    415    416      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    43    415    417      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    43     42     44      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    42     43     41      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    42     43    454      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    41     43    454      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    43    454    456      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    43    454    455      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    47     53     45      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    47     53    493      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    21     42     19      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    21     42    103      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    19     42    103      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    42    103    104      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    42    103    105      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    22     21     23      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    21     22     20      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    21     22    142      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    20     22    142      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    22    142    144      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    22    142    143      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    26     42     24      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    26     42    181      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    24     42    181      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    42    181    182      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    42    181    183      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    27     26     28      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    26     32     25      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    26     32    220      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    25     32    220      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    32    220    222      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    32    220    221      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    31     37     29      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    31     37    259      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    29     37    259      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    37    259    261      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    37    259    260      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    32     31     33      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    31     37     30      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    31     37    298      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    30     37    298      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    37    298    300      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    37    298    299      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    36     42     34      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    36     42    337      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    34     42    337      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    42    337    339      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    42    337    338      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    38     36     37      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    36     42     35      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    36     42    376      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    35     42    376      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    42    376    377      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    42    376    378      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    41     42     39      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    41     42    415      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    39     42    415      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    42    415    417      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    42    415    416      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    42     41     43      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    41     42     40      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    41     42    454      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    40     42    454      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    42    454    455      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    42    454    456      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    46     53     45      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    46     53    493      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
     45     53    493      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    53    493    495      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
     53    493    494      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    48     47     49      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    47     53     46      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    47     53    532      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    46     53    532      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    53    532    533      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    53    532    534      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    52     53     50      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    52     53    571      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    50     53    571      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    53    571    573      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    53    571    572      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    54     52     53      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    52     53     51      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    52     53    610      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    51     53    610      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    53    610    611      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    53    610    612      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    57     58     55      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    57     58    649      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    55     58    649      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    58    649    650      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    58    649    651      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    59     57     58      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    57     58     56      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    57     58    688      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    56     58    688      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    58    688    689      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    58    688    690      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    62     63     60      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    62     63    727      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    53    493    495      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    47     46     48      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    46     63     44      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    46     63    532      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    44     63    532      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    63    532    534      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    63    532    533      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    51     58     50      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    51     58    571      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    50     58    571      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    58    571    572      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    58    571    573      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    52     51     53      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    51     58     49      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    51     58    610      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    49     58    610      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    58    610    612      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    58    610    611      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    56     63     55      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    56     63    649      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    55     63    649      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    63    649    650      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    63    649    651      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    57     56     58      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    56     63     54      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    56     63    688      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    54     63    688      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    63    688    690      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    63    688    689      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    61     63     60      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    61     63    727      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
     60     63    727      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    63    727    729      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
     63    727    728      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    63     62     64      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    62     63     61      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    62     63    766      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    61     63    766      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    63    727    729      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    63     61     62      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    61     63     59      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    61     63    766      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    59     63    766      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
     63    766    767      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
     63    766    768      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    67     68     65      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    67     68    805      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    66     68     65      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    66     68    805      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
     65     68    805      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
     68    805    806      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
     68    805    807      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    69     67     68      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    67     48     66      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    67     48    844      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    66     48    844      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    48    844    845      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    48    844    846      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    72     53     70      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    72     53    883      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    70     53    883      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    53    883    885      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    53    883    884      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    74     72     76      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    73     38     71      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    73     38    922      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    71     38    922      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    38    922    924      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    38    922    923      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    75     73     76      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    72     34     73      1    1.1920e+02    1.4602e+03 ;	AU - ST - AU NanoModeler
-    72     34    961      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    73     34    961      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    34    961    963      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    34    961    962      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    79     58     77      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    79     58   1000      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    77     58   1000      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    58   1000   1002      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    58   1000   1001      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    81     79     83      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    80     33     78      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    80     33   1039      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    78     33   1039      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    33   1039   1041      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    33   1039   1040      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    82     80     83      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    80     54     79      1    1.1920e+02    1.4602e+03 ;	AU - ST - AU NanoModeler
-    80     54   1078      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    79     54   1078      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    54   1078   1079      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    54   1078   1080      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    86     63     84      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    86     63   1117      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    84     63   1117      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    63   1117   1119      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    63   1117   1118      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    88     86     90      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    87     23     85      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    87     23   1156      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    85     23   1156      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    23   1156   1158      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    23   1156   1157      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    89     87     90      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    87     63     86      1    1.1920e+02    1.4602e+03 ;	AU - ST - AU NanoModeler
-    87     63   1195      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    86     63   1195      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    63   1195   1197      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    63   1195   1196      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    93     68     91      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    93     68   1234      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    91     68   1234      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    68   1234   1235      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    68   1234   1236      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    94     93     95      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    93     28     92      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    93     28   1273      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    92     28   1273      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    28   1273   1275      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    28   1273   1274      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    98     48     96      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    98     48   1312      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    96     48   1312      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    48   1312   1313      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    48   1312   1314      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-   100     98    102      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    99     43     97      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
-    99     43   1351      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    97     43   1351      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    43   1351   1353      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
-    43   1351   1352      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-   101     99    102      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
-    98     43     99      1    1.1920e+02    1.4602e+03 ;	AU - ST - AU NanoModeler
-    98     43   1390      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    99     43   1390      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
-    43   1390   1391      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
-    43   1390   1392      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    68     66     67      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    66     63     64      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    66     63    844      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    64     63    844      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    63    844    845      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    63    844    846      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    71     73     70      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    71     73    883      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    70     73    883      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    73    883    884      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    73    883    885      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    75     71     73      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    72     63     69      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    72     63    922      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    69     63    922      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    63    922    924      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    63    922    923      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    74     72     75      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    71     73     72      1    1.1920e+02    1.4602e+03 ;	AU - ST - AU NanoModeler
+    71     73    961      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    72     73    961      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    73    961    963      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    73    961    962      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    78     42     76      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    78     42   1000      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    76     42   1000      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    42   1000   1001      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    42   1000   1002      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    82     78     80      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    79     81     77      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    79     81   1039      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    77     81   1039      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    81   1039   1040      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    81   1039   1041      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    81     79     82      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    79     81     78      1    1.1920e+02    1.4602e+03 ;	AU - ST - AU NanoModeler
+    79     81   1078      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    78     81   1078      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    81   1078   1079      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    81   1078   1080      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    85     81     83      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    85     81   1117      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    83     81   1117      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    81   1117   1118      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    81   1117   1119      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    87     85     86      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    85     81     84      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    85     81   1156      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    84     81   1156      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    81   1156   1157      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    81   1156   1158      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    90     32     88      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    90     32   1195      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    88     32   1195      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    32   1195   1196      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    32   1195   1197      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    92     90     91      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    90     48     89      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    90     48   1234      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    89     48   1234      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    48   1234   1235      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    48   1234   1236      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    95     27     93      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    95     27   1273      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    93     27   1273      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    27   1273   1275      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    27   1273   1274      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    96     95     97      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+    95     53     94      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+    95     53   1312      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    94     53   1312      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    53   1312   1314      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+    53   1312   1313      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+   100     73     98      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+   100     73   1351      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    98     73   1351      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    73   1351   1352      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    73   1351   1353      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
+   101    100    102      1    1.7240e+02    4.6024e+02 ;	ST - AU - ST NanoModeler
+   100     73     99      1    9.1300e+01    4.6024e+02 ;	AU - ST - AU NanoModeler
+   100     73   1390      1    1.0680e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    99     73   1390      1    1.1160e+02    1.4637e+02 ;	AU - ST - C1 NanoModeler
+    73   1390   1391      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H1 NanoModeler
+    73   1390   1392      1    1.0700e+02    4.1840e+02 ;	ST - C1 - H2 NanoModeler
    103    106    107      1    1.0980e+02    3.8777e+02 ;     C1 - C2     - H3    
    103    106    108      1    1.0980e+02    3.8777e+02 ;     C1 - C2     - H4    
    103    106    109      1    1.1151e+02    5.2601e+02 ;     C1 - C2     - C3    
