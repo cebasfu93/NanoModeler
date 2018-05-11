@@ -1,19 +1,19 @@
 VAR = {
 "NAME": "test",             #Name of the project
 "LIG1_FILE" : "LF1.mol2",   #Name of the mol2 of ligand1 (must be in the working directory)
-"CAP1" : "N",		    #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas	
+"CAP1" : "N",		    #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas
 
 "LIG2_FILE" : "LF2.mol2",   #Name of the mol2 of ligand2 (must be in the working directory)
-"CAP2" : "N",
+"CAP2" : "N",               #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas
 "MORPHOLOGY" : "random",    #Morphology to distribute ligands1 and 2. random, janus, and stripe are allowed
-"LIG1_FRAC" : 1.0,          #Fraction of ligand1 to place
-"RSEED" : 666,              #Random seed for random morphology
-"STRIPES" : 1,              #Number of stripes for stripe morphology. It will start (bottom up with ligand 1)
+"LIG1_FRAC" : "1.0",          #Fraction of ligand1 to place (0-1.0)
+"RSEED" : "666",              #Random seed for random morphology
+"STRIPES" : "1",              #Number of stripes for stripe morphology. It will start (bottom up with ligand 1)
 
-"CORE" : "au144SR60_NM.pdb",
+"CORE" : "au144SR60_NM.pdb",    #Name of the core to coat. Found in COREDIR/CORE
 
-"COREDIR" : "/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/CORES",
-"DEPENDS" : "/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES"
+"COREDIR" : "/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/CORES",   #Path to folder containing all the available cores
+"DEPENDS" : "/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES"  #Path to the folder containing all the dependencies that come with NanoModeler
 }
 
 import numpy as np
