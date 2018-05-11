@@ -1,9 +1,0 @@
-NAME		    CASE6
-LIG1_FILE	  LIG2.mol2
-
-LIG2_FILE	  LIG3.mol2
-
-MORPHOLOGY	stripe
-STRIPES     3
-
-CORE		    au68SR34-I3_NM.pdb

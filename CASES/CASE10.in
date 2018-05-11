@@ -1,9 +1,0 @@
-NAME		    CASE10
-LIG1_FILE	  LIGCA.mol2
-
-LIG2_FILE	  LIG3.mol2
-
-MORPHOLOGY	stripe
-STRIPES     4
-
-CORE		    au314SR96_NM.pdb

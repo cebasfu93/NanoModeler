@@ -1,8 +1,0 @@
-NAME		    CASE9
-LIG1_FILE	  LIGCA.mol2
-
-MORPHOLOGY	random
-LIG1_FRAC	 1.0
-RSEED		    666
-
-CORE		    au144SR60_NM.pdb

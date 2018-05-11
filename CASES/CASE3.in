@@ -1,9 +1,0 @@
-NAME		    CASE3
-LIG1_FILE	  LIG1.mol2
-
-LIG2_FILE	  LIG2.mol2
-
-MORPHOLOGY	janus
-LIG1_FRAC	 0.2
-
-CORE		    au36SR24_NM.pdb
