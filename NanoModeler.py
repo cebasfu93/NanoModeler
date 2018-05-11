@@ -26,8 +26,6 @@ print("Importing transformations...")
 from  transformations import *
 print("Importing subunits...")
 import subunits
-print("Importing collections...")
-import collections
 print("Importing rewrite_mol2...")
 from rewrite_mol2 import rewrite_mol2
 print("Importing NP_builder...")
