@@ -2,13 +2,13 @@ import numpy as np
 import sys
 
 def check_VAR(VAR):
-    print("Checking presence of second ligand...")
+    print("Checking input options...")
     if float(VAR["LIG1_FRAC"]) < 0 or float(VAR["LIG1_FRAC"]) > 1.0:
-        sys.exit("LIG1_FRAC must be between 0 and 1")
+        sys.exit("LIG1_FRAC must be between 0 and 1.")
     if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe" and float(VAR["LIG1_FRAC"]) >= 0 and float(VAR["LIG1_FRAC"]) <= 1.0:
-        sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings")
+        sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings.")
     if int(VAR["STRIPES"]) < 1:
-        sys.exit("The number of stripes must be at least one")
+        sys.exit("The number of stripes must be at least one.")
 
 def check_mol2(fname):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
@@ -40,7 +40,6 @@ def check_mol2(fname):
     found_ATOM=False
     atoms = []
     names = []
-    types = []
     for i in range(N_lig_file):
         if found_ATOM:
             if "@<TRIPOS>" in mol2[i]:
