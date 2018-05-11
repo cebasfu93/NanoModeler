@@ -5,11 +5,10 @@ def rewrite_mol2(fname, cap, oname):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
     out = open(oname, "w")
     if cap=="N":
+        print("There are no capping atoms...")
         cap="0"
-        #for i in range(len(mol2)):
-        #    out.write(mol2[i]+"\n")
-        #out.close()
-    #else:
+    else:
+        print("Capping atoms {} will be removed...")
     ATOM=False
     BOND=False
     atoms = []
@@ -84,5 +83,3 @@ def rewrite_mol2(fname, cap, oname):
     out.write("@<TRIPOS>RESIDUECONNECT\n")
     out.write(connect+"\n")
     out.close()
-
-#rewrite_mol2("../LIG2_CAP.mol2", "1,2,3,4", "LIG2_rewriten.mol2")

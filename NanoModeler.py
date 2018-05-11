@@ -2,8 +2,8 @@ log = open("NanoModeler.log", "w")
 log.write("WELCOME TO NANOMODELER\n")
 log.write("Importing sys library...\n")
 import sys
-sys.stdout = log
-sys.stderr = log
+#sys.stdout = log
+#sys.stderr = log
 print("Importing numpy library...")
 import numpy as np
 print("Importing random library...")
@@ -14,7 +14,7 @@ print("Importing scipy library...")
 from scipy.spatial import distance
 print("Importing sklearn library...")
 from sklearn.decomposition import PCA
-print("Importing argparse library...")
+print("Importing os library...")
 import os
 print("Importing shutil library...")
 import shutil
@@ -24,15 +24,15 @@ print("Looking for folder with dependencies...")
 sys.path.append(VAR["DEPENDS"])
 print("Importing transformations...")
 from  transformations import *
-print("Importing subunits...")
+print("Importing subunits dependency...")
 import subunits
-print("Importing rewrite_mol2...")
+print("Importing rewrite_mol2 dependency...")
 from rewrite_mol2 import rewrite_mol2
-print("Importing NP_builder...")
+print("Importing NP_builder dependency...")
 from NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
-print("Importing staples...")
+print("Importing staples dependency...")
 from staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
-print("Importing checking functions...")
+print("Importing checking functions dependency...")
 from check import check_mol2, check_VAR
 check_VAR(VAR)
 
@@ -57,24 +57,25 @@ print("\n\nCreating folder...")
 os.mkdir("TMP")
 
 print("One ligand was found...")
+print("Checking ligand1 mol2 file...")
+check_mol2(VAR["LIG1_FILE"])
 print("Rewriting ligand1 file...")
 rewrite_mol2(VAR["LIG1_FILE"], VAR["CAP1"], "TMP/"+VAR["LIG1_FILE"])
-print("Checking ligand1 mol2 file...")
-check_mol2("TMP/"+VAR["LIG1_FILE"])
+
 if two_lig:
     print("Two ligands were found...")
+    print("Checking ligand2 mol2 file...")
+    check_mol2(VAR["LIG2_FILE"])
     print("Rewriting ligand2 file...")
     rewrite_mol2(VAR["LIG2_FILE"], VAR["CAP2"], "TMP/"+VAR["LIG2_FILE"])
-    print("Checking ligand2 mol2 file...")
-    check_mol2("TMP/"+VAR["LIG2_FILE"])
 
 ##############################NP_builder########################
 
 print("Initializing ligand1...")
-xyz_lig1, names_lig1, anchor_ndx1, name_anchor1, res_anchor1, res_lig1 = init_lig_mol2(VAR["LIG1_FILE"], VAR["CAP1"])
+xyz_lig1, names_lig1, anchor_ndx1, name_anchor1, res_anchor1, res_lig1 = init_lig_mol2("TMP/"+VAR["LIG1_FILE"], VAR["CAP1"])
 if two_lig:
     print("Initializing ligand2...")
-    xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2(VAR["LIG2_FILE"], VAR["CAP2"])
+    xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2("TMP/"+VAR["LIG2_FILE"], VAR["CAP2"])
 else:
     xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = [], [], [], [], [], []
 
@@ -171,4 +172,4 @@ shutil.copyfile("NanoModeler.log", VAR["NAME"]+"/NanoModeler.log")
 os.remove("NanoModeler.log")
 
 os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
-shutil.rmtree(VAR["NAME"])
+#shutil.rmtree(VAR["NAME"])
