@@ -6,7 +6,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     "LIG1_FRAC" : LIG1_FRAC,          #Fraction of ligand1 to place (0-1.0)
     "MORPHOLOGY" : MORPHOLOGY,    #Morphology to distribute ligands1 and 2. random, janus, and stripe are allowed
     "RSEED" : RSEED,              #Random seed for random morphology
-    "STRIPES" : "1",              #Number of stripes for stripe morphology. It will start (bottom up with ligand 1)
+    "STRIPES" : STRIPES,              #Number of stripes for stripe morphology. It will start (bottom up with ligand 1)
 
     "LIG2_FILE" : LIG2_FILE,   #Name of the mol2 of ligand2 (must be in the working directory)
     "CAP2" : CAP2,               #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas
@@ -188,7 +188,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     #shutil.rmtree(VAR["NAME"])
 
 NanoModeler(NAME="test",
-    LIG1_FILE="LIG1.mol2",
+    LIG1_FILE="LIG2.mol2",
     CAP1="N",
     LIG1_FRAC="1.0",
     MORPHOLOGY="random",
@@ -196,6 +196,6 @@ NanoModeler(NAME="test",
     STRIPES="1",
     LIG2_FILE="XXX.mol2",
     CAP2="N",
-    CORE="au144SR60_NM.pdb", 
-    COREDIR="/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/CORES",
-    DEPENDS="/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES")
+    CORE="au144SR60_NM.pdb",
+    COREDIR="./CORES",
+    DEPENDS="./DEPENDENCIES")
