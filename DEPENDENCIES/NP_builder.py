@@ -52,7 +52,7 @@ def init_lig_mol2(fname, cap):
     #Moves the ligand so that the anchor is in (0,0,0)
     for i in range(len(xyz_lig_func[:,0])):
         xyz_lig_func[i,:] = xyz_lig_func[i,:] - anchor_pos
-    return xyz_lig_func, names_lig_func, anchor_ndx_func, name_anchor_func, res_anchor_func, res_lig_func
+    return xyz_lig_func/10., names_lig_func, anchor_ndx_func, name_anchor_func, res_anchor_func, res_lig_func
 
 def init_core_pdb(fname):
     #Imports core pdb file. Centers the core in (0,0,0) and returns xyz coordinates and names
@@ -68,7 +68,7 @@ def init_core_pdb(fname):
     xyz_core_func = np.array(xyz_core_func, dtype="float")
     names_core_func = np.array(names_core_func)
     res_core_func = np.array(res_core_func)
-    return xyz_core_func, names_core_func, res_core_func
+    return xyz_core_func/10., names_core_func, res_core_func
 
 def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
     #Runs a PCA and takes the first eigenvector as the best fitting line.
@@ -142,7 +142,7 @@ def get_stones(xyz_anchorsi_func, xyz_pillarsi_func):
 
 def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
     n_clash_iter = 100
-    thresh = 1.0
+    thresh = 0.1
     D_clash = distance.cdist(trans_lig_tmp, xyz_coated_tmp)
     clash_dis = np.min(D_clash)
     theta = 0
@@ -163,10 +163,10 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
             clash_dis = np.min(D_clash)
             trans_lig_best = trans_lig_try
         if theta >= 6.28 and clash_dis < thresh:
-            print("It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...".format(resnum, clash_dis/10))
+            print("It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...".format(resnum, clash_dis))
             print("Revise the final geometry...")
         if theta >= 6.28 and clash_dis > thresh and CLASH:
-            print("The clash was solved, i.e., the minimum distance between atoms is at least {} nm...".format(thresh/10))
+            print("The clash was solved, i.e., the minimum distance between atoms is at least {} nm...".format(thresh))
 
     return trans_lig_best
 
@@ -215,6 +215,11 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
     return xyz_coated_func, names_coated_func, res_coated_func
 
 def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, out_fname):
+    xyz_coated_func = xyz_coated_func*10
+    xyz_anchors1_func = xyz_anchors1_func*10
+    xyz_anchors2_func = xyz_anchors2_func*10
+    xyz_lig1_func = xyz_lig1_func*10
+    xyz_lig2_func = xyz_lig2_func*10
     N_at_lig1 = len(xyz_lig1_func[:,0])
     if len(xyz_lig2_func)!=0:
         N_at_lig2 = len(xyz_lig2_func[:,0])
