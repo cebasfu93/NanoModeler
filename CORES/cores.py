@@ -24,10 +24,8 @@ def penalty(p, S_xyz, Au_xyz):
     for i in range(2):
         angles.append(angle(p, S_xyz, Au_xyz[i]))
     angles = np.array(angles)
-    #print(angles)
     angles = np.abs((angles-109.2)/109.2)
     D_S = np.abs((D_S-1.8)/1.8)
-    #print(angles, np.sum(angles), D_S)
     return float(np.sum(angles)+D_S)
 
 def read_Au25SR18(fname):
@@ -72,7 +70,6 @@ def read_Au36CP24(fname):
         xyz = np.vstack((xyz, xyz_C[np.argsort(D_ST_C[i,:])[0]]))
         names = np.append(names, "C")
     xyz = center(xyz)
-    print(len(xyz), len(names))
     return xyz, names
 
 def read_Au102SR44(fname):
@@ -254,7 +251,6 @@ def classify_staples(xyz_sys, names_sys):
                 if new_ganchos[j].Au[k] in ganchos[i].Au:
                     taken = True
                     old = j
-        print(len(new_ganchos), len(ganchos))
         if not taken:
             new_ganchos.append(ganchos[i])
         elif taken:
@@ -271,7 +267,6 @@ def classify_staples(xyz_sys, names_sys):
         staple_act = staples[i]
         N_S = len(staple_act.S)
         N_Au = len(staple_act.Au)
-        #print(N_S, N_Au)
         if N_S == 1 and N_Au == 2:
             staple_act.change_tipo('STP')
         elif N_S == 2 and N_Au == 3:
@@ -285,14 +280,13 @@ def classify_staples(xyz_sys, names_sys):
                     print(angle)
                     #if angle <= 109.0 and angle >= 91.0:
                     if angle <= 109.0 and angle >= 87.0:
-                        staple_act.change_tipo('STV')
-                    elif angle <= 128.2 and angle >= 110.2:
                         staple_act.change_tipo('STC')
+                    elif angle <= 128.2 and angle >= 110.2:
+                        staple_act.change_tipo('STV')
                     else:
                         print("One of the staples should be STC or STV but the AuL-S-AuL angle displays an odd value. Unrecognized staple")
         else:
             print("Unrecognized staple")
-    print(len(staples))
     return staples
 
 def write_pdb(xyz_sys, names_sys, staples, fname):
@@ -354,7 +348,7 @@ def print_xyz(coords, nombres, fname):
     for i in range(len(nombres)):
         fxyz.write("{}\t\t{:.3f}   {:.3f}   {:.3f}\n".format(nombres[i], coords[i,0], coords[i,1], coords[i,2]))
     fxyz.close()
-"""
+
 #AU25SR18 (61 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 xyz_Au25SR18, names_Au25SR18 = read_Au25SR18("AU25SR18/au25_pet18.gro")
 staples_Au25SR18 = classify_staples(xyz_Au25SR18, names_Au25SR18)
@@ -391,12 +385,12 @@ write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I4_NM.pdb")
 #xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
 #staples_Au102SR44 = classify_staples(xyz_Au102SR44, names_Au102SR44)
 #write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
-"""
+
 #AU133SR52 (237 atoms, Zeng/Jin, Sci. Adv, 2015)
 xyz_Au133SR52, names_Au133SR52 = read_A133L52("AU133SR52/Au133SR52.txt")
 staples_Au133SR52 = classify_staples(xyz_Au133SR52, names_Au133SR52)
 write_pdb(xyz_Au133SR52, names_Au133SR52, staples_Au133SR52,"au133SR52_NM.pdb")
-"""
+
 #AU144SR60 (264 atoms, Lopez-Acevedo/Hakkinen, J. Phys. Chem. C. Lett, 2009)
 xyz_Au144SR60, names_Au144SR60 = read_Au144SR60("AU144SR60/au144SR60.pdb")
 staples_Au144SR60 = classify_staples(xyz_Au144SR60, names_Au144SR60)
@@ -408,4 +402,3 @@ write_pdb(xyz_Au144SR60, names_Au144SR60, staples_Au144SR60, "au144SR60_NM.pdb")
 xyz_Au314SR96, names_Au314SR96 = read_Au314SH96("AU314SR96/au314SH96.xyz")
 staples_Au314SR96 = classify_staples(xyz_Au314SR96, names_Au314SR96)
 write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
-"""
