@@ -21,8 +21,8 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     log.write("WELCOME TO NANOMODELER\n")
     log.write("Importing sys library...\n")
     import sys
-    sys.stdout = log
-    sys.stderr = log
+    #sys.stdout = log
+    #sys.stderr = log
     print("Importing numpy library...")
     import numpy as np
     print("Importing random library...")
@@ -155,7 +155,8 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     blocks = make_blocks(xyz_core, names_core, xyz_sys, ndx_C1, ndx_H1)
     if two_lig:
         blocks = blocks + make_blocks(xyz_core, names_core, xyz_sys, ndx_C2, ndx_H2)
-
+    #for b in blocks:
+    #    print(vars(b))
     print("Writing bonds parameters...")
     write_bonds(blocks, "TMP/bonds.top", xyz_sys, names_sys)
     print("Writing angles parameters...")
@@ -184,7 +185,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     shutil.copyfile("NanoModeler.log", VAR["NAME"]+"/NanoModeler.log")
     os.remove("NanoModeler.log")
 
-    os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
+    #os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
     #shutil.rmtree(VAR["NAME"])
 
 NanoModeler(NAME="test",
