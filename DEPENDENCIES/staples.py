@@ -61,8 +61,6 @@ def make_blocks(xyz_core_func, names_core_func, xyz_sys_func, ndx_C_func, ndx_H_
         D_S_Au = distance.cdist([xyz_sys_func[ndx_S]], xyz_sys_func[all_Au])[0]
         ndx_Au = all_Au[np.argsort(D_S_Au)[0:2]]
         tipos_Au = names_core_func[ndx_Au]
-        if i ==0:
-            print(ndx_C_func[i], ndx_S, ndx_Au, ndx_H_func[i])
         if np.any(np.logical_and(tipos_Au != "AUS", tipos_Au != "AUL")):
             sys.exit("There was a problem recognizing if some gold atoms where type AUL or AUS.")
         if len(ndx_H_func)!=0:
