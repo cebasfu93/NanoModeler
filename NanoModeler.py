@@ -21,8 +21,8 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     log.write("WELCOME TO NANOMODELER\n")
     log.write("Importing sys library...\n")
     import sys
-    #sys.stdout = log
-    #sys.stderr = log
+    sys.stdout = log
+    sys.stderr = log
     print("Importing numpy library...")
     import numpy as np
     print("Importing random library...")
@@ -37,6 +37,8 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     import os
     print("Importing shutil library...")
     import shutil
+    print("Importing atexit library...")
+    import atexit
     print("Looking for folder with dependencies...")
     sys.path.append(VAR["DEPENDS"])
     print("Importing default function dependency...")
@@ -51,7 +53,9 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     from NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
     print("Importing staples dependency...")
     from staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
-
+    print("Importing cleanup dependency...")
+    from cleanup import cleanup_error, cleanup_normal
+    atexit.register(cleanup_error)
     check_VAR(VAR)
 
     if (VAR["MORPHOLOGY"] == "stripe"):
@@ -155,8 +159,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     blocks = make_blocks(xyz_core, names_core, xyz_sys, ndx_C1, ndx_H1)
     if two_lig:
         blocks = blocks + make_blocks(xyz_core, names_core, xyz_sys, ndx_C2, ndx_H2)
-    #for b in blocks:
-    #    print(vars(b))
+
     print("Writing bonds parameters...")
     write_bonds(blocks, "TMP/bonds.top", xyz_sys, names_sys)
     print("Writing angles parameters...")
@@ -164,6 +167,8 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     print("Writing final topology file...")
     write_topology("TMP/"+VAR["NAME"]+".top", "TMP/bonds.top", "TMP/angles.top")
     #############################################################
+
+    atexit.unregister(cleanup_error)
 
     print("Copying final files...")
     os.mkdir(VAR["NAME"])
@@ -173,20 +178,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     for i in copy:
         shutil.copyfile("TMP/"+i, VAR["NAME"]+"/"+i)
 
-    print("Cleaning...")
-    bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
-    for i in bye:
-        os.remove(i)
-    shutil.rmtree("TMP")
-
-    print("Compressing files to output...")
-    print("NANOMODELER terminated normally. Que gracias.")
-    log.close()
-    shutil.copyfile("NanoModeler.log", VAR["NAME"]+"/NanoModeler.log")
-    os.remove("NanoModeler.log")
-
-    #os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
-    #shutil.rmtree(VAR["NAME"])
+    atexit.register(cleanup_normal, VAR, log)
 
 NanoModeler(NAME="test",
     LIG1_FILE="LIG2.mol2",
