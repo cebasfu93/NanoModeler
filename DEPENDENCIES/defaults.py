@@ -1,7 +1,7 @@
 import numpy as np
 
-def check_VAR(VAR):
-    print("Checking input options...")
+def check_VAR(VAR, log):
+    log += "Checking input options..."
     if float(VAR["LIG1_FRAC"]) < 0 or float(VAR["LIG1_FRAC"]) > 1.0:
         sys.exit("LIG1_FRAC must be between 0 and 1.")
     if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe" and float(VAR["LIG1_FRAC"]) >= 0 and float(VAR["LIG1_FRAC"]) <= 1.0:
@@ -9,7 +9,7 @@ def check_VAR(VAR):
     if int(VAR["STRIPES"]) < 1:
         sys.exit("The number of stripes must be at least one.")
 
-def check_mol2(fname):
+def check_mol2(fname, log):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
 
     found_MOLECULE = False
@@ -47,19 +47,19 @@ def check_mol2(fname):
             names.append(mol2[i].split()[1])
         elif "@<TRIPOS>ATOM" in mol2[i]:
             found_ATOM = True
-    print("{} atoms were found in the mol2 file...".format(len(atoms)))
+    log += "{} atoms were found in the mol2 file...".format(len(atoms))
 
-    print("Checking if columns 3, 4, and 5 correspond to floating numbers...")
+    log += "Checking if columns 3, 4, and 5 correspond to floating numbers..."
     for i in range(len(atoms)):
         float(atoms[i][2]), float(atoms[i][3]), float(atoms[i][4])
 
     for i in range(N_lig_file):
         if "@<TRIPOS>RESIDUECONNECT" in mol2[i]:
             connect = mol2[i+1].split()[1]
-            print("The name found for the connecting atom in the mol2 file is '{}'...".format(connect))
+            log += "The name found for the connecting atom in the mol2 file is '{}'...".format(connect)
     names = np.array(names)
     ndx_con = np.where(names==connect)[0][0]
-    print("The connecting atom was identified to be atom {}...".format(ndx_con+1))
+    log += "The connecting atom was identified to be atom {}...".format(ndx_con+1)
 
 def read_resname(lig_fname):
     mol2 = np.genfromtxt(lig_fname, delimiter="\n", dtype='str')
@@ -70,7 +70,9 @@ def read_resname(lig_fname):
 
 def write_leap(VAR, fname, two_lig_func):
     msj = "source leaprc.gaff \n\n"
+
     msj += "loadamberparams " + "TMP/"+VAR["LIG1_FILE"][:-5]+".frcmod\n"
+    msj += "loadamberparams " + VAR["DEPENDS"]+"/PARAMS.frcmod\n\n"
 
     msj += read_resname(VAR["LIG1_FILE"]) + " = loadmol3 " + "TMP/"+VAR["LIG1_FILE"]+"\n"
     msj += "check " + read_resname(VAR["LIG1_FILE"]) + "\n"

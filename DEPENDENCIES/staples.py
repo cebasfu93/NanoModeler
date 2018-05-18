@@ -32,18 +32,18 @@ def load_top(top_fname):
         residues.append(top_file[i].split()[3])
     return np.array(types), np.array(residues)
 
-def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_anchor_func, res_anchor_func):
+def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_anchor_func, res_anchor_func, log):
     ndx_C = np.where(np.logical_and(names_sys_func==name_anchor_func, res_sys_func==res_anchor_func))[0]
     type_anchor_func = types_sys_func[ndx_C]
 
-    print("Checking if the assigned atom type for the anchors is supported...")
+    log += "Checking if the assigned atom type for the anchors is supported...\n"
     if not (type_anchor_func[0]=="CT" or type_anchor_func[0]=="CA"):
         sys.exit("One of the anchors was assigned an unsupported atom type. Those supported are CT and CA.")
     N_anch = len(ndx_C)
 
     D_C_all = distance.cdist(xyz_sys_func[ndx_C], xyz_sys_func)
     if type_anchor_func[0]=="CT":
-        print("Looking for closest hydrogen atoms to anchors...")
+        log += "Looking for closest hydrogen atoms to anchors...\n"
         ndx_H = np.argsort(D_C_all)[:,1:3]
         if not np.all(types_sys_func[ndx_H.flatten().astype("int")]=="HC"):
             sys.exit("There are no parameters for the hydrogen atoms next to the anchor, or the atoms next to the anchor are not hydrogen atoms. The hydrogens next to CT anchor must be HC...")

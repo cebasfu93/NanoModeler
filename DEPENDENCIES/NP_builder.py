@@ -70,15 +70,15 @@ def init_core_pdb(fname):
     res_core_func = np.array(res_core_func)
     return xyz_core_func/10., names_core_func, res_core_func
 
-def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
+def get_ligand_pill(xyz_lig_func, anchor_ndx_func, log):
     #Runs a PCA and takes the first eigenvector as the best fitting line.
     pca = PCA(n_components=3)
     pca.fit(xyz_lig_func)
     pca1 = pca.components_[0]
     var1 = pca.explained_variance_[0]/np.sum(pca.explained_variance_)*100
 
-    print("PCA1 explains: {:.1f}% of the points' variance...".format(var1))
-    print("Consider this is a measure on how linear the input ligand is. The lower this value, the more likely it will be to get clashes in the final structure.")
+    log += "PCA1 explains: {:.1f}% of the points' variance...\n".format(var1)
+    log += "Consider this is a measure on how linear the input ligand is. The lower this value, the more likely it will be to get clashes in the final structure.\n"
 
     #Randomly takes 2 other atoms in the ligand and project their positions in PCA1
     random.seed(666)
@@ -90,26 +90,26 @@ def get_ligand_pill(xyz_lig_func, anchor_ndx_func):
         pillars_func = np.vstack((pillars_func, np.dot(xyz_lig_func[i], pca1) * pca1))
     return pillars_func
 
-def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func):
+def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func, log):
     #Distributes all the anchors in lig1 and lig2 dependending in the specified morphology
     xyz_anchors_func = xyz_core_func[names_core_func=='C',:]
     N_anchors = len(xyz_anchors_func)
     for_lig1 = round(N_anchors*frac_lig1_func)
     indexes = list(range(N_anchors))
     if morph_func == "random":
-        print("Assigning a random distribution of the ligands...")
+        log += "Assigning a random distribution of the ligands...\n"
         random.seed(rseed_func)
         random.shuffle(indexes)
         lig1_ndx = indexes[:for_lig1]
         lig2_ndx = indexes[for_lig1:]
     elif morph_func == "janus":
-        print("Assigning a janus distribution for the ligands...")
+        log += "Assigning a janus distribution for the ligands...\n"
         bottom = xyz_anchors_func[np.argsort(xyz_anchors_func[:,2])[0]]
         D_bottom_anch = distance.cdist([bottom], xyz_anchors_func)
         lig1_ndx = D_bottom_anch[0].argsort()[:for_lig1]
         lig2_ndx = list(set(indexes) - set(lig1_ndx))
     elif morph_func == "stripe":
-        print("Assigning a striped distribution for the ligands...")
+        log += "Assigning a striped distribution for the ligands...\n"
         phis = np.arccos(np.divide(xyz_anchors_func[:,2], np.linalg.norm(xyz_anchors_func, axis=1)))
         dphi = (math.pi+0.00001)/stripes_func
         lig1_ndx = []
@@ -120,8 +120,8 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
             elif phi(xyz_anchors_func[i])//dphi%2 == 1:
                 lig2_ndx.append(i)
 
-    print("The nanoparticle will have {} of ligand 1...".format(len(lig1_ndx)))
-    print("The nanoparticle will have {} of ligand 2...".format(len(lig2_ndx)))
+    log += "The nanoparticle will have {} of ligand 1...\n".format(len(lig1_ndx))
+    log += "The nanoparticle will have {} of ligand 2...\n".format(len(lig2_ndx))
     xyz_anchors1_func=xyz_anchors_func[lig1_ndx]
     xyz_anchors2_func=xyz_anchors_func[lig2_ndx]
     return xyz_anchors1_func, xyz_anchors2_func
@@ -140,7 +140,7 @@ def get_stones(xyz_anchorsi_func, xyz_pillarsi_func):
             xyz_stones[i,j,:]=xyz_anchorsi_func[i,:]*scaling
     return xyz_stones
 
-def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
+def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
     n_clash_iter = 100
     thresh = 0.1
     D_clash = distance.cdist(trans_lig_tmp, xyz_coated_tmp)
@@ -150,8 +150,8 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
     CLASH = False
     if clash_dis < thresh:
         CLASH = True
-        print("Clashes were found while placing residue {}...".format(resnum))
-        print("Trying to solve the clashes...")
+        log += "Clashes were found while placing residue {}...\n".format(resnum)
+        log += "Trying to solve the clashes...\n"
 
     while theta < 6.28:
         theta += 2*math.pi/n_clash_iter
@@ -163,14 +163,14 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
             clash_dis = np.min(D_clash)
             trans_lig_best = trans_lig_try
         if theta >= 6.28 and clash_dis < thresh:
-            print("It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...".format(resnum, clash_dis))
-            print("Revise the final geometry...")
+            log += "It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...\n".format(resnum, clash_dis)
+            log += "Revise the final geometry...\n"
         if theta >= 6.28 and clash_dis > thresh and CLASH:
-            print("The clash was solved, i.e., the minimum distance between atoms is at least {} nm...".format(thresh))
+            log += "The clash was solved, i.e., the minimum distance between atoms is at least {} nm...\n".format(thresh)
 
     return trans_lig_best
 
-def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func):
+def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func, log):
     #Merges xyz coordinates and names of the core and the ligands into one coated NP
     keep_rows=[]
     for i in range(len(names_core_func)):
@@ -193,7 +193,7 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
         trans_matrix=affine_matrix_from_points(xyz_pillars1_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
         trans_lig=np.dot(trans_matrix, xyz_lig1_func_conv).T[:,:3]
 
-        trans_lig = solve_clashes(xyz_coated_func, trans_lig, xyz_stones1_func[i,0,:], len(keep_rows)+i+1)
+        trans_lig = solve_clashes(xyz_coated_func, trans_lig, xyz_stones1_func[i,0,:], len(keep_rows)+i+1, log)
 
         xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
         names_coated_func=np.append(names_coated_func, names_lig1_func, axis=0)
@@ -207,7 +207,7 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
             trans_matrix=affine_matrix_from_points(xyz_pillars2_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
             trans_lig=np.dot(trans_matrix, xyz_lig2_func_conv).T[:,:3]
 
-            trans_lig = solve_clashes(xyz_coated_func, trans_lig, xyz_stones2_func[i,0,:], len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1)
+            trans_lig = solve_clashes(xyz_coated_func, trans_lig, xyz_stones2_func[i,0,:], len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1, log)
 
             xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
             names_coated_func=np.append(names_coated_func, names_lig2_func, axis=0)

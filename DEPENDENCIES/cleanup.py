@@ -1,27 +1,26 @@
 import os
 import shutil
 
-def cleanup_error():
-    print("Cleaning up...")
+def cleanup_error(log):
+    log += "Cleaning up...\n"
     bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
     for i in bye:
         os.system("rm " + str(i))
-    os.system("rm -r TMP")
-    print("NanoModeler terminated with errors.")
+    #os.system("rm -r TMP")
+    log += "NanoModeler terminated with errors.\n"
+    print(log)
 
 
 def cleanup_normal(VAR, log):
-    print("Cleaning...")
+    log += "Cleaning...\n"
     bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
     for i in bye:
         os.remove(i)
-    shutil.rmtree("TMP")
 
-    print("Compressing files to output...")
-    print("NanoModeler terminated normally. Que gracias.")
-    log.close()
-    shutil.copyfile("NanoModeler.log", VAR["NAME"]+"/NanoModeler.log")
-    os.remove("NanoModeler.log")
+    #shutil.rmtree("TMP")
+    log += "Compressing files to output...\n"
+    log += "NanoModeler terminated normally. Que gracias.\n"
 
-    os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
-    shutil.rmtree(VAR["NAME"])
+    print(log)
+    #os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
+    #shutil.rmtree(VAR["NAME"])
