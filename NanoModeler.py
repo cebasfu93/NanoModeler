@@ -17,8 +17,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     "DEPENDS" : DEPENDS #Path to the folder containing all the dependencies that come with NanoModeler
     }
 
-    log = ""
-    log += "WELCOME TO NANOMODELER\n\n"
+    log = "WELCOME TO NANOMODELER\n\n"
     log += "Importing sys library...\n"
     import sys
     log += "Importing numpy library...\n"
@@ -35,6 +34,8 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     import os
     log += "Importing shutil library...\n"
     import shutil
+    log += "Importing tempfile...\n"
+    import tempfile
     log += "Importing atexit library...\n"
     import atexit
     log += "Looking for folder with dependencies...\n"
