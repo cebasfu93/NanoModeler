@@ -90,11 +90,9 @@ def rewrite_mol2(fname, cap, oname, log):
         if at != len(atoms)-1:
             out.write("{0:>4} {1:>4} {2:>13.4f} {3:>9.4f} {4:>9.4f} {5:>4} {6} {7} {8:>7.4f}\n".format(\
             at, atom[1], xyz[at-1,0], xyz[at-1,1], xyz[at-1,2], atom[5], atom[6], atom[7], float(atom[8])+charge_per_atom))
-            #at, atom[1], float(atom[2]), float(atom[3]), float(atom[4]), atom[5], atom[6], atom[7], float(atom[8])+charge_per_atom))
         else:
             out.write("{0:>4} {1:>4} {2:>13.4f} {3:>9.4f} {4:>9.4f} {5:>4} {6} {7} {8:>7.4f}\n".format(\
             at, atom[1], xyz[at-1,0], xyz[at-1,1], xyz[at-1,2], atom[5], atom[6], atom[7], float(atom[8])+charge_per_atom))
-            #at, atom[1], float(atom[2]), float(atom[3]), float(atom[4]), atom[5], atom[6], atom[7], float(atom[8])))
 
     log += "Writing @<TRIPOS>BOND section...\n"
     out.write("@<TRIPOS>BOND\n")
