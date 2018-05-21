@@ -72,7 +72,7 @@ def write_leap(VAR, TMP, two_lig_func):
     msj = "source leaprc.gaff \n\n"
 
     msj += "loadamberparams " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".frcmod\n"
-    msj += "loadamberparams " + VAR["DEPENDS"]+"/PARAMS.frcmod\n\n"
+    msj += "loadamberparams " + "DEPENDENCIES/PARAMS.frcmod\n\n"
 
     msj += read_resname(TMP+"/"+VAR["LIG1_FILE"]) + " = loadmol3 " + TMP+"/"+VAR["LIG1_FILE"]+"\n"
     msj += "check " + read_resname(VAR["LIG1_FILE"]) + "\n"
@@ -83,12 +83,12 @@ def write_leap(VAR, TMP, two_lig_func):
         msj += "check " + read_resname(VAR["LIG2_FILE"]) + "\n"
         msj += "saveoff " + read_resname(VAR["LIG2_FILE"]) + " " + TMP+"/"+VAR["LIG2_FILE"][:-5]+".lib\n\n"
 
-    msj += "loadamberparams " + VAR["DEPENDS"]+"/AU.frcmod\n"
-    msj += "loadamberparams " + VAR["DEPENDS"]+"/AUS.frcmod\n"
-    msj += "loadamberparams " + VAR["DEPENDS"]+"/AUL.frcmod\n"
-    msj += "AU = loadmol3 " + VAR["DEPENDS"]+"/AU.mol2\n"
-    msj += "AUS = loadmol3 " + VAR["DEPENDS"]+"/AUS.mol2\n"
-    msj += "AUL = loadmol3 " + VAR["DEPENDS"]+"/AUL.mol2\n"
+    msj += "loadamberparams " + "DEPENDENCIES/AU.frcmod\n"
+    msj += "loadamberparams " + "DEPENDENCIES/AUS.frcmod\n"
+    msj += "loadamberparams " + "DEPENDENCIES/AUL.frcmod\n"
+    msj += "AU = loadmol3 " + "DEPENDENCIES/AU.mol2\n"
+    msj += "AUS = loadmol3 " + "DEPENDENCIES/AUS.mol2\n"
+    msj += "AUL = loadmol3 " + "DEPENDENCIES/AUL.mol2\n"
 
     msj += "loadoff " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".lib\n"
     if two_lig_func:

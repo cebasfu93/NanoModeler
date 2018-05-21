@@ -1,5 +1,5 @@
 import numpy as np
-from  transformations import *
+from  DEPENDENCIES.transformations import *
 import random
 from scipy.spatial import distance
 from sklearn.decomposition import PCA

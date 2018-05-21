@@ -1,4 +1,4 @@
-def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", MORPHOLOGY="random", RSEED="666", STRIPES="1", LIG2_FILE="XXX.mol2", CAP2="N", CORE="au144SR60_NM.pdb", COREDIR="/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/CORES", DEPENDS="/DATA/SoftwareSFU/IN-HOUSE/NanoModeler/DEPENDENCIES"):
+def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", MORPHOLOGY="random", RSEED="666", STRIPES="1", LIG2_FILE="XXX.mol2", CAP2="N", CORE="au144SR60_NM.pdb"):
     VAR = {
     "NAME": NAME,             #Name of the project
     "LIG1_FILE" : LIG1_FILE,   #Name of the mol2 of ligand1 (must be in the working directory)
@@ -11,10 +11,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     "LIG2_FILE" : LIG2_FILE,   #Name of the mol2 of ligand2 (must be in the working directory)
     "CAP2" : CAP2,               #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas
 
-    "CORE" : CORE,    #Name of the core to coat. Found in COREDIR/CORE
-
-    "COREDIR" : COREDIR,   #Path to folder containing all the available cores
-    "DEPENDS" : DEPENDS #Path to the folder containing all the dependencies that come with NanoModeler
+    "CORE" : CORE,    #Name of the core to coat. Found in CORES/CORE
     }
 
     log = "WELCOME TO NANOMODELER\n\n"
@@ -38,23 +35,23 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     import tempfile
     log += "Importing atexit library...\n"
     import atexit
-    log += "Looking for folder with dependencies...\n"
-    sys.path.append(VAR["DEPENDS"])
-    log += "Importing default function dependency...\n"
-    from defaults import check_VAR, check_mol2, write_leap
-    log += "Importing transformations...\n"
-    from  transformations import affine_matrix_from_points, vector_norm, quaternion_matrix
-    log += "Importing subunits dependency...\n"
-    import subunits
-    log += "Importing rewrite_mol2 dependency...\n"
-    from rewrite_mol2 import rewrite_mol2
     log += "Importing NP_builder dependency...\n"
-    from NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
+    from DEPENDENCIES.NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
     log += "Importing staples dependency...\n"
-    from staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
+    from DEPENDENCIES.staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
+    log += "Importing default function dependency...\n"
+    from DEPENDENCIES.defaults import check_VAR, check_mol2, write_leap
+    log += "Importing transformations...\n"
+    from  DEPENDENCIES.transformations import affine_matrix_from_points, vector_norm, quaternion_matrix
+    log += "Importing subunits dependency...\n"
+    import DEPENDENCIES.subunits
+    log += "Importing rewrite_mol2 dependency...\n"
+    from DEPENDENCIES.rewrite_mol2 import rewrite_mol2
     log += "Importing cleanup dependency...\n\n"
-    from cleanup import cleanup_error, cleanup_normal
+    from DEPENDENCIES.cleanup import cleanup_error, cleanup_normal
     log += "Creating temporary folder...\n"
+
+
     TMP = tempfile.mkdtemp(dir="./")
     atexit.register(cleanup_error, TMP, log)
 
@@ -96,7 +93,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
         xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = [], [], [], [], [], []
 
     log += "Initializing core...\n"
-    xyz_core, names_core, res_core = init_core_pdb(VAR["COREDIR"]+"/"+VAR["CORE"])
+    xyz_core, names_core, res_core = init_core_pdb("./CORES/"+VAR["CORE"])
 
     log += "Running PCA for ligand1...\n"
     xyz_pillars1 = get_ligand_pill(xyz_lig1, anchor_ndx1, log)
@@ -136,7 +133,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     os.system("tleap -sf " + TMP + "/TLeap.in > " + TMP + "/TLeap.log")
 
     log += "Running acpype...\n"
-    os.system("python {}/acpype.py -p {} -x {} -r".format(VAR["DEPENDS"], TMP+"/"+VAR["NAME"]+".prmtop", TMP+"/"+VAR["NAME"]+".inpcrd -b " + VAR["NAME"] + " -c user > acpype.log"))
+    os.system("python DEPENDENCIES/acpype.py -p {} -x {} -r".format(TMP+"/"+VAR["NAME"]+".prmtop", TMP+"/"+VAR["NAME"]+".inpcrd -b " + VAR["NAME"] + " -c user > acpype.log"))
     os.system("mv {}_GMX.top {}.top".format(VAR["NAME"], TMP+"/"+VAR["NAME"]))
     os.system("mv {}_GMX.gro {}.gro".format(VAR["NAME"], TMP+"/"+VAR["NAME"]))
 
@@ -188,6 +185,4 @@ NanoModeler(NAME="test",
     STRIPES="1",
     LIG2_FILE="XXX.mol2",
     CAP2="N",
-    CORE="au38SR24_NM.pdb",
-    COREDIR="./CORES",
-    DEPENDS="./DEPENDENCIES")
+    CORE="au38SR24_NM.pdb")

@@ -1,7 +1,7 @@
 import numpy as np
 import sys
 from scipy.spatial import distance
-import subunits
+import DEPENDENCIES.subunits as subunits
 
 signature = " NanoModeler"
 
