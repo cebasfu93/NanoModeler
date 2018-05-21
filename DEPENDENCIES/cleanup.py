@@ -1,7 +1,7 @@
 import os
 import shutil
 
-def cleanup_error(log):
+def cleanup_error(TMP, log):
     log += "Cleaning up...\n"
     bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
     for i in bye:
@@ -11,13 +11,13 @@ def cleanup_error(log):
     print(log)
 
 
-def cleanup_normal(VAR, log):
+def cleanup_normal(VAR, TMP, log):
     log += "Cleaning...\n"
     bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
     for i in bye:
         os.remove(i)
 
-    #shutil.rmtree("TMP")
+    #shutil.rmtree(TMP)
     log += "Compressing files to output...\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
 

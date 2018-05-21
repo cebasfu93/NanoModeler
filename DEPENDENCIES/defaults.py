@@ -68,33 +68,33 @@ def read_resname(lig_fname):
             resname = mol2[i+1].split()[7]
     return resname
 
-def write_leap(VAR, fname, two_lig_func):
+def write_leap(VAR, TMP, two_lig_func):
     msj = "source leaprc.gaff \n\n"
 
-    msj += "loadamberparams " + "TMP/"+VAR["LIG1_FILE"][:-5]+".frcmod\n"
+    msj += "loadamberparams " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".frcmod\n"
     msj += "loadamberparams " + VAR["DEPENDS"]+"/PARAMS.frcmod\n\n"
 
-    msj += read_resname(VAR["LIG1_FILE"]) + " = loadmol3 " + "TMP/"+VAR["LIG1_FILE"]+"\n"
+    msj += read_resname(VAR["LIG1_FILE"]) + " = loadmol3 " + TMP+"/"+VAR["LIG1_FILE"]+"\n"
     msj += "check " + read_resname(VAR["LIG1_FILE"]) + "\n"
-    msj += "saveoff " + read_resname(VAR["LIG1_FILE"]) + " " + "TMP/"+VAR["LIG1_FILE"][:-5]+".lib\n\n"
+    msj += "saveoff " + read_resname(VAR["LIG1_FILE"]) + " " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".lib\n\n"
     if two_lig_func:
-        msj += "loadamberparams " + "TMP/"+VAR["LIG2_FILE"][:-5]+".frcmod\n"
-        msj += read_resname(VAR["LIG2_FILE"]) + " = loadmol3 " + "TMP/"+VAR["LIG2_FILE"]+"\n"
+        msj += "loadamberparams " + TMP+"/"+VAR["LIG2_FILE"][:-5]+".frcmod\n"
+        msj += read_resname(VAR["LIG2_FILE"]) + " = loadmol3 " + TMP+"/"+VAR["LIG2_FILE"]+"\n"
         msj += "check " + read_resname(VAR["LIG2_FILE"]) + "\n"
-        msj += "saveoff " + read_resname(VAR["LIG2_FILE"]) + " " + "TMP/"+VAR["LIG2_FILE"][:-5]+".lib\n\n"
+        msj += "saveoff " + read_resname(VAR["LIG2_FILE"]) + " " + TMP+"/"+VAR["LIG2_FILE"][:-5]+".lib\n\n"
 
     msj += "loadamberparams " + VAR["DEPENDS"]+"/AU.frcmod\n"
     msj += "loadamberparams " + VAR["DEPENDS"]+"/ST.frcmod\n"
     msj += "AU = loadmol3 " + VAR["DEPENDS"]+"/AU.mol2\n"
     msj += "ST = loadmol3 " + VAR["DEPENDS"]+"/ST.mol2\n\n"
 
-    msj += "loadoff " + "TMP/"+VAR["LIG1_FILE"][:-5]+".lib\n"
+    msj += "loadoff " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".lib\n"
     if two_lig_func:
-        msj += "loadoff " + "TMP/"+VAR["LIG2_FILE"][:-5]+".lib\n"
+        msj += "loadoff " + TMP+"/"+VAR["LIG2_FILE"][:-5]+".lib\n"
 
-    msj += VAR["NAME"] + " = loadpdb " + "TMP/"+VAR["NAME"]+".pdb \n"
-    msj += "saveamberparm " +  VAR["NAME"] + " " + "TMP/"+VAR["NAME"]+".prmtop" + " " + "TMP/"+VAR["NAME"]+".inpcrd \n"
+    msj += VAR["NAME"] + " = loadpdb " + TMP+"/"+VAR["NAME"]+".pdb \n"
+    msj += "saveamberparm " +  VAR["NAME"] + " " + TMP+"/"+VAR["NAME"]+".prmtop" + " " + TMP+"/"+VAR["NAME"]+".inpcrd \n"
     msj += "quit"
-    out = open(fname, "w")
+    out = open(TMP+"/TLeap.in", "w")
     out.write(msj)
     out.close()

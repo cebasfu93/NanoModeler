@@ -54,7 +54,10 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     from staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
     log += "Importing cleanup dependency...\n\n"
     from cleanup import cleanup_error, cleanup_normal
-    atexit.register(cleanup_error, log)
+    log += "Creating temporary folder...\n"
+    TMP = tempfile.mkdtemp(dir="./")
+    atexit.register(cleanup_error, TMP, log)
+
     check_VAR(VAR, log)
 
     if (VAR["MORPHOLOGY"] == "stripe"):
@@ -69,29 +72,26 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     for i in VAR:
         log += (i.ljust(20) + VAR[i].ljust(50)+"\n")
 
-    log += "\n\nCreating folder...\n"
-    os.mkdir("TMP")
-
-    log += "One ligand was found...\n"
+    log += "\n\nOne ligand was found...\n"
     log += "Checking ligand1 mol2 file...\n"
     check_mol2(VAR["LIG1_FILE"], log)
     log += "Rewriting ligand1 file...\n"
-    rewrite_mol2(VAR["LIG1_FILE"], VAR["CAP1"], "TMP/"+VAR["LIG1_FILE"], log)
+    rewrite_mol2(VAR["LIG1_FILE"], VAR["CAP1"], TMP+"/"+VAR["LIG1_FILE"], log)
 
     if two_lig:
         log += "Two ligands were found...\n"
         log += "Checking ligand2 mol2 file...\n"
         check_mol2(VAR["LIG2_FILE"], log)
         log += "Rewriting ligand2 file...\n"
-        rewrite_mol2(VAR["LIG2_FILE"], VAR["CAP2"], "TMP/"+VAR["LIG2_FILE"], log)
+        rewrite_mol2(VAR["LIG2_FILE"], VAR["CAP2"], TMP+"/"+VAR["LIG2_FILE"], log)
 
     ##############################NP_builder########################
 
     log += "Initializing ligand1...\n"
-    xyz_lig1, names_lig1, anchor_ndx1, name_anchor1, res_anchor1, res_lig1 = init_lig_mol2("TMP/"+VAR["LIG1_FILE"], VAR["CAP1"])
+    xyz_lig1, names_lig1, anchor_ndx1, name_anchor1, res_anchor1, res_lig1 = init_lig_mol2(TMP+"/"+VAR["LIG1_FILE"], VAR["CAP1"])
     if two_lig:
         log += "Initializing ligand2...\n"
-        xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2("TMP/"+VAR["LIG2_FILE"], VAR["CAP2"])
+        xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2(TMP+"/"+VAR["LIG2_FILE"], VAR["CAP2"])
     else:
         xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = [], [], [], [], [], []
 
@@ -120,32 +120,32 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2, log)
 
     log += "Writing pdb of the coated nanoparticle...\n"
-    print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, "TMP/"+VAR["NAME"]+".pdb")
+    print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, TMP+"/"+VAR["NAME"]+".pdb")
 
     ################################################################
 
     log += "Running parmchk2 for ligand1...\n"
-    os.system("parmchk2 -i {} -f mol2 -o {} -a y".format("TMP/"+VAR["LIG1_FILE"], "TMP/"+VAR["LIG1_FILE"][:-5]+".frcmod"))
+    os.system("parmchk2 -i {} -f mol2 -o {} -a y".format(TMP+"/"+VAR["LIG1_FILE"], TMP+"/"+VAR["LIG1_FILE"][:-5]+".frcmod"))
     if two_lig:
         log += "Running parmchk2 for ligand2...\n"
-        os.system("parmchk2 -i {} -f mol2 -o {} -a y".format("TMP/"+VAR["LIG2_FILE"], "TMP/"+VAR["LIG2_FILE"][:-5]+".frcmod"))
+        os.system("parmchk2 -i {} -f mol2 -o {} -a y".format(TMP+"/"+VAR["LIG2_FILE"], TMP+"/"+VAR["LIG2_FILE"][:-5]+".frcmod"))
 
     log += "Writing tleap input file...\n"
-    write_leap(VAR, "TMP/TLeap.in", two_lig)
+    write_leap(VAR, TMP, two_lig)
     log += "Running tleap...\n"
-    os.system("tleap -sf TMP/TLeap.in > TMP/TLeap.log")
+    os.system("tleap -sf " + TMP + "/TLeap.in > " + TMP + "/TLeap.log")
 
     log += "Running acpype...\n"
-    os.system("python {}/acpype.py -p {} -x {} -r".format(VAR["DEPENDS"], "TMP/"+VAR["NAME"]+".prmtop", "TMP/"+VAR["NAME"]+".inpcrd -b " + VAR["NAME"] + " -c user > acpype.log"))
-    os.system("mv {}_GMX.top {}.top".format(VAR["NAME"], "TMP/"+VAR["NAME"]))
-    os.system("mv {}_GMX.gro {}.gro".format(VAR["NAME"], "TMP/"+VAR["NAME"]))
+    os.system("python {}/acpype.py -p {} -x {} -r".format(VAR["DEPENDS"], TMP+"/"+VAR["NAME"]+".prmtop", TMP+"/"+VAR["NAME"]+".inpcrd -b " + VAR["NAME"] + " -c user > acpype.log"))
+    os.system("mv {}_GMX.top {}.top".format(VAR["NAME"], TMP+"/"+VAR["NAME"]))
+    os.system("mv {}_GMX.gro {}.gro".format(VAR["NAME"], TMP+"/"+VAR["NAME"]))
 
     ##############################Staples########################
     log += "Reading gro file of the coated nanoparticle...\n"
-    xyz_sys, names_sys = load_gro("TMP/"+VAR["NAME"]+".gro")
+    xyz_sys, names_sys = load_gro(TMP+"/"+VAR["NAME"]+".gro")
 
     log += "Reading top file of the unlinked nanoparticle...\n"
-    types_sys, res_sys = load_top("TMP/"+VAR["NAME"]+".top")
+    types_sys, res_sys = load_top(TMP+"/"+VAR["NAME"]+".top")
 
     log += "Looking for anchoring carbon atoms for ligand1 and their hydrogens if applicable...\n"
     ndx_C1, ndx_H1 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor1, res_anchor1, log)
@@ -160,11 +160,11 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
         blocks = blocks + make_blocks(xyz_core, names_core, xyz_sys, ndx_C2, ndx_H2)
 
     log += "Writing bonds parameters...\n"
-    write_bonds(blocks, "TMP/bonds.top", xyz_sys, names_sys)
+    write_bonds(blocks, TMP+"/bonds.top", xyz_sys, names_sys)
     log += "Writing angles parameters...\n"
-    write_angles(blocks, "TMP/angles.top", xyz_sys, names_sys, res_core)
+    write_angles(blocks, TMP+"/angles.top", xyz_sys, names_sys, res_core)
     log += "Writing final topology file...\n"
-    write_topology("TMP/"+VAR["NAME"]+".top", "TMP/bonds.top", "TMP/angles.top")
+    write_topology(TMP+"/"+VAR["NAME"]+".top", TMP+"/bonds.top", TMP+"/angles.top")
     #############################################################
 
     atexit.unregister(cleanup_error)
@@ -175,9 +175,9 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     if two_lig:
         copy.append(VAR["LIG2_FILE"])
     for i in copy:
-        shutil.copyfile("TMP/"+i, VAR["NAME"]+"/"+i)
+        shutil.copyfile(TMP+"/"+i, VAR["NAME"]+"/"+i)
 
-    atexit.register(cleanup_normal, VAR, log)
+    atexit.register(cleanup_normal, VAR, TMP, log)
 
 NanoModeler(NAME="test",
     LIG1_FILE="LIG2.mol2",
