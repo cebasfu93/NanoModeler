@@ -86,11 +86,9 @@ def write_leap(VAR, TMP, two_lig_func):
     msj += "loadamberparams " + VAR["DEPENDS"]+"/AU.frcmod\n"
     msj += "loadamberparams " + VAR["DEPENDS"]+"/AUS.frcmod\n"
     msj += "loadamberparams " + VAR["DEPENDS"]+"/AUL.frcmod\n"
-    #msj += "loadamberparams " + VAR["DEPENDS"]+"/ST.frcmod\n"
     msj += "AU = loadmol3 " + VAR["DEPENDS"]+"/AU.mol2\n"
     msj += "AUS = loadmol3 " + VAR["DEPENDS"]+"/AUS.mol2\n"
     msj += "AUL = loadmol3 " + VAR["DEPENDS"]+"/AUL.mol2\n"
-    #msj += "ST = loadmol3 " + VAR["DEPENDS"]+"/ST.mol2\n\n"
 
     msj += "loadoff " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".lib\n"
     if two_lig_func:
