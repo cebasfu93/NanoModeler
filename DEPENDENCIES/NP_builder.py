@@ -48,10 +48,11 @@ def init_lig_mol2(fname, cap):
             anchor_ndx_func = np.where(np.logical_and(names_lig_func==name_anchor_func, resID_func==int(mol2[i+1].split()[0])))[0][0]
             res_anchor_func = res_lig_func[anchor_ndx_func]
 
-    anchor_pos = np.copy(xyz_lig_func)[anchor_ndx_func,:]
-    #Moves the ligand so that the anchor is in (0,0,0)
+    S_pos = xyz_lig_func[-1,:]
+    #Moves the ligand so that the S is in (0,0,0)
+    xyz_lig_func = xyz_lig_func - S_pos
     for i in range(len(xyz_lig_func[:,0])):
-        xyz_lig_func[i,:] = xyz_lig_func[i,:] - anchor_pos
+        xyz_lig_func[i,:] = xyz_lig_func[i,:] - xyz_lig_func[-1,:]
     return xyz_lig_func/10., names_lig_func, anchor_ndx_func, name_anchor_func, res_anchor_func, res_lig_func
 
 def init_core_pdb(fname):
@@ -92,7 +93,7 @@ def get_ligand_pill(xyz_lig_func, anchor_ndx_func, log):
 
 def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func, log):
     #Distributes all the anchors in lig1 and lig2 dependending in the specified morphology
-    xyz_anchors_func = xyz_core_func[names_core_func=='C',:]
+    xyz_anchors_func = xyz_core_func[names_core_func=='ST',:]
     N_anchors = len(xyz_anchors_func)
     for_lig1 = round(N_anchors*frac_lig1_func)
     indexes = list(range(N_anchors))
@@ -134,9 +135,9 @@ def get_stones(xyz_anchorsi_func, xyz_pillarsi_func):
 
     #Takes the COM-C vectors and scale them to match the distance between staples in the ligand's file
     for i in range(n_anchors):
-        mag_C = np.linalg.norm(xyz_anchorsi_func[i,:])
+        mag_S = np.linalg.norm(xyz_anchorsi_func[i,:])
         for j in range(n_stones_lig):
-            scaling = (mag_C + np.linalg.norm(xyz_pillarsi_func[j,:]))/mag_C
+            scaling = (mag_S + np.linalg.norm(xyz_pillarsi_func[j,:]))/mag_S
             xyz_stones[i,j,:]=xyz_anchorsi_func[i,:]*scaling
     return xyz_stones
 
@@ -174,17 +175,12 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
     #Merges xyz coordinates and names of the core and the ligands into one coated NP
     keep_rows=[]
     for i in range(len(names_core_func)):
-        if names_core_func[i]!='C':
+        if names_core_func[i]!='ST':
             keep_rows.append(i)
 
     xyz_coated_func=xyz_core_func[keep_rows,:]
     names_coated_func=names_core_func[keep_rows]
     res_coated_func=names_core_func[keep_rows]
-    res_coated_func[np.where(names_coated_func=="AUL")[0]]="AU"
-    res_coated_func[np.where(names_coated_func=="AUS")[0]]="AU"
-    names_coated_func[np.where(names_coated_func=="AUL")[0]]="AU"
-    names_coated_func[np.where(names_coated_func=="AUS")[0]]="AU"
-
 
     #Transforms and appends rototranslated ligand 1
     xyz_lig1_func_conv=np.insert(xyz_lig1_func, 3, 1, axis=1).T

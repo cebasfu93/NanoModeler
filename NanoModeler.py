@@ -148,21 +148,21 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     types_sys, res_sys = load_top(TMP+"/"+VAR["NAME"]+".top")
 
     log += "Looking for anchoring carbon atoms for ligand1 and their hydrogens if applicable...\n"
-    ndx_C1, ndx_H1 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor1, res_anchor1, log)
+    ndx_C1 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor1, res_anchor1, log)
     if two_lig:
         log += "Looking for anchoring carbon atoms for ligand2 and their hydrogens if applicable...\n"
-        ndx_C2, ndx_H2 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor2, res_anchor2, log)
+        ndx_C2 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor2, res_anchor2, log)
     else:
-        ndx_C2, ndx_H2 = [], []
+        ndx_C2 = [], []
 
-    blocks = make_blocks(xyz_core, names_core, xyz_sys, ndx_C1, ndx_H1)
+    blocks = make_blocks(xyz_sys, names_sys, names_core, res_core, ndx_C1)
     if two_lig:
-        blocks = blocks + make_blocks(xyz_core, names_core, xyz_sys, ndx_C2, ndx_H2)
+        blocks = blocks + make_blocks(xyz_sys, names_sys, names_core, res_core, ndx_C2)
 
     log += "Writing bonds parameters...\n"
     write_bonds(blocks, TMP+"/bonds.top", xyz_sys, names_sys)
     log += "Writing angles parameters...\n"
-    write_angles(blocks, TMP+"/angles.top", xyz_sys, names_sys, res_core)
+    write_angles(blocks, TMP+"/angles.top", xyz_sys, names_sys)
     log += "Writing final topology file...\n"
     write_topology(TMP+"/"+VAR["NAME"]+".top", TMP+"/bonds.top", TMP+"/angles.top")
     #############################################################
@@ -180,7 +180,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     atexit.register(cleanup_normal, VAR, TMP, log)
 
 NanoModeler(NAME="test",
-    LIG1_FILE="LIG2.mol2",
+    LIG1_FILE="LIGCA.mol2",
     CAP1="N",
     LIG1_FRAC="1.0",
     MORPHOLOGY="random",

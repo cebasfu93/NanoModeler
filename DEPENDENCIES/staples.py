@@ -40,33 +40,24 @@ def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_an
     if not (type_anchor_func[0]=="CT" or type_anchor_func[0]=="CA"):
         sys.exit("One of the anchors was assigned an unsupported atom type. Those supported are CT and CA.")
     N_anch = len(ndx_C)
+    return ndx_C
 
-    D_C_all = distance.cdist(xyz_sys_func[ndx_C], xyz_sys_func)
-    if type_anchor_func[0]=="CT":
-        log += "Looking for closest hydrogen atoms to anchors...\n"
-        ndx_H = np.argsort(D_C_all)[:,1:3]
-        if not np.all(types_sys_func[ndx_H.flatten().astype("int")]=="HC"):
-            sys.exit("There are no parameters for the hydrogen atoms next to the anchor, or the atoms next to the anchor are not hydrogen atoms. The hydrogens next to CT anchor must be HC...")
-    elif type_anchor_func[0]=="CA":
-        ndx_H = np.array([])
-    return ndx_C, ndx_H
+def make_blocks(xyz_sys_func, names_sys_func, names_core_func, res_core_func, ndx_C_func):
+    core_Au = np.where(np.logical_or(names_core_func=="AUS", names_core_func=="AUL"))[0]
+    ndx_S = np.where(names_sys_func=="ST")[0]
+    ndx_Au = np.where(np.logical_or(names_sys_func=="AUS", names_sys_func=="AUL"))[0]
+    D_S_C = distance.cdist(xyz_sys_func[ndx_S], xyz_sys_func[ndx_C_func])
+    D_S_Au = distance.cdist(xyz_sys_func[ndx_S], xyz_sys_func[ndx_Au])
 
-def make_blocks(xyz_core_func, names_core_func, xyz_sys_func, ndx_C_func, ndx_H_func):
-    all_Au = np.append(np.where(names_core_func=="AUS")[0], np.where(names_core_func=="AUL")[0])
-    all_S = np.where(names_core_func=="ST")[0]
     blocks = []
-    D_C_CORE = distance.cdist(xyz_sys_func[ndx_C_func], xyz_core_func)
-    for i in range(len(ndx_C_func)):
-        ndx_S = all_S[np.argsort(D_C_CORE[i, all_S])[0]]
-        D_S_Au = distance.cdist([xyz_sys_func[ndx_S]], xyz_sys_func[all_Au])[0]
-        ndx_Au = all_Au[np.argsort(D_S_Au)[0:2]]
-        tipos_Au = names_core_func[ndx_Au]
-        if np.any(np.logical_and(tipos_Au != "AUS", tipos_Au != "AUL")):
-            sys.exit("There was a problem recognizing if some gold atoms where type AUL or AUS.")
-        if len(ndx_H_func)!=0:
-            blocks.append(subunits.Block(ndx_S=ndx_S, ndx_Au=ndx_Au, ndx_C=ndx_C_func[i], ndx_H=ndx_H_func[i], types_Au=tipos_Au))
-        else:
-            blocks.append(subunits.Block(ndx_S=ndx_S, ndx_Au=ndx_Au, ndx_C=ndx_C_func[i], ndx_H=[], types_Au=tipos_Au))
+    for i in range(len(ndx_S)):
+        now_S = ndx_S[i]
+        now_C = ndx_C_func[np.argsort(D_S_C[i])[0]]
+        sort_S_Au = np.argsort(D_S_Au[i])[0:2]
+        old_Au = core_Au[sort_S_Au]
+        now_Au = ndx_Au[sort_S_Au]
+        tipos_Au = names_sys_func[now_Au]
+        blocks.append(subunits.Block(ndx_S=now_S, ndx_Au=now_Au, ndx_C=now_C, types_Au=tipos_Au, staple=res_core_func[old_Au]))
     return blocks
 
 def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
@@ -83,20 +74,9 @@ def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
             elif b.typesAu[j]=="AUS":
                 zero = 0.241
             bonds.write(str(b.S+1).rjust(6)+str(b.Au[j]+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.Au[j]]+signature+"\n")
-
-        #S - C bonds
-        if len(b.H) == 2:
-            cons = 99113.0
-            zero = 0.184
-        elif len(b.H) == 0:
-            cons = 198321.6
-            zero = 0.175
-        else:
-            sys.exit("There is something wrong with the anchors' hydrogen indexing.")
-        bonds.write(str(b.S+1).rjust(6)+str(b.C+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.C]+signature+"\n")
     bonds.close()
 
-def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, res_core_func):
+def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
     #Goes through every staple and wirtes the parameters for the angles involving S atoms. Then a particular case is used for the S-Aul-S bond
     angles = open(fname, 'w')
     func_type = str(1)
@@ -106,10 +86,10 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, res_core_func
 
         #AuL - S - AuL
         if np.all(b.typesAu == "AUL"):
-            if np.all(res_core_func[b.Au]=="STV"):
+            if np.all(b.staple=="STV"):
                 cons = 1460.24
                 zero = 119.2
-            elif np.all(res_core_func[b.Au]=="STC"):
+            elif np.all(b.staple=="STC"):
                 cons = 460.24
                 zero = 100.0
             else:
@@ -130,13 +110,6 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, res_core_func
             elif b.typesAu[j] == "AUS":
                 zero = 111.6
             angles.write(str(b.Au[j]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.C+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[j]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.C]+signature+"\n")
-
-        #S - C - H
-        if len(b.H) == 2:
-            cons = 418.40
-            zero = 107.0
-            angles.write(str(b.S+1).rjust(6)+str(b.C+1).rjust(7)+str(b.H[0]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.C]+" - "+names_sys_func[b.H[0]]+signature+"\n")
-            angles.write(str(b.S+1).rjust(6)+str(b.C+1).rjust(7)+str(b.H[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.C]+" - "+names_sys_func[b.H[1]]+signature+"\n")
 
         #S - AuL - S
         all_S = np.where(names_sys_func=="ST")[0]
