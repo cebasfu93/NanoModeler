@@ -48,7 +48,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     log += "Importing rewrite_mol2 dependency...\n"
     from DEPENDENCIES.rewrite_mol2 import rewrite_mol2
     log += "Importing cleanup dependency...\n\n"
-    from DEPENDENCIES.cleanup import cleanup_error, cleanup_normal
+    from DEPENDENCIES.cleanup import cleanup_error
     log += "Creating temporary folder...\n"
 
 
@@ -174,7 +174,19 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_FRAC="1.0", M
     for i in copy:
         shutil.copyfile(TMP+"/"+i, VAR["NAME"]+"/"+i)
 
-    atexit.register(cleanup_normal, VAR, TMP, log)
+    log += "Cleaning...\n"
+    bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
+    for i in bye:
+        os.remove(i)
+
+    #shutil.rmtree(TMP)
+    log += "Compressing files to output...\n"
+    log += "NanoModeler terminated normally. Que gracias.\n"
+
+    print(log)
+    #os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
+    #shutil.rmtree(VAR["NAME"])
+    return (1, log, )
 
 NanoModeler(NAME="test",
     LIG1_FILE="LIGCA.mol2",
