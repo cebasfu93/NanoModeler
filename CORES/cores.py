@@ -321,12 +321,12 @@ def write_pdb(xyz_sys, names_sys, staples, fname):
             write_pdb_block("ST", st_act.tipo, xyz_sys[st_act.S[j]], res, at, fname)
             at+=1
         res+=1
-    for i in range(N_staples):
-        st_act = staples[i]
-        for j in range(len(st_act.C)):
-            write_pdb_block("C", st_act.tipo, xyz_sys[st_act.C[j]], res, at, fname)
-            at+=1
-        res+=1
+    #for i in range(N_staples):
+    #    st_act = staples[i]
+    #    for j in range(len(st_act.C)):
+    #        write_pdb_block("C", st_act.tipo, xyz_sys[st_act.C[j]], res, at, fname)
+    #        at+=1
+    #    res+=1
 
 def write_pdb_block(atname_func, res_name_func, xyz_func, resnum, atnum, out_filename):
     #Writes one line of a generic pdb file
