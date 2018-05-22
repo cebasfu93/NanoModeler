@@ -19,7 +19,7 @@ def rot_mat(p, u, t):
 def phi(xyz):
     return math.acos(xyz[2]/np.linalg.norm(xyz))
 
-def init_lig_mol2(fname, cap):
+def init_lig_mol2(fname):
     #Imports ligand mol2 file
     mol2=np.genfromtxt(fname, delimiter='\n', dtype='str')
     N_lig_file=len(mol2)
@@ -41,12 +41,6 @@ def init_lig_mol2(fname, cap):
             found_ATOM = True
 
     xyz_lig_func, names_lig_func, res_lig_func, resID_func = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func), np.array(res_lig_func), np.array(resID_func, dtype="int")
-
-    for i in range(N_lig_file):
-        if "@<TRIPOS>RESIDUECONNECT" in mol2[i]:
-            name_anchor_func = mol2[i+1].split()[1]
-            anchor_ndx_func = np.where(np.logical_and(names_lig_func==name_anchor_func, resID_func==int(mol2[i+1].split()[0])))[0][0]
-            res_anchor_func = res_lig_func[anchor_ndx_func]
 
     S_pos = xyz_lig_func[-1,:]
     #Moves the ligand so that the S is in (0,0,0)

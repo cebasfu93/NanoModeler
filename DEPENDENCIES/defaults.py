@@ -15,7 +15,6 @@ def check_mol2(fname, log):
     found_MOLECULE = False
     found_ATOM = False
     found_BOND = False
-    found_CONNECT = False
     for i in mol2:
         if "@<TRIPOS>MOLECULE" in i:
             found_MOLECULE = True
@@ -23,8 +22,6 @@ def check_mol2(fname, log):
             found_ATOM = True
         elif "@<TRIPOS>BOND" in i:
             found_BOND = True
-        elif "@<TRIPOS>RESIDUECONNECT" in i:
-            found_CONNECT = True
 
     if not found_MOLECULE:
         sys.exit("Keyword '@<TRIPOS>MOLECULE' not found in mol2 file.")
@@ -32,19 +29,19 @@ def check_mol2(fname, log):
         sys.exit("Keyword '@<TRIPOS>ATOM' not found in mol2 file.")
     if not found_BOND:
         sys.exit("Keyword '@<TRIPOS>BOND' not found in mol2 file.")
-    if not found_CONNECT:
-        sys.exit("Keyword '@<TRIPOS>RESIDUECONNECT' not found in mol2 file.")
 
     N_lig_file=len(mol2)
     found_ATOM=False
     atoms = []
     names = []
+    res_names = []
     for i in range(N_lig_file):
         if found_ATOM:
             if "@<TRIPOS>" in mol2[i]:
                 break
             atoms.append(mol2[i].split())
             names.append(mol2[i].split()[1])
+            res_names.append(mol2[i].split()[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
             found_ATOM = True
     log += "{} atoms were found in the mol2 file...".format(len(atoms))
@@ -53,13 +50,8 @@ def check_mol2(fname, log):
     for i in range(len(atoms)):
         float(atoms[i][2]), float(atoms[i][3]), float(atoms[i][4])
 
-    for i in range(N_lig_file):
-        if "@<TRIPOS>RESIDUECONNECT" in mol2[i]:
-            connect = mol2[i+1].split()[1]
-            log += "The name found for the connecting atom in the mol2 file is '{}'...".format(connect)
-    names = np.array(names)
-    ndx_con = np.where(names==connect)[0][0]
-    log += "The connecting atom was identified to be atom {}...".format(ndx_con+1)
+    if len(atoms)!=np.unique(np.array(res_names), return_counts=True)[1][0]:
+        sys.exit("There seems to be more than one residue type in the input mol2 file")
 
 def read_resname(lig_fname):
     mol2 = np.genfromtxt(lig_fname, delimiter="\n", dtype='str')
