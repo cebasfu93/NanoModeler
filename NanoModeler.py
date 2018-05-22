@@ -193,12 +193,12 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
         os.remove(i)
 
     atexit.unregister(cleanup_error)
-    #shutil.rmtree(TMP)
+    shutil.rmtree(TMP)
     log += "Compressing files to output...\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
 
-    #os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
-    #shutil.rmtree(VAR["NAME"])
+    os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
+    shutil.rmtree(VAR["NAME"])
     atexit.register(cleanup_normal, log)
 
 
