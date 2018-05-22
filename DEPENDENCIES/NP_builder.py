@@ -26,7 +26,6 @@ def init_lig_mol2(fname):
     found_ATOM=0
     names_lig_func=[]
     xyz_lig_func=[]
-    resID_func = []
     res_lig_func=[]
     for i in range(N_lig_file):
         if found_ATOM:
@@ -35,19 +34,18 @@ def init_lig_mol2(fname):
             at_file = mol2[i].split()
             names_lig_func.append(at_file[1])
             xyz_lig_func.append(at_file[2:5])
-            resID_func.append(at_file[6])
             res_lig_func.append(at_file[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
             found_ATOM = True
 
-    xyz_lig_func, names_lig_func, res_lig_func, resID_func = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func), np.array(res_lig_func), np.array(resID_func, dtype="int")
+    xyz_lig_func, names_lig_func, res_lig_func = np.array(xyz_lig_func, dtype='float'), np.array(names_lig_func), np.array(res_lig_func)
 
     S_pos = xyz_lig_func[-1,:]
     #Moves the ligand so that the S is in (0,0,0)
     xyz_lig_func = xyz_lig_func - S_pos
     for i in range(len(xyz_lig_func[:,0])):
         xyz_lig_func[i,:] = xyz_lig_func[i,:] - xyz_lig_func[-1,:]
-    return xyz_lig_func/10., names_lig_func, anchor_ndx_func, name_anchor_func, res_anchor_func, res_lig_func
+    return xyz_lig_func/10., names_lig_func, res_lig_func
 
 def init_core_pdb(fname):
     #Imports core pdb file. Centers the core in (0,0,0) and returns xyz coordinates and names
@@ -65,8 +63,9 @@ def init_core_pdb(fname):
     res_core_func = np.array(res_core_func)
     return xyz_core_func/10., names_core_func, res_core_func
 
-def get_ligand_pill(xyz_lig_func, anchor_ndx_func, log):
+def get_ligand_pill(xyz_lig_func, log):
     #Runs a PCA and takes the first eigenvector as the best fitting line.
+    N_at = len(xyz_lig_func)
     pca = PCA(n_components=3)
     pca.fit(xyz_lig_func)
     pca1 = pca.components_[0]
@@ -77,12 +76,12 @@ def get_ligand_pill(xyz_lig_func, anchor_ndx_func, log):
 
     #Randomly takes 2 other atoms in the ligand and project their positions in PCA1
     random.seed(666)
-    rango = list(range(len(xyz_lig_func[:,0])))
-    rango.remove(anchor_ndx_func)
+    rango = list(range(N_at))
+    rango.remove(N_at-1)
     pillars_ndx = random.sample(rango, 2)
-    pillars_func = np.array([0.0, 0.0, 0.0]) #This corresponds to the first stone (i.e. the anchor) which will always be in (0,0,0)
+    pillars_func = np.array([[0.0, 0.0, 0.0]]) #This corresponds to the first stone (i.e. the anchor) which will always be in (0,0,0)
     for i in pillars_ndx:
-        pillars_func = np.vstack((pillars_func, np.dot(xyz_lig_func[i], pca1) * pca1))
+        pillars_func = np.append(pillars_func, [np.dot(xyz_lig_func[i], pca1) * pca1], axis=0)
     return pillars_func
 
 def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func, log):
@@ -126,7 +125,6 @@ def get_stones(xyz_anchorsi_func, xyz_pillarsi_func):
     n_stones_lig = len(xyz_pillarsi_func)
     n_anchors = len(xyz_anchorsi_func)
     xyz_stones = np.zeros((n_anchors, n_stones_lig, 3))
-
     #Takes the COM-C vectors and scale them to match the distance between staples in the ligand's file
     for i in range(n_anchors):
         mag_S = np.linalg.norm(xyz_anchorsi_func[i,:])

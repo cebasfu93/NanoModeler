@@ -1,4 +1,4 @@
-def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_C="N", LIG1_S='N', LIG1_FRAC="1.0", MORPHOLOGY="random", RSEED="666", STRIPES="1", LIG2_FILE="XXX.mol2", CAP2="N", LIG2_C="N", LIG2_S="N", CORE="au144SR60_NM.pdb"):
+def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2="0", LIG2_C=0, LIG2_S=0, CORE="au144SR60_NM.pdb"):
     VAR = {
     "NAME": NAME,             #Name of the project
     "LIG1_FILE" : LIG1_FILE,   #Name of the mol2 of ligand1 (must be in the working directory)
@@ -50,7 +50,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_C="N", LIG1_S
     log += "Importing subunits dependency...\n"
     import DEPENDENCIES.subunits
     log += "Importing rewrite_mol2 dependency...\n"
-    from DEPENDENCIES.rewrite_mol2 import rewrite_mol2
+    from DEPENDENCIES.rewrite_mol2 import rewrite_mol2_with_C, rewrite_mol2_with_S
     log += "Importing cleanup dependency...\n\n"
     from DEPENDENCIES.cleanup import cleanup_error
     log += "Creating temporary folder...\n"
@@ -62,60 +62,60 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_C="N", LIG1_S
     check_VAR(VAR, log)
 
     if (VAR["MORPHOLOGY"] == "stripe"):
-        if int(VAR["STRIPES"]) == 1:
+        if VAR["STRIPES"] == 1:
             two_lig = False
         else:
             two_lig = True
     else:
-        two_lig = (float(VAR["LIG1_FRAC"]) < 1.0)
+        two_lig = (VAR["LIG1_FRAC"] < 1.0)
 
     log += "Imported options:\n"
     for i in VAR:
-        log += (i.ljust(20) + VAR[i].ljust(50)+"\n")
+        log += (i.ljust(20) + str(VAR[i]).ljust(50)+"\n")
 
     log += "\n\nOne ligand was found...\n"
     log += "Checking ligand1 mol2 file...\n"
     check_mol2(VAR["LIG1_FILE"], log)
     log += "Rewriting ligand1 file...\n"
-    if LIG1_C != "N":
+    if LIG1_C != 0:
         rewrite_mol2_with_C(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_C, TMP+"/"+VAR["LIG1_FILE"], log)
     else:
-        rewrite_mol2_with_C(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_S, TMP+"/"+VAR["LIG1_FILE"], log)
+        rewrite_mol2_with_S(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_S, TMP+"/"+VAR["LIG1_FILE"], log)
 
     if two_lig:
         log += "Two ligands were found...\n"
         log += "Checking ligand2 mol2 file...\n"
         check_mol2(VAR["LIG2_FILE"], log)
         log += "Rewriting ligand2 file...\n"
-        if LIG2_C != "N":
-            rewrite_mol2(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_C, TMP+"/"+VAR["LIG2_FILE"], log)
+        if LIG2_C != 0:
+            rewrite_mol2_with_C(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_C, TMP+"/"+VAR["LIG2_FILE"], log)
         else:
-            rewrite_mol2(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_S, TMP+"/"+VAR["LIG2_FILE"], log)
+            rewrite_mol2_with_S(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_S, TMP+"/"+VAR["LIG2_FILE"], log)
 
     ##############################NP_builder########################
 
     log += "Initializing ligand1...\n"
-    xyz_lig1, names_lig1, anchor_ndx1, name_anchor1, res_anchor1, res_lig1 = init_lig_mol2(TMP+"/"+VAR["LIG1_FILE"])
+    xyz_lig1, names_lig1, res_lig1 = init_lig_mol2(TMP+"/"+VAR["LIG1_FILE"])
     if two_lig:
         log += "Initializing ligand2...\n"
-        xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = init_lig_mol2(TMP+"/"+VAR["LIG2_FILE"])
+        xyz_lig2, names_lig2, res_lig2 = init_lig_mol2(TMP+"/"+VAR["LIG2_FILE"])
     else:
-        xyz_lig2, names_lig2, anchor_ndx2, name_anchor2, res_anchor2, res_lig2 = [], [], [], [], [], []
+        xyz_lig2, names_lig2, res_lig2 = [], [], []
 
     log += "Initializing core...\n"
     xyz_core, names_core, res_core = init_core_pdb("./CORES/"+VAR["CORE"])
 
     log += "Running PCA for ligand1...\n"
-    xyz_pillars1 = get_ligand_pill(xyz_lig1, anchor_ndx1, log)
+    xyz_pillars1 = get_ligand_pill(xyz_lig1, log)
     if two_lig:
         log += "Running PCA for ligand2...\n"
-        xyz_pillars2 = get_ligand_pill(xyz_lig2, anchor_ndx2, log)
+        xyz_pillars2 = get_ligand_pill(xyz_lig2, log)
     else:
         xyz_pillars2 = []
 
     N_S = len(names_core[names_core=='ST'])
 
-    xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, float(VAR["LIG1_FRAC"]), int(VAR["RSEED"]), VAR["MORPHOLOGY"], int(VAR["STRIPES"]), log)
+    xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, VAR["LIG1_FRAC"], VAR["RSEED"], VAR["MORPHOLOGY"], VAR["STRIPES"], log)
 
     xyz_stones1 = get_stones(xyz_anchors1, xyz_pillars1)
     if two_lig:
@@ -154,11 +154,11 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_C="N", LIG1_S
     log += "Reading top file of the unlinked nanoparticle...\n"
     types_sys, res_sys = load_top(TMP+"/"+VAR["NAME"]+".top")
 
-    log += "Looking for anchoring carbon atoms for ligand1 and their hydrogens if applicable...\n"
-    ndx_C1 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor1, res_anchor1, log)
+    log += "Looking for anchoring carbon atoms for ligand1...\n"
+    ndx_C1 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig1, log)
     if two_lig:
-        log += "Looking for anchoring carbon atoms for ligand2 and their hydrogens if applicable...\n"
-        ndx_C2 = get_ndxs(xyz_sys, types_sys, names_sys, res_sys, name_anchor2, res_anchor2, log)
+        log += "Looking for anchoring carbon atoms for ligand2...\n"
+        ndx_C2 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig2, log)
     else:
         ndx_C2 = [], []
 
@@ -199,16 +199,16 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="N", LIG1_C="N", LIG1_S
     return (1, log, )
 
 NanoModeler(NAME="test",
-    LIG1_FILE="LIG2_CAP.mol2",
-    CAP1="1,2,3,4",
-    LIG1_C="N",
-    LIG1_S="N",
-    LIG1_FRAC="1.0",
+    LIG1_FILE="LIG2.mol2",
+    CAP1="0",
+    LIG1_C=1,
+    LIG1_S=0,
+    LIG1_FRAC=1.0,
     MORPHOLOGY="random",
-    RSEED="666",
-    STRIPES="1",
+    RSEED=666,
+    STRIPES=1,
     LIG2_FILE="XXX.mol2",
-    CAP2="N",
-    LIG2_C="N",
-    LIG2_S="N",
+    CAP2="0",
+    LIG2_C=0,
+    LIG2_S=0,
     CORE="au38SR24_NM.pdb")

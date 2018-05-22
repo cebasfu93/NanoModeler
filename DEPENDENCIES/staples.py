@@ -32,14 +32,15 @@ def load_top(top_fname):
         residues.append(top_file[i].split()[3])
     return np.array(types), np.array(residues)
 
-def get_ndxs(xyz_sys_func, types_sys_func, names_sys_func, res_sys_func, name_anchor_func, res_anchor_func, log):
-    ndx_C = np.where(np.logical_and(names_sys_func==name_anchor_func, res_sys_func==res_anchor_func))[0]
-    type_anchor_func = types_sys_func[ndx_C]
-
-    log += "Checking if the assigned atom type for the anchors is supported...\n"
-    if not (type_anchor_func[0]=="CT" or type_anchor_func[0]=="CA"):
-        sys.exit("One of the anchors was assigned an unsupported atom type. Those supported are CT and CA.")
-    N_anch = len(ndx_C)
+def get_ndxs(xyz_sys_func, names_sys_func, types_sys_func, res_sys_func, res_lig_func, log):
+    elements = []
+    for i in range(len(types_sys_func)):
+        elements.append(types_sys_func[i][0].upper())
+    elements = np.array(elements, dtype="str")
+    all_C = np.where(np.logical_and(elements == "C", res_sys_func==res_lig_func[0]))[0]
+    all_S = np.where(names_sys_func == "ST")[0]
+    D_S_C = distance.cdist(xyz_sys_func[all_S], xyz_sys_func[all_C])
+    ndx_C = all_C[np.argsort(D_S_C, axis=1)[:,0]]
     return ndx_C
 
 def make_blocks(xyz_sys_func, names_sys_func, names_core_func, res_core_func, ndx_C_func):

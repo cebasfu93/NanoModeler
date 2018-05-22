@@ -5,14 +5,12 @@ from sklearn.decomposition import PCA
 def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
     out = open(oname, "w")
-    if cap=="N":
+    if cap=="0":
         log += "There are no capping atoms...\n"
         cap = []
     else:
         log += "Capping atoms {} will be removed...\n".format(cap)
         cap = np.array(cap.split(","), dtype="int")
-
-    lig_s = [int(lig_s)]
 
     ATOM=False
     BOND=False
@@ -33,9 +31,9 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
             at1 = int(mol2[i].split()[1])
             at2 = int(mol2[i].split()[2])
             if at1 not in cap and at2 not in cap:
-                if at1 in lig_s:
+                if at1 == lig_s:
                     bond_s = at2
-                elif at2 in lig_s:
+                elif at2 == lig_s:
                     bond_s = at1
                 else:
                     bonds.append(np.array(mol2[i].split()))
@@ -46,7 +44,7 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
             ATOM=True
         elif ATOM:
             at = int(mol2[i].split()[0])
-            if at in lig_s:
+            if at == lig_s:
                 s_atom = np.array(mol2[i].split())
             elif at not in cap:
                 old_at_num.append(at)
@@ -65,6 +63,7 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
     new_pt = np.array(s_atom[2:5], dtype='float')
     xyz = np.append(xyz, np.array([new_pt]), axis=0)
     old_at_num.append(len(atoms))
+    old_at_num = np.array(old_at_num, dtype='int')
     atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]])
     bonds.append(['0', str(len(atoms)), str(np.where(old_at_num==bond_s)[0][0]+1), 1])
 
@@ -92,7 +91,6 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
     log += "Writing @<TRIPOS>BOND section...\n"
     out.write("@<TRIPOS>BOND\n")
     bo = 0
-    old_at_num = np.array(old_at_num)
     for bond in bonds:
         bo+=1
         if bo != len(bonds):
@@ -105,22 +103,20 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
     log += "Writing @<TRIPOS>SUBSTRUCTURE section...\n"
     out.write("@<TRIPOS>SUBSTRUCTURE\n")
     out.write("\t1 {}\t\t\t1 ****\t\t\t0 ****  ****\n".format(atoms[0][7]))
-    log += "Writing @<TRIPOS>RESIDUECONNECT section...\n"
-    out.write("@<TRIPOS>RESIDUECONNECT\n")
-    out.write("{} {}\n".format(s_atom[6], s_atom[1]))
+    #log += "Writing @<TRIPOS>RESIDUECONNECT section...\n"
+    #out.write("@<TRIPOS>RESIDUECONNECT\n")
+    #out.write("{} {}\n".format(s_atom[6], s_atom[1]))
     out.close()
 
 def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
     out = open(oname, "w")
-    if cap=="N":
+    if cap=="0":
         log += "There are no capping atoms...\n"
         cap = []
     else:
         log += "Capping atoms {} will be removed...\n".format(cap)
         cap = np.array(cap.split(","), dtype="int")
-
-    lig_c = [int(lig_c)]
 
     ATOM=False
     BOND=False
@@ -153,7 +149,7 @@ def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
                 old_at_num.append(at)
                 res_names.append(mol2[i].split()[7])
                 atoms.append(np.array(mol2[i].split()))
-            if at in lig_c:
+            if at == lig_c:
                 anch_name = mol2[i].split()[1]
             else:
                 charge_cap.append(float(mol2[i].split()[8]))
@@ -178,7 +174,8 @@ def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
     xyz = np.append(xyz, np.array([new_pt]), axis=0)
     atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), "S", atoms[anch_ndx][6], atoms[anch_ndx][7], "0.0"])
     old_at_num.append(len(atoms))
-    bonds.append(['0', str(len(atoms)), str(np.where(old_at_num==int(lig_c))[0][0]+1), "1"])
+    old_at_num = np.array(old_at_num, dtype='int')
+    bonds.append(['0', str(len(atoms)), str(np.where(old_at_num==lig_c)[0][0]+1), "1"])
 
     N_at = len(atoms)
     N_bo = len(bonds)
@@ -217,7 +214,7 @@ def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
     log += "Writing @<TRIPOS>SUBSTRUCTURE section...\n"
     out.write("@<TRIPOS>SUBSTRUCTURE\n")
     out.write("\t1 {}\t\t\t1 ****\t\t\t0 ****  ****\n".format(atoms[0][7]))
-    log += "Writing @<TRIPOS>RESIDUECONNECT section...\n"
-    out.write("@<TRIPOS>RESIDUECONNECT\n")
-    out.write("{} {}\n".format(atoms[anch_ndx][6], 'ST'))
+    #log += "Writing @<TRIPOS>RESIDUECONNECT section...\n"
+    #out.write("@<TRIPOS>RESIDUECONNECT\n")
+    #out.write("{} {}\n".format(atoms[anch_ndx][6], 'ST'))
     out.close()

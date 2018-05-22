@@ -2,11 +2,11 @@ import numpy as np
 
 def check_VAR(VAR, log):
     log += "Checking input options..."
-    if float(VAR["LIG1_FRAC"]) < 0 or float(VAR["LIG1_FRAC"]) > 1.0:
+    if VAR["LIG1_FRAC"] < 0 or VAR["LIG1_FRAC"] > 1.0:
         sys.exit("LIG1_FRAC must be between 0 and 1.")
-    if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe" and float(VAR["LIG1_FRAC"]) >= 0 and float(VAR["LIG1_FRAC"]) <= 1.0:
+    if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe" and VAR["LIG1_FRAC"] >= 0 and VAR["LIG1_FRAC"] <= 1.0:
         sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings.")
-    if int(VAR["STRIPES"]) < 1:
+    if VAR["STRIPES"] < 1:
         sys.exit("The number of stripes must be at least one.")
 
 def check_mol2(fname, log):
