@@ -45,7 +45,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     log += "Importing staples dependency...\n"
     from DEPENDENCIES.staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
     log += "Importing default function dependency...\n"
-    from DEPENDENCIES.defaults import check_VAR, check_mol2, write_leap
+    from DEPENDENCIES.defaults import check_VAR, check_mol2, check_frcmod, write_leap
     log += "Importing transformations...\n"
     from  DEPENDENCIES.transformations import affine_matrix_from_points, vector_norm, quaternion_matrix
     log += "Importing subunits dependency...\n"
@@ -134,9 +134,13 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
 
     log += "Running parmchk2 for ligand1...\n"
     os.system("parmchk2 -i {} -f mol2 -o {} -a y".format(TMP+"/"+VAR["LIG1_FILE"], TMP+"/"+VAR["LIG1_FILE"][:-5]+".frcmod"))
+    log += "Checking parameters for ligand1...\n"
+    log = check_frcmod(TMP+"/"+VAR["LIG1_FILE"][:-5]+".frcmod", log)
     if two_lig:
         log += "Running parmchk2 for ligand2...\n"
         os.system("parmchk2 -i {} -f mol2 -o {} -a y".format(TMP+"/"+VAR["LIG2_FILE"], TMP+"/"+VAR["LIG2_FILE"][:-5]+".frcmod"))
+        log += "Checking parameters for ligand2...\n"
+        log = check_frcmod(TMP+"/"+VAR["LIG2_FILE"][:-5]+".frcmod", log)
 
     log += "Writing tleap input file...\n"
     write_leap(VAR, TMP, two_lig)

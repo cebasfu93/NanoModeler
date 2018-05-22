@@ -55,6 +55,18 @@ def check_mol2(fname, log):
         sys.exit("There seems to be more than one residue type in the input mol2 file")
     return log
 
+def check_frcmod(fname, log):
+    frcmod = np.genfromtxt(fname, delimiter="\n", dtype='str')
+    errors = []
+    for i in range(len(frcmod)):
+        if "ATTN, need revision" in frcmod[i]:
+            errors.append(frcmod[i])
+    log += "The following parameters in the ligand were impossible to obtain...\n"
+    log += "Consider adding you own frcmod file with the missing parameters...\n"
+    for i in range(len(errors)):
+        log += errors[i]+"\n"
+    return log
+
 def read_resname(lig_fname):
     mol2 = np.genfromtxt(lig_fname, delimiter="\n", dtype='str')
     for i in range(len(mol2)):
