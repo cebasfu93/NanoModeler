@@ -1,4 +1,4 @@
-def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2="0", LIG2_C=0, LIG2_S=0, CORE="au144SR60_NM.pdb"):
+def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2="0", LIG2_C=0, LIG2_S=0, FRCMOD="0", CORE="au144SR60_NM.pdb"):
     VAR = {
     "NAME": NAME,             #Name of the project
     "LIG1_FILE" : LIG1_FILE,   #Name of the mol2 of ligand1 (must be in the working directory)
@@ -15,6 +15,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     "LIG2_C"    : LIG2_C,    #Atom number of carbon atom in LIG2_FILE used as anchor
     "LIG2_S"    : LIG2_S,            #Atom number in the original mol2 file of ligand 1 corresponding to the anchoring S atom
 
+    "FRCMOD"    : FRCMOD,       #Path to a frcmod provided by the user 
     "CORE" : CORE,    #Name of the core to coat. Found in CORES/CORE
     }
 
@@ -211,4 +212,5 @@ NanoModeler(NAME="test",
     CAP2="0",
     LIG2_C=0,
     LIG2_S=0,
+    FRCMOD="0"
     CORE="au38SR24_NM.pdb")

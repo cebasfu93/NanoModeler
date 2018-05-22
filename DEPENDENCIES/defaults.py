@@ -78,6 +78,8 @@ def write_leap(VAR, TMP, two_lig_func):
     msj += "loadamberparams " + "DEPENDENCIES/AU.frcmod\n"
     msj += "loadamberparams " + "DEPENDENCIES/AUS.frcmod\n"
     msj += "loadamberparams " + "DEPENDENCIES/AUL.frcmod\n"
+    if VAR["FRCMOD"] != "0":
+        msj += "loadamberparams " + VAR["FRCMOD"] + "\n"
     msj += "AU = loadmol3 " + "DEPENDENCIES/AU.mol2\n"
     msj += "AUS = loadmol3 " + "DEPENDENCIES/AUS.mol2\n"
     msj += "AUL = loadmol3 " + "DEPENDENCIES/AUL.mol2\n"
