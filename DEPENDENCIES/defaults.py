@@ -8,6 +8,7 @@ def check_VAR(VAR, log):
         sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings.")
     if VAR["STRIPES"] < 1:
         sys.exit("The number of stripes must be at least one.")
+    return log
 
 def check_mol2(fname, log):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
@@ -44,14 +45,15 @@ def check_mol2(fname, log):
             res_names.append(mol2[i].split()[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
             found_ATOM = True
-    log += "{} atoms were found in the mol2 file...".format(len(atoms))
+    log += "{} atoms were found in the mol2 file...\n".format(len(atoms))
 
-    log += "Checking if columns 3, 4, and 5 correspond to floating numbers..."
+    log += "Checking if columns 3, 4, and 5 correspond to floating numbers...\n"
     for i in range(len(atoms)):
         float(atoms[i][2]), float(atoms[i][3]), float(atoms[i][4])
 
     if len(atoms)!=np.unique(np.array(res_names), return_counts=True)[1][0]:
         sys.exit("There seems to be more than one residue type in the input mol2 file")
+    return log
 
 def read_resname(lig_fname):
     mol2 = np.genfromtxt(lig_fname, delimiter="\n", dtype='str')

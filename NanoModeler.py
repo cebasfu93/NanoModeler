@@ -15,7 +15,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     "LIG2_C"    : LIG2_C,    #Atom number of carbon atom in LIG2_FILE used as anchor
     "LIG2_S"    : LIG2_S,            #Atom number in the original mol2 file of ligand 1 corresponding to the anchoring S atom
 
-    "FRCMOD"    : FRCMOD,       #Path to a frcmod provided by the user 
+    "FRCMOD"    : FRCMOD,       #Path to a frcmod provided by the user
     "CORE" : CORE,    #Name of the core to coat. Found in CORES/CORE
     }
 
@@ -53,14 +53,14 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     log += "Importing rewrite_mol2 dependency...\n"
     from DEPENDENCIES.rewrite_mol2 import rewrite_mol2_with_C, rewrite_mol2_with_S
     log += "Importing cleanup dependency...\n\n"
-    from DEPENDENCIES.cleanup import cleanup_error
+    from DEPENDENCIES.cleanup import cleanup_error, cleanup_normal
     log += "Creating temporary folder...\n"
 
 
     TMP = tempfile.mkdtemp(dir="./")
     atexit.register(cleanup_error, TMP, log)
 
-    check_VAR(VAR, log)
+    log = check_VAR(VAR, log)
 
     if (VAR["MORPHOLOGY"] == "stripe"):
         if VAR["STRIPES"] == 1:
@@ -76,22 +76,22 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
 
     log += "\n\nOne ligand was found...\n"
     log += "Checking ligand1 mol2 file...\n"
-    check_mol2(VAR["LIG1_FILE"], log)
+    log = check_mol2(VAR["LIG1_FILE"], log)
     log += "Rewriting ligand1 file...\n"
     if LIG1_C != 0:
-        rewrite_mol2_with_C(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_C, TMP+"/"+VAR["LIG1_FILE"], log)
+        log = rewrite_mol2_with_C(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_C, TMP+"/"+VAR["LIG1_FILE"], log)
     else:
-        rewrite_mol2_with_S(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_S, TMP+"/"+VAR["LIG1_FILE"], log)
+        log = rewrite_mol2_with_S(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_S, TMP+"/"+VAR["LIG1_FILE"], log)
 
     if two_lig:
         log += "Two ligands were found...\n"
         log += "Checking ligand2 mol2 file...\n"
-        check_mol2(VAR["LIG2_FILE"], log)
+        log = check_mol2(VAR["LIG2_FILE"], log)
         log += "Rewriting ligand2 file...\n"
         if LIG2_C != 0:
-            rewrite_mol2_with_C(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_C, TMP+"/"+VAR["LIG2_FILE"], log)
+            log = rewrite_mol2_with_C(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_C, TMP+"/"+VAR["LIG2_FILE"], log)
         else:
-            rewrite_mol2_with_S(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_S, TMP+"/"+VAR["LIG2_FILE"], log)
+            log = rewrite_mol2_with_S(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_S, TMP+"/"+VAR["LIG2_FILE"], log)
 
     ##############################NP_builder########################
 
@@ -107,16 +107,16 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     xyz_core, names_core, res_core = init_core_pdb("./CORES/"+VAR["CORE"])
 
     log += "Running PCA for ligand1...\n"
-    xyz_pillars1 = get_ligand_pill(xyz_lig1, log)
+    xyz_pillars1, log = get_ligand_pill(xyz_lig1, log)
     if two_lig:
         log += "Running PCA for ligand2...\n"
-        xyz_pillars2 = get_ligand_pill(xyz_lig2, log)
+        xyz_pillars2, log = get_ligand_pill(xyz_lig2, log)
     else:
         xyz_pillars2 = []
 
     N_S = len(names_core[names_core=='ST'])
 
-    xyz_anchors1, xyz_anchors2 = assign_morph(xyz_core, names_core, VAR["LIG1_FRAC"], VAR["RSEED"], VAR["MORPHOLOGY"], VAR["STRIPES"], log)
+    xyz_anchors1, xyz_anchors2, log = assign_morph(xyz_core, names_core, VAR["LIG1_FRAC"], VAR["RSEED"], VAR["MORPHOLOGY"], VAR["STRIPES"], log)
 
     xyz_stones1 = get_stones(xyz_anchors1, xyz_pillars1)
     if two_lig:
@@ -125,7 +125,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
         xyz_stones2 = []
 
     log += "Coating nanoparticle...\n"
-    xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2, log)
+    xyz_coated_NP, names_coated_NP, res_coated_NP, log = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2, log)
 
     log += "Writing pdb of the coated nanoparticle...\n"
     print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, TMP+"/"+VAR["NAME"]+".pdb")
@@ -156,10 +156,10 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     types_sys, res_sys = load_top(TMP+"/"+VAR["NAME"]+".top")
 
     log += "Looking for anchoring carbon atoms for ligand1...\n"
-    ndx_C1 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig1, log)
+    ndx_C1 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig1)
     if two_lig:
         log += "Looking for anchoring carbon atoms for ligand2...\n"
-        ndx_C2 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig2, log)
+        ndx_C2 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig2)
     else:
         ndx_C2 = [], []
 
@@ -175,8 +175,6 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     write_topology(TMP+"/"+VAR["NAME"]+".top", TMP+"/bonds.top", TMP+"/angles.top")
     #############################################################
 
-    atexit.unregister(cleanup_error)
-
     log += "Copying final files...\n"
     os.mkdir(VAR["NAME"])
     copy = [VAR["LIG1_FILE"], VAR["NAME"]+".pdb", VAR["NAME"]+".top", VAR["NAME"]+".gro"]
@@ -190,27 +188,32 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     for i in bye:
         os.remove(i)
 
+    atexit.unregister(cleanup_error)
     #shutil.rmtree(TMP)
     log += "Compressing files to output...\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
 
-    print(log)
     #os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
     #shutil.rmtree(VAR["NAME"])
-    return (1, log, )
+    atexit.register(cleanup_normal, log)
+
 
 NanoModeler(NAME="test",
+
     LIG1_FILE="LIG2.mol2",
     CAP1="0",
     LIG1_C=1,
     LIG1_S=0,
+
     LIG1_FRAC=1.0,
     MORPHOLOGY="random",
     RSEED=666,
     STRIPES=1,
+
     LIG2_FILE="XXX.mol2",
     CAP2="0",
     LIG2_C=0,
     LIG2_S=0,
-    FRCMOD="0"
+
+    FRCMOD="0",
     CORE="au38SR24_NM.pdb")

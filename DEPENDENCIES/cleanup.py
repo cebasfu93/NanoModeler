@@ -8,3 +8,8 @@ def cleanup_error(TMP, log):
     #os.system("rm -r " + TMP)
     log += "NanoModeler terminated with errors.\n"
     print(log)
+    return (0, log, 0)
+
+def cleanup_normal(log):
+    print(log)
+    return (1, log)

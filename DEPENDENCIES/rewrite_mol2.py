@@ -73,7 +73,7 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
 
     log += "The capping group has a total charge of {:.3f}...\n".format(np.sum(charge_cap))
     log += "A charge of {:.3f} will be added to all atoms in the ligand...\n".format(charge_per_atom)
-    log += "Writing @<TRIPOS>MOLECULE section..."
+    log += "Writing @<TRIPOS>MOLECULE section...\n"
     out.write("@<TRIPOS>MOLECULE\n{}\n\t{}\t{}\t1\nSMALL\nUSER_CHARGES\n".format(mol_name, N_at, N_bo))
 
     log += "Writing @<TRIPOS>ATOM section...\n"
@@ -103,10 +103,8 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
     log += "Writing @<TRIPOS>SUBSTRUCTURE section...\n"
     out.write("@<TRIPOS>SUBSTRUCTURE\n")
     out.write("\t1 {}\t\t\t1 ****\t\t\t0 ****  ****\n".format(atoms[0][7]))
-    #log += "Writing @<TRIPOS>RESIDUECONNECT section...\n"
-    #out.write("@<TRIPOS>RESIDUECONNECT\n")
-    #out.write("{} {}\n".format(s_atom[6], s_atom[1]))
     out.close()
+    return log
 
 def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
@@ -145,12 +143,12 @@ def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
             ATOM=True
         elif ATOM:
             at = int(mol2[i].split()[0])
+            if at == lig_c:
+                anch_name = mol2[i].split()[1]
             if at not in cap:
                 old_at_num.append(at)
                 res_names.append(mol2[i].split()[7])
                 atoms.append(np.array(mol2[i].split()))
-            if at == lig_c:
-                anch_name = mol2[i].split()[1]
             else:
                 charge_cap.append(float(mol2[i].split()[8]))
 
@@ -183,7 +181,7 @@ def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
 
     log += "The capping group has a total charge of {:.3f}...\n".format(np.sum(charge_cap))
     log += "A charge of {:.3f} will be added to all atoms in the ligand...\n".format(charge_per_atom)
-    log += "Writing @<TRIPOS>MOLECULE section..."
+    log += "Writing @<TRIPOS>MOLECULE section...\n"
     out.write("@<TRIPOS>MOLECULE\n{}\n\t{}\t{}\t1\nSMALL\nUSER_CHARGES\n".format(mol_name, N_at, N_bo))
 
     log += "Writing @<TRIPOS>ATOM section...\n"
@@ -214,7 +212,5 @@ def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
     log += "Writing @<TRIPOS>SUBSTRUCTURE section...\n"
     out.write("@<TRIPOS>SUBSTRUCTURE\n")
     out.write("\t1 {}\t\t\t1 ****\t\t\t0 ****  ****\n".format(atoms[0][7]))
-    #log += "Writing @<TRIPOS>RESIDUECONNECT section...\n"
-    #out.write("@<TRIPOS>RESIDUECONNECT\n")
-    #out.write("{} {}\n".format(atoms[anch_ndx][6], 'ST'))
     out.close()
+    return log

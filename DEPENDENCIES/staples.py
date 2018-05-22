@@ -32,7 +32,7 @@ def load_top(top_fname):
         residues.append(top_file[i].split()[3])
     return np.array(types), np.array(residues)
 
-def get_ndxs(xyz_sys_func, names_sys_func, types_sys_func, res_sys_func, res_lig_func, log):
+def get_ndxs(xyz_sys_func, names_sys_func, types_sys_func, res_sys_func, res_lig_func):
     elements = []
     for i in range(len(types_sys_func)):
         elements.append(types_sys_func[i][0].upper())

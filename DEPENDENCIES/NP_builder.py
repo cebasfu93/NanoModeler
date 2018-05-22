@@ -82,7 +82,7 @@ def get_ligand_pill(xyz_lig_func, log):
     pillars_func = np.array([[0.0, 0.0, 0.0]]) #This corresponds to the first stone (i.e. the anchor) which will always be in (0,0,0)
     for i in pillars_ndx:
         pillars_func = np.append(pillars_func, [np.dot(xyz_lig_func[i], pca1) * pca1], axis=0)
-    return pillars_func
+    return pillars_func, log
 
 def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func, log):
     #Distributes all the anchors in lig1 and lig2 dependending in the specified morphology
@@ -118,7 +118,7 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
     log += "The nanoparticle will have {} of ligand 2...\n".format(len(lig2_ndx))
     xyz_anchors1_func=xyz_anchors_func[lig1_ndx]
     xyz_anchors2_func=xyz_anchors_func[lig2_ndx]
-    return xyz_anchors1_func, xyz_anchors2_func
+    return xyz_anchors1_func, xyz_anchors2_func, log
 
 def get_stones(xyz_anchorsi_func, xyz_pillarsi_func):
     #Return a 3D array with the xyz coordinates for all the stones of all the anchors
@@ -200,7 +200,7 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
             xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
             names_coated_func=np.append(names_coated_func, names_lig2_func, axis=0)
             res_coated_func=np.append(res_coated_func, res_lig2_func, axis=0)
-    return xyz_coated_func, names_coated_func, res_coated_func
+    return xyz_coated_func, names_coated_func, res_coated_func, log
 
 def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, out_fname):
     xyz_coated_func = xyz_coated_func*10
