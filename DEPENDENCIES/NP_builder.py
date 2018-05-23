@@ -95,20 +95,11 @@ def get_ligand_pill(xyz_lig_func, lig_c, lig_s, log):
     rango.remove(N_at-1)
     rango.remove(lig_c-1)
     pillars_ndx = random.sample(rango, 2)
-    pillars_func = xyz_lig_func[lig_c-1]
+    pillars_func = [xyz_lig_func[lig_c-1]]
     for p in pillars_ndx:
-        pillars_func = np.append(pillars_func, [np.dot(xyz_lig_func[p], pca1) * pca1], axis=0)
-    """
-    if lig_s == 0:
-        pillars_ndx = random.sample(rango, 2)
-        fixed = np.array([lig_c-1])
-    else:
-        pillars_ndx = random.sample(rango, 1)
-        fixed = np.array([lig_c-1, N_at-1])
-    pillars_func = xyz_lig_func[fixed]
-    for p in pillars_ndx:
-        pillars_func = np.append(pillars_func, [np.dot(xyz_lig_func[p], pca1) * pca1], axis=0)
+        pillars_func = np.append(pillars_func, np.array([np.dot(xyz_lig_func[p], pca1) * pca1]), axis=0)
 
+    """
     fig=plt.figure( )
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(xyz_lig_func[:,0], xyz_lig_func[:,1], xyz_lig_func[:,2], s=25)
@@ -174,20 +165,11 @@ def get_stones(xyz_core_func, names_core_func, xyz_anchorsi_func, xyz_pillarsi_f
         f1 = (mag_C + np.linalg.norm(xyz_pillarsi_func[1,:]))/mag_C
         xyz_stones[i,1,:] = xyz_anchorsi_func[i,:]*f1
         f2 = (mag_C + np.linalg.norm(xyz_pillarsi_func[2,:]))/mag_C
-        xyz_stones[i,2,:] = xyz_anchorsi_func[i,:]*f1
+        xyz_stones[i,2,:] = xyz_anchorsi_func[i,:]*f2
 
         xyz_stones[i,3,:] = xyz_core_func[ndx_core_ST[sort_D_anch_ST[i,0]]]
 
-        """if lig_s==0:
-            for j in range(1,3):
-                scaling = (mag_S + np.linalg.norm(xyz_pillarsi_func[j,:]))/mag_S
-                xyz_stones[i,j,:]=xyz_anchorsi_func[i,:]*scaling
-            xyz_stones[i,3,:] = xyz_anchorsi_func[i,:]
-        else:
-            xyz_stones[i,1,:] = xyz_anchorsi_func[i,:]
-            scaling = (mag_S + np.linalg.norm(xyz_pillarsi_func[2,:]))/mag_S
-            xyz_stones[i,2,:]=xyz_anchorsi_func[i,:]*scaling
-
+    """
     fig=plt.figure( )
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(xyz_core_func[:,0], xyz_core_func[:,1], xyz_core_func[:,2], s=25)
@@ -195,17 +177,21 @@ def get_stones(xyz_core_func, names_core_func, xyz_anchorsi_func, xyz_pillarsi_f
     ax.set_xlim((-5, 5))
     ax.set_ylim((-5, 5))
     ax.set_zlim((-5, 5))
-    plt.show()"""
+    plt.show()
     fig=plt.figure( )
     ax = fig.add_subplot(111, projection='3d')
     ax.scatter(xyz_core_func[:,0], xyz_core_func[:,1], xyz_core_func[:,2], s=25)
     #ax.scatter(xyz_C[:,0], xyz_C[:,1], xyz_C[:,2], s=25)
-    for i in range(n_stones_lig):
-        ax.scatter(xyz_stones[:,i,0], xyz_stones[:,i,1], xyz_stones[:,i,2], s =50, alpha=0.5)
+    #for i in range(n_stones_lig+1):
+        #ax.scatter(xyz_stones[:,i,0], xyz_stones[:,i,1], xyz_stones[:,i,2], s =50, alpha=0.5)
+    ax.scatter(xyz_stones[:,0,0], xyz_stones[:,0,1], xyz_stones[:,0,2], s =50, alpha=0.5, color='r')
+    ax.scatter(xyz_stones[:,1,0], xyz_stones[:,1,1], xyz_stones[:,1,2], s =50, alpha=0.5, color='g')
+    ax.scatter(xyz_stones[:,2,0], xyz_stones[:,2,1], xyz_stones[:,2,2], s =50, alpha=0.5, color='m')
+    ax.scatter(xyz_stones[:,3,0], xyz_stones[:,3,1], xyz_stones[:,3,2], s =50, alpha=0.5, color='y')
     ax.set_xlim((-3, 3))
     ax.set_ylim((-3, 3))
     ax.set_zlim((-3, 3))
-    plt.show()
+    plt.show()"""
     return xyz_stones
 
 def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
@@ -255,23 +241,21 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
         xyz_stones_now = xyz_stones1_func[i,:-1,:]
         trans_matrix=affine_matrix_from_points(xyz_pillars1_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
         trans_lig=np.dot(trans_matrix, xyz_lig1_func_conv).T[:,:3]
+        trans_lig = trans_lig[:-1]
 
-        if lig1_s == 0:
-            trans_lig = trans_lig[:-1]
+        if lig1_s == 0 or elong:
             trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+i+1, log)
-            trans_lig = np.append(trans_lig, [xyz_stones1_func[i,-1,:]], axis=0)
-        else:
-            if elong:
-                trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+i+1, log)
-            else:
-                D_clash = distance.cdist(trans_lig, xyz_coated_func)
-                clash_dis = np.min(D_clash)
-                if clash_dis < 0.1:
-                    log += "The sulphur atom was given in the mol2 file of ligand 1...\n"
-                    log += "There are no degrees of freedom available to prevent clashes...\n"
-                    log += "Clashes were found while placing residue {}...\n".format(len(keep_rows)+i+1)
-                    log += "Consider parametrizing ligand 1 without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
 
+        else:
+            D_clash = distance.cdist(trans_lig, xyz_coated_func)
+            clash_dis = np.min(D_clash)
+            if clash_dis < 0.1:
+                log += "The sulphur atom was given in the mol2 file of ligand 1...\n"
+                log += "There are no degrees of freedom available to prevent clashes...\n"
+                log += "Clashes were found while placing residue {}...\n".format(len(keep_rows)+i+1)
+                log += "Consider parametrizing ligand 1 without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
+
+        trans_lig = np.append(trans_lig, [xyz_stones1_func[i,-1,:]], axis=0)
         xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
         names_coated_func=np.append(names_coated_func, names_lig1_func, axis=0)
         res_coated_func=np.append(res_coated_func, res_lig1_func, axis=0)
@@ -283,24 +267,21 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
             xyz_stones_now = xyz_stones2_func[i,:-1,:]
             trans_matrix=affine_matrix_from_points(xyz_pillars2_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
             trans_lig=np.dot(trans_matrix, xyz_lig2_func_conv).T[:,:3]
+            trans_lig = trans_lig[:-1]
 
-            if lig2_s == 0:
-                trans_lig = trans_lig[:-1]
+            if lig2_s == 0 or elong:
                 trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1, log)
-                trans_lig = np.append(trans_lig, [xyz_stones2_func[i,-1,:]], axis=0)
 
             else:
-                if elong:
-                    trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1, log)
-                else:
-                    D_clash = distance.cdist(trans_lig, xyz_coated_func)
-                    clash_dis = np.min(D_clash)
-                    if clash_dis < 0.1:
-                        log += "The sulphur atom was given in the mol2 file of ligand 2...\n"
-                        log += "There are no degrees of freedom available to prevent clashes...\n"
-                        log += "Clashes were found while placing residue {}...\n".format(len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1)
-                        log += "Consider parametrizing ligand 2 without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
+                D_clash = distance.cdist(trans_lig, xyz_coated_func)
+                clash_dis = np.min(D_clash)
+                if clash_dis < 0.1:
+                    log += "The sulphur atom was given in the mol2 file of ligand 2...\n"
+                    log += "There are no degrees of freedom available to prevent clashes...\n"
+                    log += "Clashes were found while placing residue {}...\n".format(len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1)
+                    log += "Consider parametrizing ligand 2 without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
 
+            trans_lig = np.append(trans_lig, [xyz_stones2_func[i,-1,:]], axis=0)
             xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
             names_coated_func=np.append(names_coated_func, names_lig2_func, axis=0)
             res_coated_func=np.append(res_coated_func, res_lig2_func, axis=0)
