@@ -208,7 +208,7 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
         if lig1_s == 0:
             trans_lig = trans_lig[:-1]
             trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+i+1, log)
-            trans_lig = np.append(trans_lig, [xyz_stones1_func[i,-1,:]])
+            trans_lig = np.append(trans_lig, [xyz_stones1_func[i,-1,:]], axis=0)
         else:
             if elong:
                 trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+i+1, log)
@@ -236,7 +236,7 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
             if lig2_s == 0:
                 trans_lig = trans_lig[:-1]
                 trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1, log)
-                trans_lig = np.append(trans_lig, [xyz_stones2_func[i,-1,:]])
+                trans_lig = np.append(trans_lig, [xyz_stones2_func[i,-1,:]], axis=0)
 
             else:
                 if elong:

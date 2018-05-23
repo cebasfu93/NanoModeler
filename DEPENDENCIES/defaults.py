@@ -61,9 +61,9 @@ def check_frcmod(fname, log):
     for i in range(len(frcmod)):
         if "ATTN, need revision" in frcmod[i]:
             errors.append(frcmod[i])
-    log += "The following parameters in the ligand were impossible to obtain...\n"
-    log += "Consider adding you own frcmod file with the missing parameters...\n"
     for i in range(len(errors)):
+        log += "The following parameters in the ligand were impossible to obtain...\n"
+        log += "Consider adding you own frcmod file with the missing parameters...\n"
         log += errors[i]+"\n"
     return log
 

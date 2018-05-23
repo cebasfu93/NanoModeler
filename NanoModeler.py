@@ -98,7 +98,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     ##############################NP_builder########################
 
     log += "Initializing core...\n"
-    xyz_core, names_core, res_core = init_core_pdb("./CORES/"+VAR["CORE"])
+    xyz_core, names_core, res_core = init_core_pdb("./CORES/"+VAR["CORE"], VAR["ELONGATED"])
 
     log += "Initializing ligand1...\n"
     xyz_lig1, names_lig1, res_lig1 = init_lig_mol2(TMP+"/"+VAR["LIG1_FILE"], VAR["LIG1_S"], VAR["LIG1_C"])
@@ -120,9 +120,9 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
 
     xyz_anchors1, xyz_anchors2, log = assign_morph(xyz_core, names_core, VAR["LIG1_FRAC"], VAR["RSEED"], VAR["MORPHOLOGY"], VAR["STRIPES"], log)
 
-    xyz_stones1 = get_stones(xyz_core, names_core, xyz_anchors1, xyz_pillars1)
+    xyz_stones1 = get_stones(xyz_core, names_core, xyz_anchors1, xyz_pillars1, VAR["LIG1_S"])
     if two_lig:
-        xyz_stones2 = get_stones(xyz_core, names_core, xyz_anchors2, xyz_pillars2)
+        xyz_stones2 = get_stones(xyz_core, names_core, xyz_anchors2, xyz_pillars2, VAR["LIGs_S"])
     else:
         xyz_stones2 = []
 
