@@ -186,6 +186,26 @@ def read_Au144SR60(fname):
     names = np.array(names, dtype='str')
     return xyz, names
 
+def read_Au68SR34(fname):
+    fxyz = np.genfromtxt(fname, skip_header=2, dtype=str)
+    xyz = []
+    names = []
+    N_xyz = len(fxyz)
+    for i in range(N_xyz):
+        if fxyz[i,0] == "Xx":
+            xyz.append(fxyz[i,1:])
+            names.append("AU")
+        elif fxyz[i,0] == "S":
+            xyz.append(fxyz[i,1:])
+            names.append("ST")
+        elif fxyz[i,0] == "C":
+            xyz.append(fxyz[i,1:])
+            names.append("C")
+
+    xyz = center(xyz)
+    names = np.array(names)
+    return xyz, names
+
 def read_Au314SH96(fname):
     fxyz = np.genfromtxt(fname, skip_header=1, dtype=str)
     xyz = []
@@ -321,12 +341,12 @@ def write_pdb(xyz_sys, names_sys, staples, fname):
             write_pdb_block("ST", st_act.tipo, xyz_sys[st_act.S[j]], res, at, fname)
             at+=1
         res+=1
-    #for i in range(N_staples):
-    #    st_act = staples[i]
-    #    for j in range(len(st_act.C)):
-    #        write_pdb_block("C", st_act.tipo, xyz_sys[st_act.C[j]], res, at, fname)
-    #        at+=1
-    #    res+=1
+    for i in range(N_staples):
+        st_act = staples[i]
+        for j in range(len(st_act.C)):
+            write_pdb_block("C", st_act.tipo, xyz_sys[st_act.C[j]], res, at, fname)
+            at+=1
+        res+=1
 
 def write_pdb_block(atname_func, res_name_func, xyz_func, resnum, atnum, out_filename):
     #Writes one line of a generic pdb file
@@ -348,7 +368,7 @@ def print_xyz(coords, nombres, fname):
     for i in range(len(nombres)):
         fxyz.write("{}\t\t{:.3f}   {:.3f}   {:.3f}\n".format(nombres[i], coords[i,0], coords[i,1], coords[i,2]))
     fxyz.close()
-
+"""
 #AU25SR18 (61 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 xyz_Au25SR18, names_Au25SR18 = read_Au25SR18("AU25SR18/au25_pet18.gro")
 staples_Au25SR18 = classify_staples(xyz_Au25SR18, names_Au25SR18)
@@ -381,6 +401,24 @@ xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I4.xyz")
 staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
 write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I4_NM.pdb")
 
+#AU68SR34 (136 atoms, Xu/Gao, J. Phys. Chem C, 2015)
+####Prepared with minimized staples
+xyz_Au68SR34, names_Au68SR34 = read_Au68SR34("AU68SR34/test-I1/test-I1_CORE.xyz")
+staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
+write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I1_NM.pdb")
+
+xyz_Au68SR34, names_Au68SR34 = read_Au68SR34("AU68SR34/test-I2/test-I2_CORE.xyz")
+staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
+write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I2_NM.pdb")
+
+xyz_Au68SR34, names_Au68SR34 = read_Au68SR34("AU68SR34/test-I3/test-I3_CORE.xyz")
+staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
+write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I3_NM.pdb")
+
+xyz_Au68SR34, names_Au68SR34 = read_Au68SR34("AU68SR34/test-I4/test-I4_CORE.xyz")
+staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
+write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I4_NM.pdb")
+
 #AU102SR44 (190 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 #xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
 #staples_Au102SR44 = classify_staples(xyz_Au102SR44, names_Au102SR44)
@@ -402,3 +440,10 @@ write_pdb(xyz_Au144SR60, names_Au144SR60, staples_Au144SR60, "au144SR60_NM.pdb")
 xyz_Au314SR96, names_Au314SR96 = read_Au314SH96("AU314SR96/au314SH96.xyz")
 staples_Au314SR96 = classify_staples(xyz_Au314SR96, names_Au314SR96)
 write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
+
+#AU314SR96 (506 atoms, Malola/Hakkinen, ACS Nano, 2013)
+####Prepared with minimized staples
+xyz_Au314SR96, names_Au314SR96 = read_Au68SR34("AU314SR96/test-314/test-314_CORE.xyz")
+staples_Au314SR96 = classify_staples(xyz_Au314SR96, names_Au314SR96)
+write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
+"""
