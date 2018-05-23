@@ -54,7 +54,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     log += "Importing subunits dependency...\n"
     import DEPENDENCIES.subunits
     log += "Importing rewrite_mol2 dependency...\n"
-    from DEPENDENCIES.rewrite_mol2 import rewrite_mol2_with_C, rewrite_mol2_with_S
+    from DEPENDENCIES.rewrite_mol2 import rewrite_mol2
     log += "Importing cleanup dependency...\n\n"
     from DEPENDENCIES.cleanup import cleanup_error
     log += "Creating temporary folder...\n"
@@ -80,20 +80,14 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     log += "Checking ligand1 mol2 file...\n"
     log = check_mol2(VAR["LIG1_FILE"], log)
     log += "Rewriting ligand1 file...\n"
-    if LIG1_S != 0:
-        VAR["LIG1_C"], log = rewrite_mol2_with_S(VAR["LIG1_FILE"], VAR["CAP1"], VAR["LIG1_S"], VAR["LIG1_C"], TMP+"/"+VAR["LIG1_FILE"], VAR["ELONGATED"], log)
-    else:
-        VAR["LIG1_C"], log = rewrite_mol2_with_C(VAR["LIG1_FILE"], VAR["CAP1"], VAR["LIG1_C"], TMP+"/"+VAR["LIG1_FILE"], log)
+    VAR["LIG1_C"], log = rewrite_mol2(VAR["LIG1_FILE"], VAR["CAP1"], VAR["LIG1_S"], VAR["LIG1_C"], TMP+"/"+VAR["LIG1_FILE"], VAR["ELONGATED"], log)
 
     if two_lig:
         log += "Two ligands were found...\n"
         log += "Checking ligand2 mol2 file...\n"
         log = check_mol2(VAR["LIG2_FILE"], log)
         log += "Rewriting ligand2 file...\n"
-        if LIG2_S != 0:
-            VAR["LIG2_C"], log = rewrite_mol2_with_S(VAR["LIG2_FILE"], VAR["CAP2"], VAR["LIG2_S"], VAR["LIG2_C"], TMP+"/"+VAR["LIG2_FILE"], VAR["ELONGATED"], log)
-        else:
-            VAR["LIG2_C"], log = rewrite_mol2_with_C(VAR["LIG2_FILE"], VAR["CAP2"], VAR["LIG2_C"], TMP+"/"+VAR["LIG2_FILE"], log)
+        VAR["LIG2_C"], log = rewrite_mol2(VAR["LIG2_FILE"], VAR["CAP2"], VAR["LIG2_S"], VAR["LIG2_C"], TMP+"/"+VAR["LIG2_FILE"], VAR["ELONGATED"], log)
 
     ##############################NP_builder########################
 
@@ -206,10 +200,10 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
 
 NanoModeler(NAME="test",
 
-    LIG1_FILE="LIG2.mol2",
+    LIG1_FILE="TPE.mol2",
     CAP1="0",
-    LIG1_C=1,
-    LIG1_S=0,
+    LIG1_C=2,
+    LIG1_S=1,
 
     LIG1_FRAC=1.0,
     MORPHOLOGY="random",
@@ -222,6 +216,6 @@ NanoModeler(NAME="test",
     LIG2_S=0,
 
     FRCMOD="0",
+
     CORE="au25SR18_NM.pdb",
-    #CORE="au314SR96_NM.pdb",
     ELONGATED=False)
