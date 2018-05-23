@@ -5,9 +5,6 @@ from scipy.spatial import distance
 from sklearn.decomposition import PCA
 import math
 
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-
 def rot_mat(p, u, t):
     ct = math.cos(t)
     st = math.sin(t)
@@ -98,17 +95,6 @@ def get_ligand_pill(xyz_lig_func, lig_c, lig_s, log):
     pillars_func = [xyz_lig_func[lig_c-1]]
     for p in pillars_ndx:
         pillars_func = np.append(pillars_func, np.array([np.dot(xyz_lig_func[p], pca1) * pca1]), axis=0)
-
-    """
-    fig=plt.figure( )
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(xyz_lig_func[:,0], xyz_lig_func[:,1], xyz_lig_func[:,2], s=25)
-    ax.scatter(pillars_func[:,0], pillars_func[:,1], pillars_func[:,2], s =50, alpha=0.5)
-    ax.set_xlim((-1.5, 1.5))
-    ax.set_ylim((-1.5, 1.5))
-    ax.set_zlim((-1.5, 1.5))
-    plt.show()"""
-
     return pillars_func, log
 
 def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func, log):
@@ -169,29 +155,6 @@ def get_stones(xyz_core_func, names_core_func, xyz_anchorsi_func, xyz_pillarsi_f
 
         xyz_stones[i,3,:] = xyz_core_func[ndx_core_ST[sort_D_anch_ST[i,0]]]
 
-    """
-    fig=plt.figure( )
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(xyz_core_func[:,0], xyz_core_func[:,1], xyz_core_func[:,2], s=25)
-    ax.scatter(xyz_anchorsi_func[:,0], xyz_anchorsi_func[:,1], xyz_anchorsi_func[:,2], s =50, alpha=0.5)
-    ax.set_xlim((-5, 5))
-    ax.set_ylim((-5, 5))
-    ax.set_zlim((-5, 5))
-    plt.show()
-    fig=plt.figure( )
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(xyz_core_func[:,0], xyz_core_func[:,1], xyz_core_func[:,2], s=25)
-    #ax.scatter(xyz_C[:,0], xyz_C[:,1], xyz_C[:,2], s=25)
-    #for i in range(n_stones_lig+1):
-        #ax.scatter(xyz_stones[:,i,0], xyz_stones[:,i,1], xyz_stones[:,i,2], s =50, alpha=0.5)
-    ax.scatter(xyz_stones[:,0,0], xyz_stones[:,0,1], xyz_stones[:,0,2], s =50, alpha=0.5, color='r')
-    ax.scatter(xyz_stones[:,1,0], xyz_stones[:,1,1], xyz_stones[:,1,2], s =50, alpha=0.5, color='g')
-    ax.scatter(xyz_stones[:,2,0], xyz_stones[:,2,1], xyz_stones[:,2,2], s =50, alpha=0.5, color='m')
-    ax.scatter(xyz_stones[:,3,0], xyz_stones[:,3,1], xyz_stones[:,3,2], s =50, alpha=0.5, color='y')
-    ax.set_xlim((-3, 3))
-    ax.set_ylim((-3, 3))
-    ax.set_zlim((-3, 3))
-    plt.show()"""
     return xyz_stones
 
 def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
