@@ -2,7 +2,7 @@ import numpy as np
 import sys
 from sklearn.decomposition import PCA
 
-def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
+def rewrite_mol2_with_S(fname, cap, lig_s, lig_c, oname, elong, log):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
     out = open(oname, "w")
     if cap=="0":
@@ -44,6 +44,8 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
             ATOM=True
         elif ATOM:
             at = int(mol2[i].split()[0])
+            if at == lig_c:
+                anch_name = mol2[i].split()[1]
             if at == lig_s:
                 s_atom = np.array(mol2[i].split())
             elif at not in cap:
@@ -60,8 +62,20 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
         xyz.append(np.array([float(atom[2]), float(atom[3]), float(atom[4])]))
     xyz = np.array(xyz)
 
-    new_pt = np.array(s_atom[2:5], dtype='float')
-    xyz = np.append(xyz, np.array([new_pt]), axis=0)
+    if elong:
+        anch_ndx = np.where(names == anch_name)[0][0]
+        xyz_anch = xyz[anch_ndx]
+        xyz = np.subtract(xyz, xyz_anch)
+        pca = PCA(n_components=3)
+        pca.fit(xyz)
+        pca1 = pca.components_[0]
+        if np.sum(np.mean(xyz, axis=0)>=0)<2:
+            pca1=-pca1
+        new_pt = pca1/np.linalg.norm(pca1)*1.8
+    else:
+        new_pt = np.array(s_atom[2:5], dtype='float')
+        xyz = np.append(xyz, np.array([new_pt]), axis=0)
+
     old_at_num.append(len(atoms))
     old_at_num = np.array(old_at_num, dtype='int')
     atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]])
@@ -104,7 +118,9 @@ def rewrite_mol2_with_S(fname, cap, lig_s, oname, log):
     out.write("@<TRIPOS>SUBSTRUCTURE\n")
     out.write("\t1 {}\t\t\t1 ****\t\t\t0 ****  ****\n".format(atoms[0][7]))
     out.close()
-    return log
+
+    new_lig_c = np.where(old_at_num==lig_c)[0][0]+1
+    return new_lig_c, log
 
 def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
@@ -213,4 +229,6 @@ def rewrite_mol2_with_C(fname, cap, lig_c, oname, log):
     out.write("@<TRIPOS>SUBSTRUCTURE\n")
     out.write("\t1 {}\t\t\t1 ****\t\t\t0 ****  ****\n".format(atoms[0][7]))
     out.close()
-    return log
+
+    new_lig_c = np.where(old_at_num==lig_c)[0][0]+1
+    return new_lig_c, log

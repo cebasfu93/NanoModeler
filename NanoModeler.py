@@ -1,4 +1,4 @@
-def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2="0", LIG2_C=0, LIG2_S=0, FRCMOD="0", CORE="au144SR60_NM.pdb"):
+def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2="0", LIG2_C=0, LIG2_S=0, FRCMOD="0", CORE="au144SR60_NM.pdb", ELONGATED=False):
     VAR = {
     "NAME": NAME,             #Name of the project
     "LIG1_FILE" : LIG1_FILE,   #Name of the mol2 of ligand1 (must be in the working directory)
@@ -17,6 +17,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
 
     "FRCMOD"    : FRCMOD,       #Path to a frcmod provided by the user
     "CORE" : CORE,    #Name of the core to coat. Found in CORES/CORE
+    "ELONGATED" : ELONGATED    #If set to true, the first carbon of the cores will be ignored and placed along the O-S axis
     }
 
     log = "WELCOME TO NANOMODELER\n\n"
@@ -38,6 +39,8 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     import shutil
     log += "Importing tempfile...\n"
     import tempfile
+    log += "Importing zipfile...\n"
+    import zipfile
     log += "Importing atexit library...\n"
     import atexit
     log += "Importing NP_builder dependency...\n"
@@ -46,16 +49,15 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     from DEPENDENCIES.staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
     log += "Importing default function dependency...\n"
     from DEPENDENCIES.defaults import check_VAR, check_mol2, check_frcmod, write_leap
-    log += "Importing transformations...\n"
+    log += "Importing transformations dependency...\n"
     from  DEPENDENCIES.transformations import affine_matrix_from_points, vector_norm, quaternion_matrix
     log += "Importing subunits dependency...\n"
     import DEPENDENCIES.subunits
     log += "Importing rewrite_mol2 dependency...\n"
     from DEPENDENCIES.rewrite_mol2 import rewrite_mol2_with_C, rewrite_mol2_with_S
     log += "Importing cleanup dependency...\n\n"
-    from DEPENDENCIES.cleanup import cleanup_error, cleanup_normal
+    from DEPENDENCIES.cleanup import cleanup_error
     log += "Creating temporary folder...\n"
-
 
     TMP = tempfile.mkdtemp(dir="./")
     atexit.register(cleanup_error, TMP, log)
@@ -78,39 +80,39 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     log += "Checking ligand1 mol2 file...\n"
     log = check_mol2(VAR["LIG1_FILE"], log)
     log += "Rewriting ligand1 file...\n"
-    if LIG1_C != 0:
-        log = rewrite_mol2_with_C(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_C, TMP+"/"+VAR["LIG1_FILE"], log)
+    if LIG1_S != 0:
+        VAR["LIG1_C"], log = rewrite_mol2_with_S(VAR["LIG1_FILE"], VAR["CAP1"], VAR["LIG1_S"], VAR["LIG1_C"], TMP+"/"+VAR["LIG1_FILE"], VAR["ELONGATED"], log)
     else:
-        log = rewrite_mol2_with_S(VAR["LIG1_FILE"], VAR["CAP1"], LIG1_S, TMP+"/"+VAR["LIG1_FILE"], log)
+        VAR["LIG1_C"], log = rewrite_mol2_with_C(VAR["LIG1_FILE"], VAR["CAP1"], VAR["LIG1_C"], TMP+"/"+VAR["LIG1_FILE"], log)
 
     if two_lig:
         log += "Two ligands were found...\n"
         log += "Checking ligand2 mol2 file...\n"
         log = check_mol2(VAR["LIG2_FILE"], log)
         log += "Rewriting ligand2 file...\n"
-        if LIG2_C != 0:
-            log = rewrite_mol2_with_C(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_C, TMP+"/"+VAR["LIG2_FILE"], log)
+        if LIG2_S != 0:
+            VAR["LIG2_C"], log = rewrite_mol2_with_S(VAR["LIG2_FILE"], VAR["CAP2"], VAR["LIG2_S"], VAR["LIG2_C"], TMP+"/"+VAR["LIG2_FILE"], VAR["ELONGATED"], log)
         else:
-            log = rewrite_mol2_with_S(VAR["LIG2_FILE"], VAR["CAP2"], LIG2_S, TMP+"/"+VAR["LIG2_FILE"], log)
+            VAR["LIG2_C"], log = rewrite_mol2_with_C(VAR["LIG2_FILE"], VAR["CAP2"], VAR["LIG2_C"], TMP+"/"+VAR["LIG2_FILE"], log)
 
     ##############################NP_builder########################
-
-    log += "Initializing ligand1...\n"
-    xyz_lig1, names_lig1, res_lig1 = init_lig_mol2(TMP+"/"+VAR["LIG1_FILE"])
-    if two_lig:
-        log += "Initializing ligand2...\n"
-        xyz_lig2, names_lig2, res_lig2 = init_lig_mol2(TMP+"/"+VAR["LIG2_FILE"])
-    else:
-        xyz_lig2, names_lig2, res_lig2 = [], [], []
 
     log += "Initializing core...\n"
     xyz_core, names_core, res_core = init_core_pdb("./CORES/"+VAR["CORE"])
 
+    log += "Initializing ligand1...\n"
+    xyz_lig1, names_lig1, res_lig1 = init_lig_mol2(TMP+"/"+VAR["LIG1_FILE"], VAR["LIG1_S"], VAR["LIG1_C"])
+    if two_lig:
+        log += "Initializing ligand2...\n"
+        xyz_lig2, names_lig2, res_lig2 = init_lig_mol2(TMP+"/"+VAR["LIG2_FILE"], VAR["LIG1_S"], VAR["LIG2_C"])
+    else:
+        xyz_lig2, names_lig2, res_lig2 = [], [], []
+
     log += "Running PCA for ligand1...\n"
-    xyz_pillars1, log = get_ligand_pill(xyz_lig1, log)
+    xyz_pillars1, log = get_ligand_pill(xyz_lig1, VAR["LIG1_C"], VAR["LIG1_S"], log)
     if two_lig:
         log += "Running PCA for ligand2...\n"
-        xyz_pillars2, log = get_ligand_pill(xyz_lig2, log)
+        xyz_pillars2, log = get_ligand_pill(xyz_lig2, VAR["LIG2_C"], VAR["LIG2_S"], log)
     else:
         xyz_pillars2 = []
 
@@ -118,14 +120,14 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
 
     xyz_anchors1, xyz_anchors2, log = assign_morph(xyz_core, names_core, VAR["LIG1_FRAC"], VAR["RSEED"], VAR["MORPHOLOGY"], VAR["STRIPES"], log)
 
-    xyz_stones1 = get_stones(xyz_anchors1, xyz_pillars1)
+    xyz_stones1 = get_stones(xyz_core, names_core, xyz_anchors1, xyz_pillars1)
     if two_lig:
-        xyz_stones2 = get_stones(xyz_anchors2, xyz_pillars2)
+        xyz_stones2 = get_stones(xyz_core, names_core, xyz_anchors2, xyz_pillars2)
     else:
         xyz_stones2 = []
 
     log += "Coating nanoparticle...\n"
-    xyz_coated_NP, names_coated_NP, res_coated_NP, log = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2, log)
+    xyz_coated_NP, names_coated_NP, res_coated_NP, log = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2, VAR["LIG1_S"], VAR["LIG2_S"], VAR["ELONGATED"], log)
 
     log += "Writing pdb of the coated nanoparticle...\n"
     print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, TMP+"/"+VAR["NAME"]+".pdb")
@@ -179,28 +181,28 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     write_topology(TMP+"/"+VAR["NAME"]+".top", TMP+"/bonds.top", TMP+"/angles.top")
     #############################################################
 
-    log += "Copying final files...\n"
-    os.mkdir(VAR["NAME"])
+    atexit.unregister(cleanup_error)
+
+    log += "Compressing final files...\n"
+    #os.mkdir(VAR["NAME"])
     copy = [VAR["LIG1_FILE"], VAR["NAME"]+".pdb", VAR["NAME"]+".top", VAR["NAME"]+".gro"]
     if two_lig:
         copy.append(VAR["LIG2_FILE"])
+
+    final_zip = zipfile.ZipFile(VAR["NAME"]+".zip", "w")
     for i in copy:
-        shutil.copyfile(TMP+"/"+i, VAR["NAME"]+"/"+i)
+        final_zip.write(TMP+"/"+i)
+    final_zip.close()
 
     log += "Cleaning...\n"
     bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
     for i in bye:
         os.remove(i)
+    #shutil.rmtree(TMP)
 
-    atexit.unregister(cleanup_error)
-    shutil.rmtree(TMP)
-    log += "Compressing files to output...\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
-
-    os.system("tar -zcvf {}.tar.gz {}".format(VAR["NAME"], VAR["NAME"]))
-    shutil.rmtree(VAR["NAME"])
-    atexit.register(cleanup_normal, log)
-
+    print(log)
+    return (1, log, final_zip)
 
 NanoModeler(NAME="test",
 
@@ -220,4 +222,5 @@ NanoModeler(NAME="test",
     LIG2_S=0,
 
     FRCMOD="0",
-    CORE="au38SR24_NM.pdb")
+    CORE="au25SR18_NM.pdb",
+    ELONGATED=False)
