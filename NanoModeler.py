@@ -223,4 +223,5 @@ NanoModeler(NAME="test",
 
     FRCMOD="0",
     CORE="au25SR18_NM.pdb",
+    #CORE="au314SR96_NM.pdb",
     ELONGATED=False)
