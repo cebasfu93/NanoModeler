@@ -74,8 +74,8 @@ def rewrite_mol2_with_S(fname, cap, lig_s, lig_c, oname, elong, log):
         new_pt = pca1/np.linalg.norm(pca1)*1.8
     else:
         new_pt = np.array(s_atom[2:5], dtype='float')
-        xyz = np.append(xyz, np.array([new_pt]), axis=0)
 
+    xyz = np.append(xyz, np.array([new_pt]), axis=0)
     old_at_num.append(len(atoms))
     old_at_num = np.array(old_at_num, dtype='int')
     atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]])
