@@ -82,7 +82,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
         atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', atoms[0][6], atoms[0][7], "0.0"])
     else:
         atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]])
-    bonds.append(['0', str(len(atoms)), str(lig_c), 1])
+    bonds.append(['0', str(len(atoms)), str(np.where(old_at_num==lig_c)[0][0]+1), 1])
 
     N_at = len(atoms)
     N_bo = len(bonds)
