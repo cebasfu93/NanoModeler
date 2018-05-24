@@ -441,6 +441,7 @@ xyz_Au314SR96, names_Au314SR96 = read_Au314SH96("AU314SR96/au314SH96.xyz")
 staples_Au314SR96 = classify_staples(xyz_Au314SR96, names_Au314SR96)
 write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
 
+
 #AU314SR96 (506 atoms, Malola/Hakkinen, ACS Nano, 2013)
 ####Prepared with minimized staples
 xyz_Au314SR96, names_Au314SR96 = read_Au68SR34("AU314SR96/test-314/test-314_CORE.xyz")
