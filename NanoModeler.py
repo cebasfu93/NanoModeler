@@ -202,7 +202,7 @@ NanoModeler(NAME="test",
 
     LIG1_FILE="TPE.mol2",
     CAP1="0",
-    LIG1_C=2,
+    LIG1_C=0,
     LIG1_S=1,
 
     LIG1_FRAC=1.0,

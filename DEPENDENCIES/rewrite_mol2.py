@@ -14,6 +14,8 @@ def rewrite_mol2(fname, cap, lig_s, lig_c, oname, elong, log):
 
     if lig_s == 0:
         lig_s = []
+    else:
+        lig_c = find_C(fname, cap, lig_s)
 
     ATOM=False
     BOND=False
@@ -124,3 +126,22 @@ def rewrite_mol2(fname, cap, lig_s, lig_c, oname, elong, log):
 
     new_lig_c = np.where(old_at_num==lig_c)[0][0]+1
     return new_lig_c, log
+
+def find_C(fname, cap, lig_s):
+    mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
+
+    BOND = False
+    for i in range(len(mol2)):
+        if BOND:
+            at1 = int(mol2[i].split()[1])
+            at2 = int(mol2[i].split()[2])
+            if at1 not in cap and at2 not in cap:
+                if at1 == lig_s:
+                    found_c = at2
+                elif at2 == lig_s:
+                    found_c = at1
+            if "@<TRIPOS>" in mol2[i+1]:
+                break
+        if "@<TRIPOS>BOND" in mol2[i]:
+            BOND = True
+    return found_c
