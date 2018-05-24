@@ -4,7 +4,7 @@ def check_VAR(VAR, log):
     log += "Checking input options..."
     if VAR["LIG1_FRAC"] < 0 or VAR["LIG1_FRAC"] > 1.0:
         sys.exit("LIG1_FRAC must be between 0 and 1.")
-    if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe" and VAR["LIG1_FRAC"] >= 0 and VAR["LIG1_FRAC"] <= 1.0:
+    if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe":
         sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings.")
     if VAR["STRIPES"] < 1:
         sys.exit("The number of stripes must be at least one.")
@@ -13,38 +13,38 @@ def check_VAR(VAR, log):
 def check_mol2(fname, log):
     mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
 
-    found_MOLECULE = False
-    found_ATOM = False
-    found_BOND = False
+    MOLECULE = False
+    ATOM = False
+    BOND = False
     for i in mol2:
         if "@<TRIPOS>MOLECULE" in i:
-            found_MOLECULE = True
+            MOLECULE = True
         elif "@<TRIPOS>ATOM" in i:
-            found_ATOM = True
+            ATOM = True
         elif "@<TRIPOS>BOND" in i:
-            found_BOND = True
+            fBOND = True
 
-    if not found_MOLECULE:
+    if not MOLECULE:
         sys.exit("Keyword '@<TRIPOS>MOLECULE' not found in mol2 file.")
-    if not found_ATOM:
+    if not ATOM:
         sys.exit("Keyword '@<TRIPOS>ATOM' not found in mol2 file.")
-    if not found_BOND:
+    if not BOND:
         sys.exit("Keyword '@<TRIPOS>BOND' not found in mol2 file.")
 
     N_lig_file=len(mol2)
-    found_ATOM=False
+    ATOM=False
     atoms = []
     names = []
     res_names = []
     for i in range(N_lig_file):
-        if found_ATOM:
+        if ATOM:
             if "@<TRIPOS>" in mol2[i]:
                 break
             atoms.append(mol2[i].split())
             names.append(mol2[i].split()[1])
             res_names.append(mol2[i].split()[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
-            found_ATOM = True
+            ATOM = True
     log += "{} atoms were found in the mol2 file...\n".format(len(atoms))
 
     log += "Checking if columns 3, 4, and 5 correspond to floating numbers...\n"
@@ -61,10 +61,11 @@ def check_frcmod(fname, log):
     for i in range(len(frcmod)):
         if "ATTN, need revision" in frcmod[i]:
             errors.append(frcmod[i])
-    for i in range(len(errors)):
+    if errors:
         log += "The following parameters in the ligand were impossible to obtain...\n"
         log += "Consider adding you own frcmod file with the missing parameters...\n"
-        log += errors[i]+"\n"
+        for i in range(len(errors)):
+            log += errors[i]+"\n"
     return log
 
 def read_resname(lig_fname):
@@ -77,33 +78,33 @@ def read_resname(lig_fname):
 def write_leap(VAR, TMP, two_lig_func):
     msj = "source leaprc.gaff \n\n"
 
-    msj += "loadamberparams " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".frcmod\n"
-    msj += "loadamberparams " + "DEPENDENCIES/PARAMS.frcmod\n\n"
+    msj += "loadamberparams {}/{}.frcmod\n".format(TMP, VAR["LIG1_FILE"][:-5])
+    msj += "loadamberparams DEPENDENCIES/PARAMS.frcmod\n\n"
 
-    msj += read_resname(TMP+"/"+VAR["LIG1_FILE"]) + " = loadmol3 " + TMP+"/"+VAR["LIG1_FILE"]+"\n"
-    msj += "check " + read_resname(VAR["LIG1_FILE"]) + "\n"
-    msj += "saveoff " + read_resname(VAR["LIG1_FILE"]) + " " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".lib\n\n"
+    msj += "{} = loadmol3 {}/{}\n".format(read_resname(TMP+"/"+VAR["LIG1_FILE"]), TMP, VAR["LIG1_FILE"])
+    msj += "check {}\n".format(read_resname(VAR["LIG1_FILE"]))
+    msj += "saveoff {} {}/{}.lib\n\n".format(read_resname(VAR["LIG1_FILE"]), TMP, VAR["LIG1_FILE"][:-5])
     if two_lig_func:
-        msj += "loadamberparams " + TMP+"/"+VAR["LIG2_FILE"][:-5]+".frcmod\n"
-        msj += read_resname(VAR["LIG2_FILE"]) + " = loadmol3 " + TMP+"/"+VAR["LIG2_FILE"]+"\n"
-        msj += "check " + read_resname(VAR["LIG2_FILE"]) + "\n"
-        msj += "saveoff " + read_resname(VAR["LIG2_FILE"]) + " " + TMP+"/"+VAR["LIG2_FILE"][:-5]+".lib\n\n"
+        msj += "loadamberparams {}/{}.frcmod\n".format(TMP, VAR["LIG2_FILE"][:-5])
+        msj += "{} = loadmol3 {}/{}\n".format(read_resname(VAR["LIG2_FILE"]), TMP, VAR["LIG2_FILE"])
+        msj += "check {}\n".format(read_resname(VAR["LIG2_FILE"]))
+        msj += "saveoff {} {}/{}.lib\n\n".format(read_resname(VAR["LIG2_FILE"]), TMP, VAR["LIG2_FILE"][:-5])
 
-    msj += "loadamberparams " + "DEPENDENCIES/AU.frcmod\n"
-    msj += "loadamberparams " + "DEPENDENCIES/AUS.frcmod\n"
-    msj += "loadamberparams " + "DEPENDENCIES/AUL.frcmod\n"
+    msj += "loadamberparams DEPENDENCIES/AU.frcmod\n"
+    msj += "loadamberparams DEPENDENCIES/AUS.frcmod\n"
+    msj += "loadamberparams DEPENDENCIES/AUL.frcmod\n"
     if VAR["FRCMOD"] != "0":
-        msj += "loadamberparams " + VAR["FRCMOD"] + "\n"
-    msj += "AU = loadmol3 " + "DEPENDENCIES/AU.mol2\n"
-    msj += "AUS = loadmol3 " + "DEPENDENCIES/AUS.mol2\n"
-    msj += "AUL = loadmol3 " + "DEPENDENCIES/AUL.mol2\n"
+        msj += "loadamberparams {}\n".format(VAR["FRCMOD"])
+    msj += "AU = loadmol3 DEPENDENCIES/AU.mol2\n"
+    msj += "AUS = loadmol3 DEPENDENCIES/AUS.mol2\n"
+    msj += "AUL = loadmol3 DEPENDENCIES/AUL.mol2\n"
 
-    msj += "loadoff " + TMP+"/"+VAR["LIG1_FILE"][:-5]+".lib\n"
+    msj += "loadoff {}/{}.lib\n".format(TMP, VAR["LIG1_FILE"][:-5])
     if two_lig_func:
-        msj += "loadoff " + TMP+"/"+VAR["LIG2_FILE"][:-5]+".lib\n"
+        msj += "loadoff {}/{}.lib\n".format(TMP, VAR["LIG2_FILE"][:-5])
 
-    msj += VAR["NAME"] + " = loadpdb " + TMP+"/"+VAR["NAME"]+".pdb \n"
-    msj += "saveamberparm " +  VAR["NAME"] + " " + TMP+"/"+VAR["NAME"]+".prmtop" + " " + TMP+"/"+VAR["NAME"]+".inpcrd \n"
+    msj += "{} = loadpdb {}/{}.pdb\n".format(VAR["NAME"], TMP, VAR["NAME"])
+    msj += "saveamberparm {} {}/{}.prmtop {}/{}.inpcrd\n".format(VAR["NAME"], TMP, VAR["NAME"], TMP, VAR["NAME"])
     msj += "quit"
     out = open(TMP+"/TLeap.in", "w")
     out.write(msj)
