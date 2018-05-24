@@ -204,11 +204,11 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     print(log)
     return (1, log, final_zip)
 
-NanoModeler(NAME="test-144",
+NanoModeler(NAME="test",
 
-    LIG1_FILE=open("MET.mol2"),
-    CAP1="1,3,4,5",
-    LIG1_C=2,
+    LIG1_FILE=open("LIG2.mol2"),
+    CAP1="0",
+    LIG1_C=1,
     LIG1_S=0,
 
     LIG1_FRAC=1.0,
@@ -216,12 +216,12 @@ NanoModeler(NAME="test-144",
     RSEED=666,
     STRIPES=1,
 
-    LIG2_FILE=open("LIG3.mol2"),
+    #LIG2_FILE=open("LIG3.mol2"),
     CAP2="0",
     LIG2_C=0,
     LIG2_S=0,
 
     FRCMOD="0",
 
-    CORE=open("CORES/au144SR60_NM.pdb"),
+    CORE=open("CORES/au25SR18_NM.pdb"),
     ELONGATED=False)
