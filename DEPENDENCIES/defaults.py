@@ -10,9 +10,7 @@ def check_VAR(VAR, log):
         sys.exit("The number of stripes must be at least one.")
     return log
 
-def check_mol2(fname, log):
-    mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
-
+def check_mol2(mol2, log):
     MOLECULE = False
     ATOM = False
     BOND = False
@@ -22,7 +20,7 @@ def check_mol2(fname, log):
         elif "@<TRIPOS>ATOM" in i:
             ATOM = True
         elif "@<TRIPOS>BOND" in i:
-            fBOND = True
+            BOND = True
 
     if not MOLECULE:
         sys.exit("Keyword '@<TRIPOS>MOLECULE' not found in mol2 file.")
@@ -68,8 +66,8 @@ def check_frcmod(fname, log):
             log += errors[i]+"\n"
     return log
 
-def read_resname(lig_fname):
-    mol2 = np.genfromtxt(lig_fname, delimiter="\n", dtype='str')
+def read_resname(fname):
+    mol2 = np.genfromtxt(fname, delimiter="\n", dtype='str')
     for i in range(len(mol2)):
         if "@<TRIPOS>ATOM" in mol2[i]:
             resname = mol2[i+1].split()[7]
@@ -78,30 +76,29 @@ def read_resname(lig_fname):
 def write_leap(VAR, TMP, two_lig_func):
     msj = "source leaprc.gaff \n\n"
 
-    msj += "loadamberparams {}/{}.frcmod\n".format(TMP, VAR["LIG1_FILE"][:-5])
-    msj += "loadamberparams DEPENDENCIES/PARAMS.frcmod\n\n"
-
-    msj += "{} = loadmol3 {}/{}\n".format(read_resname(TMP+"/"+VAR["LIG1_FILE"]), TMP, VAR["LIG1_FILE"])
-    msj += "check {}\n".format(read_resname(VAR["LIG1_FILE"]))
-    msj += "saveoff {} {}/{}.lib\n\n".format(read_resname(VAR["LIG1_FILE"]), TMP, VAR["LIG1_FILE"][:-5])
+    msj += "loadamberparams {}/LIG1.frcmod\n".format(TMP)
+    msj += "{} = loadmol3 {}/LIG1.mol2\n".format(read_resname(TMP+"/LIG1.mol2"), TMP)
+    msj += "check {}\n".format(read_resname(TMP+"/LIG1.mol2"))
+    msj += "saveoff {} {}/LIG1.lib\n\n".format(read_resname(TMP+"/LIG1.mol2"), TMP)
     if two_lig_func:
-        msj += "loadamberparams {}/{}.frcmod\n".format(TMP, VAR["LIG2_FILE"][:-5])
-        msj += "{} = loadmol3 {}/{}\n".format(read_resname(VAR["LIG2_FILE"]), TMP, VAR["LIG2_FILE"])
-        msj += "check {}\n".format(read_resname(VAR["LIG2_FILE"]))
-        msj += "saveoff {} {}/{}.lib\n\n".format(read_resname(VAR["LIG2_FILE"]), TMP, VAR["LIG2_FILE"][:-5])
+        msj += "loadamberparams {}/LIG2.frcmod\n".format(TMP)
+        msj += "{} = loadmol3 {}/LIG2.mol2\n".format(read_resname(TMP+"/LIG2.mol2"), TMP)
+        msj += "check {}\n".format(read_resname(TMP+"/LIG2.mol2"))
+        msj += "saveoff {} {}/LIG2.lib\n\n".format(read_resname(TMP+"/LIG2.mol2"), TMP)
 
     msj += "loadamberparams DEPENDENCIES/AU.frcmod\n"
     msj += "loadamberparams DEPENDENCIES/AUS.frcmod\n"
     msj += "loadamberparams DEPENDENCIES/AUL.frcmod\n"
+    msj += "loadamberparams DEPENDENCIES/PARAMS.frcmod\n\n"
     if VAR["FRCMOD"] != "0":
         msj += "loadamberparams {}\n".format(VAR["FRCMOD"])
     msj += "AU = loadmol3 DEPENDENCIES/AU.mol2\n"
     msj += "AUS = loadmol3 DEPENDENCIES/AUS.mol2\n"
     msj += "AUL = loadmol3 DEPENDENCIES/AUL.mol2\n"
 
-    msj += "loadoff {}/{}.lib\n".format(TMP, VAR["LIG1_FILE"][:-5])
+    msj += "loadoff {}/LIG1.lib\n".format(TMP)
     if two_lig_func:
-        msj += "loadoff {}/{}.lib\n".format(TMP, VAR["LIG2_FILE"][:-5])
+        msj += "loadoff {}/LIG2.lib\n".format(TMP)
 
     msj += "{} = loadpdb {}/{}.pdb\n".format(VAR["NAME"], TMP, VAR["NAME"])
     msj += "saveamberparm {} {}/{}.prmtop {}/{}.inpcrd\n".format(VAR["NAME"], TMP, VAR["NAME"], TMP, VAR["NAME"])

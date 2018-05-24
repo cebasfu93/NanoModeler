@@ -46,9 +46,8 @@ def init_lig_mol2(fname, lig_s, lig_c):
     xyz_lig_func = xyz_lig_func - origin
     return xyz_lig_func/10., names_lig_func, res_lig_func
 
-def init_core_pdb(fname, elong):
+def init_core_pdb(pdb, elong):
     #Imports core pdb file. Centers the core in (0,0,0) and returns xyz coordinates and names
-    pdb=np.genfromtxt(fname, delimiter='\n', dtype=str)
     names_core_func = []
     res_core_func = []
     xyz_core_func = []

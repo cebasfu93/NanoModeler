@@ -2,8 +2,7 @@ import numpy as np
 import sys
 from sklearn.decomposition import PCA
 
-def rewrite_mol2(fname, cap, lig_s, lig_c, oname, elong, log):
-    mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
+def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     out = open(oname, "w")
     if cap=="0":
         log += "There are no capping atoms...\n"
@@ -36,12 +35,7 @@ def rewrite_mol2(fname, cap, lig_s, lig_c, oname, elong, log):
             at1 = int(mol2[i].split()[1])
             at2 = int(mol2[i].split()[2])
             if at1 not in cap and at2 not in cap:
-                if at1 == lig_s:
-                    bond_s = at2
-                elif at2 == lig_s:
-                    bond_s = at1
-                else:
-                    bonds.append(np.array(mol2[i].split()))
+                bonds.append(np.array(mol2[i].split()))
             if "@<TRIPOS>" in mol2[i+1]:
                 BOND=False
         elif "@<TRIPOS>ATOM" in mol2[i]:
@@ -67,7 +61,7 @@ def rewrite_mol2(fname, cap, lig_s, lig_c, oname, elong, log):
         xyz.append(np.array([float(atom[2]), float(atom[3]), float(atom[4])]))
     xyz = np.array(xyz)
 
-    if elong and not lig_s:
+    if elong or not lig_s:
         anch_ndx = np.where(names == anch_name)[0][0]
         xyz_anch = xyz[anch_ndx]
         xyz = np.subtract(xyz, xyz_anch)
@@ -83,8 +77,12 @@ def rewrite_mol2(fname, cap, lig_s, lig_c, oname, elong, log):
     xyz = np.append(xyz, np.array([new_pt]), axis=0)
     old_at_num.append(len(atoms))
     old_at_num = np.array(old_at_num, dtype='int')
-    atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]])
-    bonds.append(['0', str(len(atoms)), str(np.where(old_at_num==bond_s)[0][0]+1), 1])
+
+    if not lig_s:
+        atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', atoms[0][6], atoms[0][7], "0.0"])
+    else:
+        atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]])
+    bonds.append(['0', str(len(atoms)), str(lig_c), 1])
 
     N_at = len(atoms)
     N_bo = len(bonds)
@@ -127,9 +125,7 @@ def rewrite_mol2(fname, cap, lig_s, lig_c, oname, elong, log):
     new_lig_c = np.where(old_at_num==lig_c)[0][0]+1
     return new_lig_c, log
 
-def find_C(fname, cap, lig_s):
-    mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
-
+def find_C(mol2, cap, lig_s):
     BOND = False
     for i in range(len(mol2)):
         if BOND:
