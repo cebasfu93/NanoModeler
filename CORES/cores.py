@@ -283,6 +283,7 @@ def classify_staples(xyz_sys, names_sys):
         #staples.append(subunits.Staple(ndx_S=ganchos[i].S, ndx_Au=ganchos[i].Au, ndx_C=ganchos[i].C))
 
     #Depending in the number of sulphur and gold atoms in each staple, it clssifies it. For STC and STV it calculates the angle Aul-S-Aul and with an tolerance of +/-9 degrees, the staple is classified
+    print("Au{} SR{}".format(len(ndx_AU), len(ndx_ST)))
     for i in range(len(staples)):
         staple_act = staples[i]
         N_S = len(staple_act.S)
@@ -299,7 +300,7 @@ def classify_staples(xyz_sys, names_sys):
                     angle = calc_angle(xyz_sys[near_Au[0]], xyz_sys[staple_act.S[j]], xyz_sys[near_Au[1]])
                     print(angle)
                     #if angle <= 109.0 and angle >= 91.0:
-                    if angle <= 109.0 and angle >= 87.0:
+                    if angle <= 109.0 and angle >= 83.0:
                         staple_act.change_tipo('STC')
                     elif angle <= 128.2 and angle >= 110.2:
                         staple_act.change_tipo('STV')
@@ -401,24 +402,6 @@ xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I4.xyz")
 staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
 write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I4_NM.pdb")
 
-#AU68SR34 (136 atoms, Xu/Gao, J. Phys. Chem C, 2015)
-####Prepared with minimized staples
-xyz_Au68SR34, names_Au68SR34 = read_Au68SR34("AU68SR34/test-I1/test-I1_CORE.xyz")
-staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
-write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I1_NM.pdb")
-
-xyz_Au68SR34, names_Au68SR34 = read_Au68SR34("AU68SR34/test-I2/test-I2_CORE.xyz")
-staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
-write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I2_NM.pdb")
-
-xyz_Au68SR34, names_Au68SR34 = read_Au68SR34("AU68SR34/test-I3/test-I3_CORE.xyz")
-staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
-write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I3_NM.pdb")
-
-xyz_Au68SR34, names_Au68SR34 = read_Au68SR34("AU68SR34/test-I4/test-I4_CORE.xyz")
-staples_Au68SR34 = classify_staples(xyz_Au68SR34, names_Au68SR34)
-write_pdb(xyz_Au68SR34, names_Au68SR34, staples_Au68SR34, "au68SR34-I4_NM.pdb")
-
 #AU102SR44 (190 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 #xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
 #staples_Au102SR44 = classify_staples(xyz_Au102SR44, names_Au102SR44)
@@ -435,16 +418,26 @@ staples_Au144SR60 = classify_staples(xyz_Au144SR60, names_Au144SR60)
 write_pdb(xyz_Au144SR60, names_Au144SR60, staples_Au144SR60, "au144SR60_NM.pdb")
 #print_xyz(xyz_Au144SR60, names_Au144SR60, "au144SR60_NM")
 
-
 #AU314SR96 (506 atoms, Malola/Hakkinen, ACS Nano, 2013)
 xyz_Au314SR96, names_Au314SR96 = read_Au314SH96("AU314SR96/au314SH96.xyz")
 staples_Au314SR96 = classify_staples(xyz_Au314SR96, names_Au314SR96)
 write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
-
-
-#AU314SR96 (506 atoms, Malola/Hakkinen, ACS Nano, 2013)
-####Prepared with minimized staples
-xyz_Au314SR96, names_Au314SR96 = read_Au68SR34("AU314SR96/test-314/test-314_CORE.xyz")
-staples_Au314SR96 = classify_staples(xyz_Au314SR96, names_Au314SR96)
-write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
 """
+
+####Prepared with minimized staples
+core_dic = {"AU25SR18/test-25/test-25_CORE.xyz": "au25SR18_NM.pdb", \
+            "AU36SR24/test-36/test-36_CORE.xyz": "au36SR24_NM.pdb", \
+            "AU38SR24/test-38/test-38_CORE.xyz": "au38SR24_NM.pdb", \
+            "AU68SR34/test-I1/test-I1_CORE.xyz": "au68SR34-I1_NM.pdb", \
+            "AU68SR34/test-I2/test-I2_CORE.xyz": "au68SR34-I2_NM.pdb", \
+            "AU68SR34/test-I3/test-I3_CORE.xyz": "au68SR34-I3_NM.pdb", \
+            "AU68SR34/test-I4/test-I4_CORE.xyz": "au68SR34-I4_NM.pdb", \
+            "AU133SR52/test-133/test-133_CORE.xyz": "au133SR52_NM.pdb", \
+            "AU144SR60/test-144/test-144_CORE.xyz": "au144SR60_NM.pdb", \
+            "AU314SR96/test-314/test-314_CORE.xyz": "au314SR96_NM.pdb", \
+}
+
+for i in core_dic:
+    xyz_core, names_core = read_Au68SR34(i)
+    staples_core = classify_staples(xyz_core, names_core)
+    write_pdb(xyz_core, names_core, staples_core, core_dic[i])
