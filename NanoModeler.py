@@ -151,7 +151,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     os.system("tleap -sf {}/TLeap.in > {}/TLeap.log".format(TMP, TMP))
 
     log += "Running acpype...\n"
-    os.system("python DEPENDENCIES/acpype.py -b {}/NP -c user -p {}/NP.prmtop -x {}/NP.inpcrd > {}/acpype.log".format(TMP, TMP, TMP, TMP))
+    os.system("python DEPENDENCIES/acpype.py -r -b {}/NP -c user -p {}/NP.prmtop -x {}/NP.inpcrd > {}/acpype.log".format(TMP, TMP, TMP, TMP))
     os.system("mv {}/NP_GMX.top {}/NP.top".format(TMP, TMP))
     os.system("mv {}/NP_GMX.gro {}/NP.gro".format(TMP, TMP))
 
@@ -204,7 +204,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", zip_path]      #List of files of delete at the end of the run (including the zip file)
     for i in bye:
         os.remove(i)
-    #shutil.rmtree(TMP)     #Deletes the temporary folder
+    shutil.rmtree(TMP)     #Deletes the temporary folder
 
     log += "\"Señoras y señores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
@@ -229,5 +229,5 @@ if __name__ == "__main__":
 
         FRCMOD=None,
 
-        CORE=open("CORES/au25SR18_NM.pdb"),
+        CORE=open("CORES/au38SR24_NM.pdb"),
         ELONGATED=False)
