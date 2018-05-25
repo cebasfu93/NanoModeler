@@ -1,4 +1,4 @@
-def NanoModeler(LIG1_FILE="LIG1.mol2", CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2=[], LIG2_C=0, LIG2_S=0, FRCMOD=None, CORE="au144SR60_NM.pdb", ELONGATED=False):
+def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE=None, CAP2=[], LIG2_C=0, LIG2_S=0, FRCMOD=None, CORE=None, ELONGATED=False):
     VAR = {
     "LIG1_FILE" : LIG1_FILE,   #ByteArray of the mol2 of ligand1 (must be in the working directory)
     "CAP1" : CAP1,		    #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas
