@@ -1,4 +1,4 @@
-NanoModeler v0.2
+NanoModeler v0.3
 
 Known bugs:
 -None. NanoModeler is perfect.
@@ -9,3 +9,6 @@ Known bugs:
 
 Perspectives:
 -Make a broader check of possible errors.
+-Csearch must include the S atom.
+-Clean log file.
+-Comment code.
