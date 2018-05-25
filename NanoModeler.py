@@ -189,13 +189,17 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     if two_lig:
         copy.append("LIG2.mol2")
 
-    final_zip = zipfile.ZipFile(TMP+".zip", "w")
+    zip_path = TMP + ".zip"
+    zip_tmp = zipfile.ZipFile(zip_path, "w")
     for i in copy:
-        final_zip.write("{}/{}".format(TMP, i))
-    final_zip.close()
+        zip_tmp.write("{}/{}".format(TMP, i))
+    zip_tmp.close()
+    zf = open(zip_path, 'rb')
+    zip_data = zf.read()
+    zf.close()
 
     log += "Cleaning...\n"
-    bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp"]
+    bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", zip_path]
     for i in bye:
         os.remove(i)
     #shutil.rmtree(TMP)
@@ -203,7 +207,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     log += "\"Señoras y señores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
     print(log)
-    return (1, log, final_zip)
+    return (1, log, zip_data)
 
 if __name__ == "__main__":
     NanoModeler(LIG1_FILE=open("LIG2.mol2"),
