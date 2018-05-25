@@ -195,7 +195,7 @@ def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pi
         trans_lig = trans_lig[:-1]
 
         if lig_s == 0 or elong:
-            trans_lig, log = solve_clashes(xyz_coated_tmp, trans_lig, xyz_stones_now[0,:], last_res_num+i+1, log)
+            trans_lig, log = solve_clashes(np.append(xyz_coated_tmp, [xyz_stones_tmp[i,-1,:]], axis=0), trans_lig, xyz_stones_now[0,:], last_res_num+i+1, log)
 
         else:
             D_clash = distance.cdist(trans_lig, xyz_coated_tmp)
