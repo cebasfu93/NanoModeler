@@ -35,11 +35,11 @@ def load_top(top_fname):
 def get_ndxs(xyz_sys_func, names_sys_func, types_sys_func, res_sys_func, res_lig_func):
     elements = []
     for i in range(len(types_sys_func)):
-        elements.append(types_sys_func[i][0].upper())
+        elements.append(types_sys_func[i][0].upper())       #Assumes the the element is the first character of the type
     elements = np.array(elements, dtype="str")
     all_C = np.where(np.logical_and(elements == "C", res_sys_func==res_lig_func[0]))[0]
     all_S = np.where(names_sys_func == "ST")[0]
-    D_S_C = distance.cdist(xyz_sys_func[all_S], xyz_sys_func[all_C])
+    D_S_C = distance.cdist(xyz_sys_func[all_S], xyz_sys_func[all_C])        #Takes the carbon atoms closest to the ST atoms
     ndx_C = all_C[np.argsort(D_S_C, axis=1)[:,0]]
     return ndx_C
 
@@ -52,6 +52,7 @@ def make_blocks(xyz_sys_func, names_sys_func, names_core_func, res_core_func, nd
 
     blocks = []
     for i in range(len(ndx_S)):
+        #For every S atom, the ndx of the 2 closest gold atoms and 1 closest C atom are retrieved as well as the type of the gold atoms (taken from the core file)
         now_S = ndx_S[i]
         now_C = ndx_C_func[np.argsort(D_S_C[i])[0]]
         sort_S_Au = np.argsort(D_S_Au[i])[0:2]
@@ -62,14 +63,13 @@ def make_blocks(xyz_sys_func, names_sys_func, names_core_func, res_core_func, nd
     return blocks
 
 def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
-    #Goes through the S atoms of every staple, looks for the closest Au and C atoms, and assign bond parameters
     bonds = open(fname, 'w')
     func_type = str(1)
     for i in range(len(blocks_list)):
         b = blocks_list[i]
         #S - Au bonds
         cons = 62730
-        for j in range(2):
+        for j in range(2):      #Writes the two S-gold bonds in every block
             if b.typesAu[j]=="AUL":
                 zero = 0.233
             elif b.typesAu[j]=="AUS":
@@ -78,10 +78,9 @@ def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
     bonds.close()
 
 def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
-    #Goes through every staple and wirtes the parameters for the angles involving S atoms. Then a particular case is used for the S-Aul-S bond
     angles = open(fname, 'w')
     func_type = str(1)
-    Au_taken = []
+    Au_taken = []       #List to save the AUL indexes of the atoms whose AUL - S - AUL parameters have already been written for
     for i in range(len(blocks_list)):
         b = blocks_list[i]
 
@@ -120,6 +119,7 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
                 cons = 460.240
                 zero = 172.4
 
+                #For every AUL (not repeated) the angle is made with its 2 closest S atoms
                 D_AuL_S = distance.cdist([xyz_sys_func[b.Au[j]]], xyz_sys_func[all_S])
                 near_S = all_S[np.argsort(D_AuL_S[0])[0:2]]
                 angles.write(str(near_S[0]+1).rjust(6)+str(b.Au[j]+1).rjust(7)+str(near_S[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_S[0]]+" - "+names_sys_func[b.Au[j]]+" - "+names_sys_func[near_S[1]]+signature+"\n")

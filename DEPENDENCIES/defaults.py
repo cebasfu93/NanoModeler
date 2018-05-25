@@ -12,7 +12,7 @@ def check_mol2(mol2, log):
     MOLECULE = False
     ATOM = False
     BOND = False
-    for i in mol2:
+    for i in mol2:  #Looks for needed keywords in the mol2 file
         if "@<TRIPOS>MOLECULE" in i:
             MOLECULE = True
         elif "@<TRIPOS>ATOM" in i:
@@ -73,8 +73,9 @@ def read_resname(fname):
     return resname
 
 def write_leap(VAR, TMP, two_lig_func):
-    msj = "source leaprc.gaff \n\n"
+    msj = "source leaprc.gaff2 \n\n"
 
+    #Loads parameters of the ligands
     msj += "loadamberparams {}/LIG1.frcmod\n".format(TMP)
     msj += "{} = loadmol3 {}/LIG1.mol2\n".format(read_resname(TMP+"/LIG1.mol2"), TMP)
     msj += "check {}\n".format(read_resname(TMP+"/LIG1.mol2"))
@@ -85,20 +86,25 @@ def write_leap(VAR, TMP, two_lig_func):
         msj += "check {}\n".format(read_resname(TMP+"/LIG2.mol2"))
         msj += "saveoff {} {}/LIG2.lib\n\n".format(read_resname(TMP+"/LIG2.mol2"), TMP)
 
+    #Loads parameters of the gold and S atoms
     msj += "loadamberparams PARAMS/AU.frcmod\n"
     msj += "loadamberparams PARAMS/AUS.frcmod\n"
     msj += "loadamberparams PARAMS/AUL.frcmod\n"
     msj += "loadamberparams PARAMS/PARAMS.frcmod\n\n"
     if VAR["FRCMOD"]:
-        msj += "loadamberparams {}\n".format(VAR["FRCMOD"])
+        msj += "loadamberparams {}\n".format(VAR["FRCMOD"])     #If the user gave an frcmod in overwrites all the previous ones
+
+    #Loads structures of the gold and S atoms
     msj += "AU = loadmol3 PARAMS/AU.mol2\n"
     msj += "AUS = loadmol3 PARAMS/AUS.mol2\n"
     msj += "AUL = loadmol3 PARAMS/AUL.mol2\n"
 
+    #Loads libraries of the ligands
     msj += "loadoff {}/LIG1.lib\n".format(TMP)
     if two_lig_func:
         msj += "loadoff {}/LIG2.lib\n".format(TMP)
 
+    #Loads pdb and saves parameters to amber files
     msj += "NP = loadpdb {}/NP.pdb\n".format(TMP)
     msj += "saveamberparm NP {}/NP.prmtop {}/NP.inpcrd\n".format(TMP, TMP)
     msj += "quit"
