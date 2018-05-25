@@ -1,7 +1,7 @@
 import numpy as np
 
 def check_VAR(VAR, log):
-    log += "Checking input options..."
+    log += "Checking input options...\n"
     if VAR["LIG1_FRAC"] < 0 or VAR["LIG1_FRAC"] > 1.0:
         sys.exit("LIG1_FRAC must be between 0 and 1.")
     if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe":
@@ -100,8 +100,8 @@ def write_leap(VAR, TMP, two_lig_func):
     if two_lig_func:
         msj += "loadoff {}/LIG2.lib\n".format(TMP)
 
-    msj += "{} = loadpdb {}/{}.pdb\n".format(VAR["NAME"], TMP, VAR["NAME"])
-    msj += "saveamberparm {} {}/{}.prmtop {}/{}.inpcrd\n".format(VAR["NAME"], TMP, VAR["NAME"], TMP, VAR["NAME"])
+    msj += "NP = loadpdb {}/NP.pdb\n".format(TMP)
+    msj += "saveamberparm NP {}/NP.prmtop {}/NP.inpcrd\n".format(TMP, TMP)
     msj += "quit"
     out = open(TMP+"/TLeap.in", "w")
     out.write(msj)

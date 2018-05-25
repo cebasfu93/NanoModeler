@@ -1,6 +1,5 @@
-def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2="0", LIG2_C=0, LIG2_S=0, FRCMOD="0", CORE="au144SR60_NM.pdb", ELONGATED=False):
+def NanoModeler(LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2="0", LIG2_C=0, LIG2_S=0, FRCMOD="0", CORE="au144SR60_NM.pdb", ELONGATED=False):
     VAR = {
-    "NAME": NAME,             #Name of the project
     "LIG1_FILE" : LIG1_FILE,   #ByteArray of the mol2 of ligand1 (must be in the working directory)
     "CAP1" : CAP1,		    #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas
     "LIG1_C"    : LIG1_C,    #Atom number of carbon atom in LIG1_FILE used as anchor
@@ -130,7 +129,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     xyz_coated_NP, names_coated_NP, res_coated_NP, log = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2, VAR["LIG1_S"], VAR["LIG2_S"], VAR["ELONGATED"], log)
 
     log += "Writing pdb of the coated nanoparticle...\n"
-    print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, TMP+"/"+VAR["NAME"]+".pdb")
+    print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, TMP+"/NP.pdb")
 
     ################################################################
 
@@ -150,16 +149,16 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     os.system("tleap -sf " + TMP + "/TLeap.in > " + TMP + "/TLeap.log")
 
     log += "Running acpype...\n"
-    os.system("python DEPENDENCIES/acpype.py -p {} -x {} -r".format(TMP+"/"+VAR["NAME"]+".prmtop", TMP+"/"+VAR["NAME"]+".inpcrd -b " + VAR["NAME"] + " -c user > acpype.log"))
-    os.system("mv {}_GMX.top {}.top".format(VAR["NAME"], TMP+"/"+VAR["NAME"]))
-    os.system("mv {}_GMX.gro {}.gro".format(VAR["NAME"], TMP+"/"+VAR["NAME"]))
+    os.system("python DEPENDENCIES/acpype.py -p {} -x {} -r".format(TMP+"/NP.prmtop", TMP+"/NP.inpcrd -b NP -c user > acpype.log"))
+    os.system("mv NP_GMX.top {}/NP.top".format(TMP))
+    os.system("mv NP_GMX.gro {}/NP.gro".format(TMP))
 
     ##############################Staples########################
     log += "Reading gro file of the coated nanoparticle...\n"
-    xyz_sys, names_sys = load_gro(TMP+"/"+VAR["NAME"]+".gro")
+    xyz_sys, names_sys = load_gro(TMP+"/NP.gro")
 
     log += "Reading top file of the unlinked nanoparticle...\n"
-    types_sys, res_sys = load_top(TMP+"/"+VAR["NAME"]+".top")
+    types_sys, res_sys = load_top(TMP+"/NP.top")
 
     log += "Looking for anchoring carbon atoms for ligand1...\n"
     ndx_C1 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig1)
@@ -178,18 +177,18 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     log += "Writing angles parameters...\n"
     write_angles(blocks, TMP+"/angles.top", xyz_sys, names_sys)
     log += "Writing final topology file...\n"
-    write_topology(TMP+"/"+VAR["NAME"]+".top", TMP+"/bonds.top", TMP+"/angles.top")
+    write_topology(TMP+"/NP.top", TMP+"/bonds.top", TMP+"/angles.top")
     #############################################################
 
     atexit.unregister(cleanup_error)
 
     log += "Compressing final files...\n"
-    #os.mkdir(VAR["NAME"])
-    copy = ["LIG1.mol2", VAR["NAME"]+".pdb", VAR["NAME"]+".top", VAR["NAME"]+".gro"]
+
+    copy = ["LIG1.mol2", "NP.pdb", "NP.top", "NP.gro"]
     if two_lig:
         copy.append("LIG2.mol2")
 
-    final_zip = zipfile.ZipFile(VAR["NAME"]+".zip", "w")
+    final_zip = zipfile.ZipFile(TMP+".zip", "w")
     for i in copy:
         final_zip.write(TMP+"/"+i)
     final_zip.close()
@@ -204,9 +203,7 @@ def NanoModeler(NAME="test", LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0
     print(log)
     return (1, log, final_zip)
 
-NanoModeler(NAME="test",
-
-    LIG1_FILE=open("LIG2.mol2"),
+NanoModeler(LIG1_FILE=open("LIG2.mol2"),
     CAP1="0",
     LIG1_C=1,
     LIG1_S=0,
