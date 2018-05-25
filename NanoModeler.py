@@ -203,22 +203,23 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     print(log)
     return (1, log, final_zip)
 
-NanoModeler(LIG1_FILE=open("LIG2.mol2"),
-    CAP1=[],
-    LIG1_C=1,
-    LIG1_S=0,
+if __name__ == "__main__":
+    NanoModeler(LIG1_FILE=open("LIG2.mol2"),
+        CAP1=[],
+        LIG1_C=1,
+        LIG1_S=0,
 
-    LIG1_FRAC=0.5,
-    MORPHOLOGY="random",
-    RSEED=666,
-    STRIPES=1,
+        LIG1_FRAC=1.0,
+        MORPHOLOGY="random",
+        RSEED=666,
+        STRIPES=1,
 
-    LIG2_FILE=open("LIG3.mol2"),
-    CAP2=[],
-    LIG2_C=1,
-    LIG2_S=0,
+        LIG2_FILE=None, #open("LIG3.mol2"),
+        CAP2=[],
+        LIG2_C=1,
+        LIG2_S=0,
 
-    FRCMOD=None,
+        FRCMOD=None,
 
-    CORE=open("CORES/au25SR18_NM.pdb"),
-    ELONGATED=False)
+        CORE=open("CORES/au25SR18_NM.pdb"),
+        ELONGATED=False)
