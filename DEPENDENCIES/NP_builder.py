@@ -82,8 +82,8 @@ def get_ligand_pill(xyz_lig_func, lig_c, lig_s, log):
         pca1=-pca1
     var1 = pca.explained_variance_[0]/np.sum(pca.explained_variance_)*100
 
-    log += "PCA1 explains: {:.1f}% of the points' variance...\n".format(var1)
-    log += "Consider this is a measure on how linear the input ligand is. The lower this value, the more likely it will be to get clashes in the final structure.\n"
+    log += "\tPCA1 explains: {:.1f}% of the points' variance...\n".format(var1)
+    log += "\tConsider this is a measure on how linear the input ligand is. The lower this value, the more likely it will be to get clashes in the final structure.\n"
 
     #Randomly takes 2 other atoms in the ligand and project their positions in PCA1
     random.seed(666)
@@ -103,19 +103,19 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
     for_lig1 = round(N_anchors*frac_lig1_func)
     indexes = list(range(N_anchors))
     if morph_func == "random":
-        log += "Assigning a random distribution of the ligands...\n"
+        log += "\tAssigning a random distribution of the ligands...\n"
         random.seed(rseed_func)
         random.shuffle(indexes)
         lig1_ndx = indexes[:for_lig1]
         lig2_ndx = indexes[for_lig1:]
     elif morph_func == "janus":
-        log += "Assigning a janus distribution for the ligands...\n"
+        log += "\tAssigning a janus distribution for the ligands...\n"
         bottom = xyz_anchors_func[np.argsort(xyz_anchors_func[:,2])[0]]
         D_bottom_anch = distance.cdist([bottom], xyz_anchors_func)
         lig1_ndx = D_bottom_anch[0].argsort()[:for_lig1]
         lig2_ndx = list(set(indexes) - set(lig1_ndx))
     elif morph_func == "stripe":
-        log += "Assigning a striped distribution for the ligands...\n"
+        log += "\tAssigning a striped distribution for the ligands...\n"
         phis = np.arccos(np.divide(xyz_anchors_func[:,2], np.linalg.norm(xyz_anchors_func, axis=1)))
         dphi = (math.pi+0.00001)/stripes_func
         lig1_ndx = []
@@ -126,8 +126,8 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
             elif phi(xyz_anchors_func[i])//dphi%2 == 1:
                 lig2_ndx.append(i)
 
-    log += "The nanoparticle will have {} of ligand 1...\n".format(len(lig1_ndx))
-    log += "The nanoparticle will have {} of ligand 2...\n".format(len(lig2_ndx))
+    log += "\tThe nanoparticle will have {} of ligand 1...\n".format(len(lig1_ndx))
+    log += "\tThe nanoparticle will have {} of ligand 2...\n".format(len(lig2_ndx))
     xyz_anchors1_func=xyz_anchors_func[lig1_ndx]
     xyz_anchors2_func=xyz_anchors_func[lig2_ndx]
     return xyz_anchors1_func, xyz_anchors2_func, log
@@ -166,8 +166,8 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
     CLASH = False
     if clash_dis < thresh:
         CLASH = True
-        log += "Clashes were found while placing residue {}...\n".format(resnum)
-        log += "Trying to solve the clashes...\n"
+        log += "\tClashes were found while placing residue {}...\n".format(resnum)
+        log += "\tTrying to solve the clashes...\n"
 
     while theta < 6.28:
         theta += 2*math.pi/n_clash_iter
@@ -179,10 +179,10 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
             clash_dis = np.min(D_clash)
             trans_lig_best = trans_lig_try
         if theta >= 6.28 and clash_dis < thresh:
-            log += "It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...\n".format(resnum, clash_dis)
-            log += "Revise the final geometry...\n"
+            log += "\tIt was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...\n".format(resnum, clash_dis)
+            log += "\tRevise the final geometry...\n"
         if theta >= 6.28 and clash_dis > thresh and CLASH:
-            log += "The clash was solved, i.e., the minimum distance between atoms is at least {} nm...\n".format(thresh)
+            log += "\tThe clash was solved, i.e., the minimum distance between atoms is at least {} nm...\n".format(thresh)
 
     return trans_lig_best, log
 
@@ -225,10 +225,10 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
     res_coated_func=names_core_func[keep_rows]
 
     #Transforms and appends rototranslated ligand 1
-    log += "Placing ligand 1 around the core...\n"
+    log += "\tPlacing ligand 1 around the core...\n"
     xyz_coated_func, names_coated_func, res_coated_func, log = place_ligand(xyz_lig1_func, names_lig1_func, res_lig1_func, xyz_stones1_func, xyz_pillars1_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows), lig1_s, elong, log)
     if len(xyz_lig2_func)!=0:
-        log += "Placing ligand 2 around the core...\n"
+        log += "\tPlacing ligand 2 around the core...\n"
         xyz_coated_func, names_coated_func, res_coated_func, log = place_ligand(xyz_lig2_func, names_lig2_func, res_lig2_func, xyz_stones2_func, xyz_pillars2_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows)+len(xyz_stones1_func[:,0,0]), lig2_s, elong, log)
 
     return xyz_coated_func, names_coated_func, res_coated_func, log

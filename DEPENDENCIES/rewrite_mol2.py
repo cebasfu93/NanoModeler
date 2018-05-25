@@ -5,9 +5,9 @@ from sklearn.decomposition import PCA
 def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     out = open(oname, "w")
     if not cap:
-        log += "There are no capping atoms...\n"
+        log += "\tNo capping atoms were found...\n"
     else:
-        log += "Capping atoms {} will be removed...\n".format(cap)
+        log += "\tCapping atoms {} will be removed...\n".format(cap)
 
     if lig_s != 0:
         lig_c = find_C(mol2, cap, lig_s)
@@ -21,10 +21,10 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     charge_cap = []
     for i in range(len(mol2)):
         if "@<TRIPOS>MOLECULE" in mol2[i]:
-            log += "Reading @<TRIPOS>MOLECULE section...\n"
+            log += "\tReading @<TRIPOS>MOLECULE section...\n"
             mol_name = mol2[i+1].split()[0]
         elif "@<TRIPOS>BOND" in mol2[i]:
-            log += "Reading @<TRIPOS>BOND section...\n"
+            log += "\tReading @<TRIPOS>BOND section...\n"
             BOND=True
             ATOM=False
         elif BOND:
@@ -35,7 +35,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
             if "@<TRIPOS>" in mol2[i+1]:
                 BOND=False
         elif "@<TRIPOS>ATOM" in mol2[i]:
-            log += "Reading @<TRIPOS>ATOM section...\n"
+            log += "\tReading @<TRIPOS>ATOM section...\n"
             ATOM=True
         elif ATOM:
             at = int(mol2[i].split()[0])
@@ -84,12 +84,12 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     N_bo = len(bonds)
     charge_per_atom = np.sum(charge_cap)/(N_at-1)
 
-    log += "The capping group has a total charge of {:.3f}...\n".format(np.sum(charge_cap))
-    log += "A charge of {:.3f} will be added to all atoms in the ligand...\n".format(charge_per_atom)
-    log += "Writing @<TRIPOS>MOLECULE section...\n"
+    log += "\tThe capping group has a total charge of {:.3f}...\n".format(np.sum(charge_cap))
+    log += "\tA charge of {:.3f} will be added to all atoms in the ligand...\n".format(charge_per_atom)
+    log += "\tWriting @<TRIPOS>MOLECULE section...\n"
     out.write("@<TRIPOS>MOLECULE\n{}\n\t{}\t{}\t1\nSMALL\nUSER_CHARGES\n".format(mol_name, N_at, N_bo))
 
-    log += "Writing @<TRIPOS>ATOM section...\n"
+    log += "\tWriting @<TRIPOS>ATOM section...\n"
     out.write("@<TRIPOS>ATOM\n")
     at = 0
     for atom in atoms:
@@ -101,7 +101,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
             out.write("{0:>4} {1:>4} {2:>13.4f} {3:>9.4f} {4:>9.4f} {5:>4} {6} {7} {8:>7.4f}\n".format(\
             at, atom[1], xyz[at-1,0], xyz[at-1,1], xyz[at-1,2], atom[5], atom[6], atom[7], float(atom[8])+charge_per_atom))
 
-    log += "Writing @<TRIPOS>BOND section...\n"
+    log += "\tWriting @<TRIPOS>BOND section...\n"
     out.write("@<TRIPOS>BOND\n")
     bo = 0
 
@@ -114,7 +114,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
         else:
             out.write("{0:>5} {1:>5} {2:>5} {3:>2}\n".format(bo, str(bond[1]), str(bond[2]), bond[3]))
 
-    log += "Writing @<TRIPOS>SUBSTRUCTURE section...\n"
+    log += "\tWriting @<TRIPOS>SUBSTRUCTURE section...\n"
     out.write("@<TRIPOS>SUBSTRUCTURE\n")
     out.write("\t1 {}\t\t\t1 ****\t\t\t0 ****  ****\n".format(atoms[0][7]))
     out.close()

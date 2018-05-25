@@ -56,12 +56,13 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     from DEPENDENCIES.rewrite_mol2 import rewrite_mol2
     log += "Importing cleanup dependency...\n\n"
     from DEPENDENCIES.cleanup import cleanup_error
-    log += "Creating temporary folder...\n"
 
+    log += "Creating temporary folder...\n"
     TMP = tempfile.mkdtemp(dir="./")
     atexit.register(cleanup_error, TMP, log)
 
-    log = check_VAR(VAR, log)
+    log += "Checking input options...\n"
+    check_VAR(VAR)
 
     if (VAR["MORPHOLOGY"] == "stripe"):
         if VAR["STRIPES"] == 1:
@@ -70,12 +71,11 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
             two_lig = True
     else:
         two_lig = (VAR["LIG1_FRAC"] < 1.0)
-
     log += "Imported options:\n"
     for i in VAR:
-        log += (i.ljust(20) + str(VAR[i]).ljust(50)+"\n")
+        log += "\t{:<20}{:>20}\n".format(i, str(VAR[i]))
 
-    log += "\n\nOne ligand was found...\n"
+    log += "\nOne ligand was found...\n"
     log += "Checking ligand1 mol2 file...\n"
     LIG1_MOL2 = VAR["LIG1_FILE"].readlines()
     LIG1_MOL2 = [s.replace("\n", "") for s in LIG1_MOL2]
@@ -117,6 +117,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
 
     N_S = len(names_core[names_core=='ST'])
 
+    log +="Assigning morphology...\n"
     xyz_anchors1, xyz_anchors2, log = assign_morph(xyz_core, names_core, VAR["LIG1_FRAC"], VAR["RSEED"], VAR["MORPHOLOGY"], VAR["STRIPES"], log)
 
     xyz_stones1 = get_stones(xyz_core, names_core, xyz_anchors1, xyz_pillars1, VAR["LIG1_S"])
@@ -146,10 +147,10 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     log += "Writing tleap input file...\n"
     write_leap(VAR, TMP, two_lig)
     log += "Running tleap...\n"
-    os.system("tleap -sf " + TMP + "/TLeap.in > " + TMP + "/TLeap.log")
+    os.system("tleap -sf {}/TLeap.in > {}/TLeap.log".format(TMP, TMP))
 
     log += "Running acpype...\n"
-    os.system("python DEPENDENCIES/acpype.py -p {} -x {} -r".format(TMP+"/NP.prmtop", TMP+"/NP.inpcrd -b NP -c user > acpype.log"))
+    os.system("python DEPENDENCIES/acpype.py -b NP -c user -p {}/NP.prmtop -x {}/NP.inpcrd > {}/acpype.log".format(TMP, TMP, TMP))
     os.system("mv NP_GMX.top {}/NP.top".format(TMP))
     os.system("mv NP_GMX.gro {}/NP.gro".format(TMP))
 
@@ -190,15 +191,16 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
 
     final_zip = zipfile.ZipFile(TMP+".zip", "w")
     for i in copy:
-        final_zip.write(TMP+"/"+i)
+        final_zip.write("{}/{}".format(TMP, i))
     final_zip.close()
 
     log += "Cleaning...\n"
-    bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
+    bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp"]
     for i in bye:
         os.remove(i)
     #shutil.rmtree(TMP)
 
+    log += "\"Señoras y señores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
     print(log)
     return (1, log, final_zip)

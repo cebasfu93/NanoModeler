@@ -1,14 +1,12 @@
 import numpy as np
 
-def check_VAR(VAR, log):
-    log += "Checking input options...\n"
+def check_VAR(VAR):
     if VAR["LIG1_FRAC"] < 0 or VAR["LIG1_FRAC"] > 1.0:
         sys.exit("LIG1_FRAC must be between 0 and 1.")
     if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe":
         sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings.")
     if VAR["STRIPES"] < 1:
         sys.exit("The number of stripes must be at least one.")
-    return log
 
 def check_mol2(mol2, log):
     MOLECULE = False
@@ -43,12 +41,13 @@ def check_mol2(mol2, log):
             res_names.append(mol2[i].split()[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
             ATOM = True
-    log += "{} atoms were found in the mol2 file...\n".format(len(atoms))
+    log += "\t{} atoms were found in the mol2 file...\n".format(len(atoms))
 
-    log += "Checking if columns 3, 4, and 5 correspond to floating numbers...\n"
+    log += "\tChecking if columns 3, 4, and 5 correspond to floating numbers...\n"
     for i in range(len(atoms)):
         float(atoms[i][2]), float(atoms[i][3]), float(atoms[i][4])
 
+    log += "\tChecking if there is only one residue in the input structure...\n"
     if len(atoms)!=np.unique(np.array(res_names), return_counts=True)[1][0]:
         sys.exit("There seems to be more than one residue type in the input mol2 file")
     return log
@@ -60,10 +59,10 @@ def check_frcmod(fname, log):
         if "ATTN, need revision" in frcmod[i]:
             errors.append(frcmod[i])
     if errors:
-        log += "The following parameters in the ligand were impossible to obtain...\n"
-        log += "Consider adding you own frcmod file with the missing parameters...\n"
+        log += "\tThe following parameters in the ligand were impossible to obtain...\n"
+        log += "\tConsider adding you own frcmod file with the missing parameters...\n"
         for i in range(len(errors)):
-            log += errors[i]+"\n"
+            log += "\t{}\n".format(errors[i])
     return log
 
 def read_resname(fname):

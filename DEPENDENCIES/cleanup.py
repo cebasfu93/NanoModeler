@@ -2,7 +2,7 @@ import os
 
 def cleanup_error(TMP, log):
     log += "Cleaning up...\n"
-    bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", "acpype.log"]
+    bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp"]
     for i in bye:
         if os.path.isfile(i):
             os.remove(i)
