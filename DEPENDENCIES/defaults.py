@@ -90,7 +90,7 @@ def write_leap(VAR, TMP, two_lig_func):
     msj += "loadamberparams PARAMS/AUS.frcmod\n"
     msj += "loadamberparams PARAMS/AUL.frcmod\n"
     msj += "loadamberparams PARAMS/PARAMS.frcmod\n\n"
-    if VAR["FRCMOD"] != "0":
+    if VAR["FRCMOD"]:
         msj += "loadamberparams {}\n".format(VAR["FRCMOD"])
     msj += "AU = loadmol3 PARAMS/AU.mol2\n"
     msj += "AUS = loadmol3 PARAMS/AUS.mol2\n"

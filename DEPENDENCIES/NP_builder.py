@@ -231,7 +231,6 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
         log += "Placing ligand 2 around the core...\n"
         xyz_coated_func, names_coated_func, res_coated_func, log = place_ligand(xyz_lig2_func, names_lig2_func, res_lig2_func, xyz_stones2_func, xyz_pillars2_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows)+len(xyz_stones1_func[:,0,0]), lig2_s, elong, log)
 
-    print(xyz_coated_func, names_coated_func, res_coated_func)
     return xyz_coated_func, names_coated_func, res_coated_func, log
 
 def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, out_fname):

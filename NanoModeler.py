@@ -1,4 +1,4 @@
-def NanoModeler(LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2="0", LIG2_C=0, LIG2_S=0, FRCMOD="0", CORE="au144SR60_NM.pdb", ELONGATED=False):
+def NanoModeler(LIG1_FILE="LIG1.mol2", CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE="XXX.mol2", CAP2=[], LIG2_C=0, LIG2_S=0, FRCMOD=None, CORE="au144SR60_NM.pdb", ELONGATED=False):
     VAR = {
     "LIG1_FILE" : LIG1_FILE,   #ByteArray of the mol2 of ligand1 (must be in the working directory)
     "CAP1" : CAP1,		    #Atom numbers (as in the mol2, likely to start in 1) to remove. Numbers separated by commas
@@ -121,7 +121,7 @@ def NanoModeler(LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1
 
     xyz_stones1 = get_stones(xyz_core, names_core, xyz_anchors1, xyz_pillars1, VAR["LIG1_S"])
     if two_lig:
-        xyz_stones2 = get_stones(xyz_core, names_core, xyz_anchors2, xyz_pillars2, VAR["LIGs_S"])
+        xyz_stones2 = get_stones(xyz_core, names_core, xyz_anchors2, xyz_pillars2, VAR["LIG2_S"])
     else:
         xyz_stones2 = []
 
@@ -204,21 +204,21 @@ def NanoModeler(LIG1_FILE="LIG1.mol2", CAP1="0", LIG1_C=0, LIG1_S=0, LIG1_FRAC=1
     return (1, log, final_zip)
 
 NanoModeler(LIG1_FILE=open("LIG2.mol2"),
-    CAP1="0",
+    CAP1=[],
     LIG1_C=1,
     LIG1_S=0,
 
-    LIG1_FRAC=1.0,
+    LIG1_FRAC=0.5,
     MORPHOLOGY="random",
     RSEED=666,
     STRIPES=1,
 
-    #LIG2_FILE=open("LIG3.mol2"),
-    CAP2="0",
-    LIG2_C=0,
+    LIG2_FILE=open("LIG3.mol2"),
+    CAP2=[],
+    LIG2_C=1,
     LIG2_S=0,
 
-    FRCMOD="0",
+    FRCMOD=None,
 
     CORE=open("CORES/au25SR18_NM.pdb"),
     ELONGATED=False)

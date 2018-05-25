@@ -4,16 +4,12 @@ from sklearn.decomposition import PCA
 
 def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     out = open(oname, "w")
-    if cap=="0":
+    if not cap:
         log += "There are no capping atoms...\n"
-        cap = []
     else:
         log += "Capping atoms {} will be removed...\n".format(cap)
-        cap = np.array(cap.split(","), dtype="int")
 
-    if lig_s == 0:
-        lig_s = []
-    else:
+    if lig_s != 0:
         lig_c = find_C(mol2, cap, lig_s)
 
     ATOM=False
