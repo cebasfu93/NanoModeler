@@ -14,7 +14,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     if lig_s == 0:
         lig_s = []
     else:
-        lig_c = find_C(fname, cap, lig_s)
+        lig_c = find_C(mol2, cap, lig_s)
 
     ATOM=False
     BOND=False
@@ -34,7 +34,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
         elif BOND:
             at1 = int(mol2[i].split()[1])
             at2 = int(mol2[i].split()[2])
-            if at1 not in cap and at2 not in cap:
+            if at1 not in cap and at2 not in cap and at1 != lig_s and at2 != lig_s:
                 bonds.append(np.array(mol2[i].split()))
             if "@<TRIPOS>" in mol2[i+1]:
                 BOND=False
@@ -108,6 +108,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     log += "Writing @<TRIPOS>BOND section...\n"
     out.write("@<TRIPOS>BOND\n")
     bo = 0
+
     for bond in bonds:
         bo+=1
         if bo != len(bonds):
