@@ -186,6 +186,33 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
 
     return trans_lig_best, log
 
+def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pillars_tmp, xyz_coated_tmp, names_coated_tmp, res_coated_tmp, last_res_num, lig_s, elong, log):
+    xyz_lig_conv=np.insert(xyz_lig_tmp, 3, 1, axis=1).T
+    for i in range(len(xyz_stones_tmp[:,0,0])):
+        xyz_stones_now = xyz_stones_tmp[i,:-1,:]
+        trans_matrix=affine_matrix_from_points(xyz_pillars_tmp.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
+        trans_lig=np.dot(trans_matrix, xyz_lig_conv).T[:,:3]
+        trans_lig = trans_lig[:-1]
+
+        if lig_s == 0 or elong:
+            trans_lig, log = solve_clashes(xyz_coated_tmp, trans_lig, xyz_stones_now[0,:], last_res_num+i+1, log)
+
+        else:
+            D_clash = distance.cdist(trans_lig, xyz_coated_tmp)
+            clash_dis = np.min(D_clash)
+            if clash_dis < 0.1:
+                log += "\tThe sulphur atom was given in the mol2 file of the ligand...\n"
+                log += "\tThere are no degrees of freedom available to prevent clashes...\n"
+                log += "\tClashes were found while placing residue {}...\n".format(last_res_num+i+1)
+                log += "\tConsider parametrizing the ligand without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
+
+        trans_lig = np.append(trans_lig, [xyz_stones_tmp[i,-1,:]], axis=0)
+        xyz_coated_tmp=np.append(xyz_coated_tmp, trans_lig, axis=0)
+        names_coated_tmp=np.append(names_coated_tmp, names_lig_tmp, axis=0)
+        res_coated_tmp=np.append(res_coated_tmp, res_lig_tmp, axis=0)
+
+    return xyz_coated_tmp, names_coated_tmp, res_coated_tmp, log
+
 def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func, lig1_s, lig2_s, elong, log):
     #Merges xyz coordinates and names of the core and the ligands into one coated NP
     keep_rows=[]
@@ -198,61 +225,17 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
     res_coated_func=names_core_func[keep_rows]
 
     #Transforms and appends rototranslated ligand 1
-    xyz_lig1_func_conv=np.insert(xyz_lig1_func, 3, 1, axis=1).T
-    for i in range(len(xyz_stones1_func[:,0,0])):
-        xyz_stones_now = xyz_stones1_func[i,:-1,:]
-        trans_matrix=affine_matrix_from_points(xyz_pillars1_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
-        trans_lig=np.dot(trans_matrix, xyz_lig1_func_conv).T[:,:3]
-        trans_lig = trans_lig[:-1]
-
-        if lig1_s == 0 or elong:
-            trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+i+1, log)
-
-        else:
-            D_clash = distance.cdist(trans_lig, xyz_coated_func)
-            clash_dis = np.min(D_clash)
-            if clash_dis < 0.1:
-                log += "The sulphur atom was given in the mol2 file of ligand 1...\n"
-                log += "There are no degrees of freedom available to prevent clashes...\n"
-                log += "Clashes were found while placing residue {}...\n".format(len(keep_rows)+i+1)
-                log += "Consider parametrizing ligand 1 without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
-
-        trans_lig = np.append(trans_lig, [xyz_stones1_func[i,-1,:]], axis=0)
-        xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
-        names_coated_func=np.append(names_coated_func, names_lig1_func, axis=0)
-        res_coated_func=np.append(res_coated_func, res_lig1_func, axis=0)
-
-    #Transforms and appends rototranslated ligand 2
+    log += "Placing ligand 1 around the core...\n"
+    xyz_coated_func, names_coated_func, res_coated_func, log = place_ligand(xyz_lig1_func, names_lig1_func, res_lig1_func, xyz_stones1_func, xyz_pillars1_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows), lig1_s, elong, log)
     if len(xyz_lig2_func)!=0:
-        xyz_lig2_func_conv=np.insert(xyz_lig2_func, 3, 1, axis=1).T
-        for i in range(len(xyz_stones2_func[:,0,0])):
-            xyz_stones_now = xyz_stones2_func[i,:-1,:]
-            trans_matrix=affine_matrix_from_points(xyz_pillars2_func.T, xyz_stones_now.T, shear=False, scale=False, usesvd=True)
-            trans_lig=np.dot(trans_matrix, xyz_lig2_func_conv).T[:,:3]
-            trans_lig = trans_lig[:-1]
+        log += "Placing ligand 2 around the core...\n"
+        xyz_coated_func, names_coated_func, res_coated_func, log = place_ligand(xyz_lig2_func, names_lig2_func, res_lig2_func, xyz_stones2_func, xyz_pillars2_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows)+len(xyz_stones1_func[:,0,0]), lig2_s, elong, log)
 
-            if lig2_s == 0 or elong:
-                trans_lig, log = solve_clashes(xyz_coated_func, trans_lig, xyz_stones_now[0,:], len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1, log)
-
-            else:
-                D_clash = distance.cdist(trans_lig, xyz_coated_func)
-                clash_dis = np.min(D_clash)
-                if clash_dis < 0.1:
-                    log += "The sulphur atom was given in the mol2 file of ligand 2...\n"
-                    log += "There are no degrees of freedom available to prevent clashes...\n"
-                    log += "Clashes were found while placing residue {}...\n".format(len(keep_rows)+len(xyz_stones1_func[:,0,0])+i+1)
-                    log += "Consider parametrizing ligand 2 without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
-
-            trans_lig = np.append(trans_lig, [xyz_stones2_func[i,-1,:]], axis=0)
-            xyz_coated_func=np.append(xyz_coated_func, trans_lig, axis=0)
-            names_coated_func=np.append(names_coated_func, names_lig2_func, axis=0)
-            res_coated_func=np.append(res_coated_func, res_lig2_func, axis=0)
+    print(xyz_coated_func, names_coated_func, res_coated_func)
     return xyz_coated_func, names_coated_func, res_coated_func, log
 
 def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, out_fname):
     xyz_coated_func = xyz_coated_func*10
-    xyz_anchors1_func = xyz_anchors1_func*10
-    xyz_anchors2_func = xyz_anchors2_func*10
     xyz_lig1_func = xyz_lig1_func*10
     xyz_lig2_func = xyz_lig2_func*10
     N_at_lig1 = len(xyz_lig1_func[:,0])
