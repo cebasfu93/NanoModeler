@@ -150,9 +150,9 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     os.system("tleap -sf {}/TLeap.in > {}/TLeap.log".format(TMP, TMP))
 
     log += "Running acpype...\n"
-    os.system("python DEPENDENCIES/acpype.py -b NP -c user -p {}/NP.prmtop -x {}/NP.inpcrd > {}/acpype.log".format(TMP, TMP, TMP))
-    os.system("mv NP_GMX.top {}/NP.top".format(TMP))
-    os.system("mv NP_GMX.gro {}/NP.gro".format(TMP))
+    os.system("python DEPENDENCIES/acpype.py -b {}/NP -c user -p {}/NP.prmtop -x {}/NP.inpcrd > {}/acpype.log".format(TMP, TMP, TMP, TMP))
+    os.system("mv {}/NP_GMX.top {}/NP.top".format(TMP, TMP))
+    os.system("mv {}/NP_GMX.gro {}/NP.gro".format(TMP, TMP))
 
     ##############################Staples########################
     log += "Reading gro file of the coated nanoparticle...\n"
