@@ -1,12 +1,12 @@
 #!/usr/bin/env python
-from __future__ import print_function
+#from __future__ import print_function
 from datetime import datetime
 from shutil import copy2
 from shutil import rmtree
 import traceback
 import signal
-import time
-import optparse
+#import time
+#import optparse
 import math
 import os
 import pickle
@@ -1999,10 +1999,14 @@ a        """
         itpText = []
         oitpText = []
         otopText = []
-        top = self.baseName + '_GMX.top'
+        """top = self.baseName + '_GMX.top'
         itp = self.baseName + '_GMX.itp'
         otop = self.baseName + '_GMX_OPLS.top'
-        oitp = self.baseName + '_GMX_OPLS.itp'
+        oitp = self.baseName + '_GMX_OPLS.itp'"""
+        top = self.baseName + '.top'
+        itp = self.baseName + '.itp'
+        otop = self.baseName + '_OPLS.top'
+        oitp = self.baseName + '_OPLS.itp'
 
         headDefault = \
 """
@@ -2626,7 +2630,7 @@ a        """
     def writeGroFile(self):
         # print "Writing GROMACS GRO file\n"
         self.printDebug("writing GRO file")
-        gro = self.baseName + '_GMX.gro'
+        gro = self.baseName + '.gro'
         gmxDir = os.path.abspath('.')
         groFileName = os.path.join(gmxDir, gro)
         groFile = open(groFileName, 'w')
@@ -3332,7 +3336,7 @@ class Dihedral(object):
         return '<%s, ang=%.2f>' % (self.atoms, self.phase * 180 / Pi)
 
 if __name__ == '__main__':
-    t0 = time.time()
+    #t0 = time.time()
     print(header)
 
     parser = optparse.OptionParser(usage = usage + epilog)
@@ -3512,7 +3516,7 @@ if __name__ == '__main__':
             traceback.print_tb(exceptionTraceback, file = sys.stdout)
         acpypeFailed = True
 
-    execTime = int(round(time.time() - t0))
+    #execTime = int(round(time.time() - t0))
     if execTime == 0:
         msg = "less than a second"
     else:
@@ -3532,4 +3536,3 @@ if __name__ == '__main__':
     if acpypeFailed: sys.exit(1)
     try: os.chdir(molecule.rootDir)
     except: pass
-
