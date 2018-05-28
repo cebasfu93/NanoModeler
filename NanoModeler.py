@@ -42,6 +42,20 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     import zipfile
     log += "Importing atexit library...\n"
     import atexit
+    log += "Importing re library...\n"
+    import re
+    log += "Importing pickle library...\n"
+    import pickle
+    log += "Importing subprocess library...\n"
+    import subprocess
+    log += "Importing signal library...\n"
+    import signal
+    log += "Importing traceback library...\n"
+    import traceback
+    log += "Importing datetime library...\n"
+    import datetime
+    log += "Importing acpype.py...\n"
+    from DEPENDENCIES.acpype import MolTopol
     log += "Importing NP_builder dependency...\n"
     from DEPENDENCIES.NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
     log += "Importing staples dependency...\n"
@@ -74,7 +88,11 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
         two_lig = (VAR["LIG1_FRAC"] < 1.0)
     log += "Imported options:\n"
     for i in VAR:
-        log += "\t{:<20}{:>20}\n".format(i, str(VAR[i]))
+        if (i == "LIG1_FILE" or i == "LIG2_FILE"or i == "CORE") and VAR[i]:
+            if VAR[i]:
+                log += "\t{:<20}{:>20}\n".format(i, str(VAR[i].name))
+        else:
+            log += "\t{:<20}{:>20}\n".format(i, str(VAR[i]))
 
     log += "\nOne ligand was found...\n"
     log += "Checking ligand1 mol2 file...\n"
@@ -151,9 +169,12 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     os.system("tleap -sf {}/TLeap.in > {}/TLeap.log".format(TMP, TMP))
 
     log += "Running acpype...\n"
-    os.system("python DEPENDENCIES/acpype.py -r -b {}/NP -c user -p {}/NP.prmtop -x {}/NP.inpcrd > {}/acpype.log".format(TMP, TMP, TMP, TMP))
-    os.system("mv {}/NP_GMX.top {}/NP.top".format(TMP, TMP))
-    os.system("mv {}/NP_GMX.gro {}/NP.gro".format(TMP, TMP))
+    acpype_system = MolTopol(acFileXyz = "{}/NP.inpcrd".format(TMP), acFileTop = "{}/NP.prmtop".format(TMP),
+                      debug = False, basename = "{}/NP".format(TMP),
+                      verbose = False,  gmx45 = True,
+                      disam = True,     direct = True,
+                      is_sorted = False, chiral = True)
+    acpype_system.writeGromacsTopolFiles(amb2gmx = True)
 
     ##############################Staples########################
     log += "Reading gro file of the coated nanoparticle...\n"
