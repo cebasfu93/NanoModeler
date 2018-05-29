@@ -90,6 +90,7 @@ def read_Au102SR44(fname):
             names.append('C')
     xyz = center(xyz)*10
     names = np.array(names, dtype='str')
+
     return xyz, names
 
 def read_A133L52(fname):
@@ -238,6 +239,7 @@ def classify_staples(xyz_sys, names_sys):
     ndx_ST = np.where(names_sys=='ST')[0]
     ndx_C = np.where(names_sys=='C')[0]
 
+    N_AU = len(ndx_AU)
     N_ST = len(ndx_ST)
 
     blocks = []
@@ -247,10 +249,9 @@ def classify_staples(xyz_sys, names_sys):
         ndx_au = np.argsort(D_ST_AU[i])[0:2]
         ndx_c = np.argsort(D_ST_C[i])[0]
         blocks.append(subunits.Block(ndx_S=ndx_ST[i], ndx_Au=ndx_AU[ndx_au], ndx_C=ndx_C[ndx_c]))
-
-
     N_blocks = len(blocks)
     ganchos = []
+
     for i in range(N_blocks):
         taken = False
         for j in range(len(ganchos)):
@@ -280,10 +281,11 @@ def classify_staples(xyz_sys, names_sys):
     staples = []
     for i in range(N_ganchos):
         staples.append(subunits.Staple(ndx_S=new_ganchos[i].S, ndx_Au=new_ganchos[i].Au, ndx_C=new_ganchos[i].C))
-        #staples.append(subunits.Staple(ndx_S=ganchos[i].S, ndx_Au=ganchos[i].Au, ndx_C=ganchos[i].C))
 
     #Depending in the number of sulphur and gold atoms in each staple, it clssifies it. For STC and STV it calculates the angle Aul-S-Aul and with an tolerance of +/-9 degrees, the staple is classified
     print("Au{} SR{}".format(len(ndx_AU), len(ndx_ST)))
+
+    new_staples = []
     for i in range(len(staples)):
         staple_act = staples[i]
         N_S = len(staple_act.S)
@@ -306,11 +308,27 @@ def classify_staples(xyz_sys, names_sys):
                         staple_act.change_tipo('STV')
                     else:
                         print("One of the staples should be STC or STV but the AuL-S-AuL angle displays an odd value. Unrecognized staple")
+        if not (N_S == 4 and N_Au == 5 and N_AU == 102):
+            new_staples.append(staple_act)
+
         else:
             print("Unrecognized staple")
-    return staples
+
+    if N_AU == 102:
+        new_staples.append(subunits.Staple(ndx_S=[116, 117], ndx_Au=[29, 88, 88, 39], ndx_C=[160, 161], tipo="STR"))
+        new_staples.append(subunits.Staple(ndx_S=[122, 123], ndx_Au=[38, 85, 85], ndx_C = [166, 167], tipo="STR"))
+        new_staples.append(subunits.Staple(ndx_S=[134, 135], ndx_Au=[68, 97, 97, 78], ndx_C=[178, 179], tipo="STR"))
+        new_staples.append(subunits.Staple(ndx_S=[138, 139], ndx_Au=[77, 94, 94], ndx_C=[182, 183], tipo="STR"))
+
+    return new_staples
 
 def write_pdb(xyz_sys, names_sys, staples, fname):
+    if len(xyz_sys) == 192:
+        xyz_sys = np.delete(xyz_sys, 79, axis = 0)
+        xyz_sys = np.delete(xyz_sys, 39, axis = 0)
+        names_sys = np.delete(names_sys, 79, axis = 0)
+        names_sys = np.delete(names_sys, 39, axis = 0)
+
     pdb=open(fname, 'w')
     pdb.close()
     all_busy_Au = np.array([], dtype='int')
@@ -320,7 +338,6 @@ def write_pdb(xyz_sys, names_sys, staples, fname):
 
     for i in range(N_staples):
         all_busy_Au = np.append(all_busy_Au, staples[i].Au)
-
     res = 1
     at = 1
 
@@ -331,6 +348,7 @@ def write_pdb(xyz_sys, names_sys, staples, fname):
             res+=1
 
     for i in range(N_staples):
+        #print(vars(staples[i]))
         st_act = staples[i]
         for j in range(len(st_act.Au_s)):
             write_pdb_block("AUS", st_act.tipo, xyz_sys[st_act.Au_s[j]], res, at, fname)
@@ -369,6 +387,8 @@ def print_xyz(coords, nombres, fname):
     for i in range(len(nombres)):
         fxyz.write("{}\t\t{:.3f}   {:.3f}   {:.3f}\n".format(nombres[i], coords[i,0], coords[i,1], coords[i,2]))
     fxyz.close()
+
+
 """
 #AU25SR18 (61 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 xyz_Au25SR18, names_Au25SR18 = read_Au25SR18("AU25SR18/au25_pet18.gro")
@@ -436,8 +456,14 @@ core_dic = {"AU25SR18/test-25/test-25_CORE.xyz": "au25SR18_NM.pdb", \
             "AU144SR60/test-144/test-144_CORE.xyz": "au144SR60_NM.pdb", \
             "AU314SR96/test-314/test-314_CORE.xyz": "au314SR96_NM.pdb", \
 }
-
+"""
 for i in core_dic:
     xyz_core, names_core = read_Au68SR34(i)
     staples_core = classify_staples(xyz_core, names_core)
     write_pdb(xyz_core, names_core, staples_core, core_dic[i])
+"""
+
+#AU102SR44 (190 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
+xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
+staples_Au102SR44 = classify_staples(xyz_Au102SR44, names_Au102SR44)
+write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
