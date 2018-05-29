@@ -1,15 +1,25 @@
 PARAMETERS FROM JCTC 2016, 12, 1342-1350
+MASS
+AU        196.96700
+AUL        196.96700
+AUS        196.96700
+
 BOND
 CA-S    237.0     1.75
 CT-S    118.443   1.84
 
 ANGLE
-CA-C-OH   70.0   112.0
-CA-C-O    70.0   126.0
-CA-CA-S   50.0   120.0
-S-CT-HC   50.0   107.0
-H1-CT-CA  50.0   109.0
+CA-C -OH   70.0   112.0
+CA-C -O    70.0   126.0
+CA-CA-S    50.0   120.0
+S -CT-HC   50.0   107.0
+H1-CT-CA   50.0   109.0
 
 DIHE
-X-X-CA-S    4   4.4   180.0   2
-C-CA-CA-CA  4   4.4   180.0   2
+X -X -CA-S    4   4.4   180.0   2
+C -CA-CA-CA   4   4.4   180.0   2
+
+NONBON
+AU             1.4755  5.2900
+AUL             1.4755  5.2900
+AUS             1.4755  5.2900

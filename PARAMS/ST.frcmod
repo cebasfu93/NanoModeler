@@ -1,6 +1,6 @@
 remark goes here
 MASS
-ST              32.06           
+S              32.06
 
 ANGLE
 
@@ -9,7 +9,4 @@ DIHE
 IMPROPER
 
 NONBON
-ST             2.00  0.2500
-
-
-
+S             2.00  0.2500

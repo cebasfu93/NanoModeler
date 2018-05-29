@@ -1,6 +1,6 @@
-remark goes here
+Parameters for AU
 MASS
-AU        196.96700                
+AU        196.96700
 
 ANGLE
 
@@ -9,7 +9,4 @@ DIHE
 IMPROPER
 
 NONBON
-AU             1.4755  5.2900           
-
-
-
+AU             1.4755  5.2900

@@ -1,6 +1,6 @@
-remark goes here
+Parameters for AUL
 MASS
-AUL        196.96700                
+AUL        196.96700
 
 ANGLE
 
@@ -9,7 +9,4 @@ DIHE
 IMPROPER
 
 NONBON
-AUL             1.4755  5.2900           
-
-
-
+AUL             1.4755  5.2900
