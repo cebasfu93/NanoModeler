@@ -74,7 +74,7 @@ def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
                 zero = 0.233
             elif b.typesAu[j]=="AUS":
                 zero = 0.241
-            bonds.write(str(b.S+1).rjust(6)+str(b.Au[j]+1).rjust(7)+str(func_type).rjust(4)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.S]+" - "+names_sys_func[b.Au[j]]+signature+"\n")
+            bonds.write("{:>6} {:>6} {:>3}".format(b.S+1, b.Au[j]+1, func_type)+" {:>13.4e} {:>13.4e}".format(zero, cons)+" ;     {:3} - {:3}\t{}\n".format(names_sys_func[b.S], names_sys_func[b.Au[j]], signature))
     bonds.close()
 
 def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
@@ -94,13 +94,13 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
                 zero = 100.0
             else:
                 sys.exit("There was a problem recognizing the staple type when trying to write an Au - S - Au angle.")
-            angles.write(str(b.Au[0]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[0]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.Au[1]]+signature+"\n")
+            angles.write("{:>6} {:>6} {:>6} {:>6}".format(b.Au[0]+1, b.S+1, b.Au[1]+1, func_type)+" {:>13.4e} {:>13.4e}".format(zero, cons)+" ;     {:3} - {:3} - {:3}\t{}\n".format(names_sys_func[b.Au[0]], names_sys_func[b.S], names_sys_func[b.Au[1]], signature))
 
         #AuL - S - AuS
         if np.any(b.typesAu == "AUS"):
             cons = 460.240
             zero = 91.3
-            angles.write(str(b.Au[0]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.Au[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[0]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.Au[1]]+signature+"\n")
+            angles.write("{:>6} {:>6} {:>6} {:>6}".format(b.Au[0]+1, b.S+1, b.Au[1]+1, func_type)+" {:>13.4e} {:>13.4e}".format(zero, cons)+" ;     {:3} - {:3} - {:3}\t{}\n".format(names_sys_func[b.Au[0]], names_sys_func[b.S], names_sys_func[b.Au[1]], signature))
 
         #Au - S -  C
         for j in range(2):
@@ -109,7 +109,7 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
                 zero = 106.8
             elif b.typesAu[j] == "AUS":
                 zero = 111.6
-            angles.write(str(b.Au[j]+1).rjust(6)+str(b.S+1).rjust(7)+str(b.C+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[b.Au[j]]+" - "+names_sys_func[b.S]+" - "+names_sys_func[b.C]+signature+"\n")
+            angles.write("{:>6} {:>6} {:>6} {:>6}".format(b.Au[j]+1, b.S+1, b.C+1, func_type)+" {:>13.4e} {:>13.4e}".format(zero, cons)+" ;     {:3} - {:3} - {:3}\t{}\n".format(names_sys_func[b.Au[j]], names_sys_func[b.S], names_sys_func[b.C], signature))
 
         #S - AuL - S
         all_S = np.where(names_sys_func=="ST")[0]
@@ -122,7 +122,7 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
                 #For every AUL (not repeated) the angle is made with its 2 closest S atoms
                 D_AuL_S = distance.cdist([xyz_sys_func[b.Au[j]]], xyz_sys_func[all_S])
                 near_S = all_S[np.argsort(D_AuL_S[0])[0:2]]
-                angles.write(str(near_S[0]+1).rjust(6)+str(b.Au[j]+1).rjust(7)+str(near_S[1]+1).rjust(7)+str(func_type).rjust(7)+"{:.4e}".format(zero).rjust(14)+"{:.4e}".format(cons).rjust(14)+" ;\t"+names_sys_func[near_S[0]]+" - "+names_sys_func[b.Au[j]]+" - "+names_sys_func[near_S[1]]+signature+"\n")
+                angles.write("{:>6} {:>6} {:>6} {:>6}".format(near_S[0]+1, b.Au[j]+1, near_S[1]+1, func_type)+" {:>13.4e} {:>13.4e}".format(zero, cons)+" ;     {:3} - {:3} - {:3}\t{}\n".format(names_sys_func[near_S[0]], names_sys_func[b.Au[j]], names_sys_func[near_S[1]], signature))
 
     angles.close()
 
