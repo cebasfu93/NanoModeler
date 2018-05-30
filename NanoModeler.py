@@ -88,7 +88,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
         two_lig = (VAR["LIG1_FRAC"] < 1.0)
     log += "Imported options:\n"
     for i in VAR:
-        if (i == "LIG1_FILE" or i == "LIG2_FILE"or i == "CORE") and VAR[i]:
+        if (i == "LIG1_FILE" or i == "LIG2_FILE"or i == "CORE" or i == "FRCMOD") and VAR[i]:
             if VAR[i]:
                 log += "\t{:<20}{:>20}\n".format(i, str(VAR[i].name))
         else:
@@ -172,8 +172,8 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     acpype_system = MolTopol(acFileXyz = "{}/NP.inpcrd".format(TMP), acFileTop = "{}/NP.prmtop".format(TMP),
                       debug = False, basename = "{}/NP".format(TMP),
                       verbose = False,  gmx45 = True,
-                      disam = True,     direct = True,
-                      is_sorted = False, chiral = True)
+                      disam = False,     direct = False,
+                      is_sorted = False, chiral = False)
     acpype_system.writeGromacsTopolFiles(amb2gmx = True)
 
     ##############################Staples########################
@@ -233,9 +233,9 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     return (1, log, zip_data)
 
 if __name__ == "__main__":
-    NanoModeler(LIG1_FILE=open("LIG2.mol2"),
+    NanoModeler(LIG1_FILE=open("Mol-ia1_m1-c2.mol2"),
         CAP1=[],
-        LIG1_C=1,
+        LIG1_C=38,
         LIG1_S=0,
 
         LIG1_FRAC=1.0,
@@ -248,7 +248,7 @@ if __name__ == "__main__":
         LIG2_C=1,
         LIG2_S=0,
 
-        FRCMOD=None,
+        FRCMOD=open("NP2.frcmod"),
 
-        CORE=open("CORES/au38SR24_NM.pdb"),
+        CORE=open("CORES/au144SR60_NM.pdb"),
         ELONGATED=False)
