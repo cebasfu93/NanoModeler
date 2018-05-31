@@ -9,7 +9,10 @@ def calc_angle(a, b, c):
     ba = a - b
     bc = c - b
     cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
-    angle = np.arccos(cosine_angle)*180/math.pi
+    if np.abs(cosine_angle-1.0) < 0.001:
+        angle = 0
+    else:
+        angle = np.arccos(cosine_angle)*180/math.pi
     return angle
 
 def center(coords):
@@ -233,6 +236,26 @@ def read_Au314SH96(fname):
     names = np.array(names)
     return xyz, names
 
+def read_Au44SR28(fname):
+    fxyz = np.genfromtxt(fname, skip_header=1, dtype='str')
+    xyz = []
+    names = []
+    N_xyz = len(fxyz)
+    for i in range(N_xyz):
+        if fxyz[i,0] == "Au":
+            xyz.append(fxyz[i,1:])
+            names.append("AU")
+        elif fxyz[i,0] == "S":
+            xyz.append(fxyz[i,1:])
+            names.append("ST")
+        elif fxyz[i,0] == "C":
+            xyz.append(fxyz[i,1:])
+            names.append("C")
+
+    xyz = center(xyz)
+    names = np.array(names)
+    return xyz, names
+
 def classify_staples(xyz_sys, names_sys):
 
     ndx_AU = np.where(names_sys=='AU')[0]
@@ -246,9 +269,10 @@ def classify_staples(xyz_sys, names_sys):
     D_ST_AU = distance.cdist(xyz_sys[ndx_ST],xyz_sys[ndx_AU])
     D_ST_C = distance.cdist(xyz_sys[ndx_ST],xyz_sys[ndx_C])
     for i in range(N_ST):
-        ndx_au = np.argsort(D_ST_AU[i])[0:2]
         ndx_c = np.argsort(D_ST_C[i])[0]
+        ndx_au = np.argsort(D_ST_AU[i])[0:2]
         blocks.append(subunits.Block(ndx_S=ndx_ST[i], ndx_Au=ndx_AU[ndx_au], ndx_C=ndx_C[ndx_c]))
+
     N_blocks = len(blocks)
     ganchos = []
 
@@ -388,7 +412,6 @@ def print_xyz(coords, nombres, fname):
         fxyz.write("{}\t\t{:.3f}   {:.3f}   {:.3f}\n".format(nombres[i], coords[i,0], coords[i,1], coords[i,2]))
     fxyz.close()
 
-
 """
 #AU25SR18 (61 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 xyz_Au25SR18, names_Au25SR18 = read_Au25SR18("AU25SR18/au25_pet18.gro")
@@ -404,6 +427,28 @@ write_pdb(xyz_Au36SR24, names_Au36SR24, staples_Au36SR24, "au36SR24_NM.pdb")
 xyz_Au38SR24, names_Au38SR24 = read_Au25SR18("AU38SR24/au38_pet24.gro")
 staples_Au38SR24 = classify_staples(xyz_Au38SR24, names_Au38SR24)
 write_pdb(xyz_Au38SR24, names_Au38SR24, staples_Au38SR24, "au38SR24_NM.pdb")
+
+#AU44SR28 (100 atoms, Pei/Liu, JACS, 2013)
+xyz_Au44SR28, names_Au44SR28 = read_Au44SR28("AU44SR28/Au44SR28.xyz")
+staples_Au44SR28 = classify_staples(xyz_Au44SR28, names_Au44SR28)
+write_pdb(xyz_Au44SR28, names_Au44SR28, staples_Au44SR28, "au44SR28_NM.pdb")
+
+#AU68SR32 (132 atoms, Wu/Zeng, Sci. Adv, 2015)
+xyz_Au68SR32, names_Au68SR32 = read_Au314SH96("AU68SR32/Au68SH32-I1.xyz")
+staples_Au68SR32 = classify_staples(xyz_Au68SR32, names_Au68SR32)
+write_pdb(xyz_Au68SR32, names_Au68SR32, staples_Au68SR32, "au68SR32-I1_NM.pdb")
+
+xyz_Au68SR32, names_Au68SR32 = read_Au314SH96("AU68SR32/Au68SH32-I2.xyz")
+staples_Au68SR32 = classify_staples(xyz_Au68SR32, names_Au68SR32)
+write_pdb(xyz_Au68SR32, names_Au68SR32, staples_Au68SR32, "au68SR32-I2_NM.pdb")
+
+xyz_Au68SR32, names_Au68SR32 = read_Au314SH96("AU68SR32/Au68SH32-I3.xyz")
+staples_Au68SR32 = classify_staples(xyz_Au68SR32, names_Au68SR32)
+write_pdb(xyz_Au68SR32, names_Au68SR32, staples_Au68SR32, "au68SR32-I3_NM.pdb")
+
+xyz_Au68SR32, names_Au68SR32 = read_Au314SH96("AU68SR32/Au68SH32-I4.xyz")
+staples_Au68SR32 = classify_staples(xyz_Au68SR32, names_Au68SR32)
+write_pdb(xyz_Au68SR32, names_Au68SR32, staples_Au68SR32, "au68SR32-I4_NM.pdb")
 
 #AU68SR34 (136 atoms, Xu/Gao, J. Phys. Chem C, 2015)
 xyz_Au68SR34, names_Au68SR34 = read_Au314SH96("AU68SR34/Au68SH34-I1.xyz")
@@ -448,6 +493,11 @@ write_pdb(xyz_Au314SR96, names_Au314SR96, staples_Au314SR96, "au314SR96_NM.pdb")
 core_dic = {"AU25SR18/test-25/test-25_CORE.xyz": "au25SR18_NM.pdb", \
             "AU36SR24/test-36/test-36_CORE.xyz": "au36SR24_NM.pdb", \
             "AU38SR24/test-38/test-38_CORE.xyz": "au38SR24_NM.pdb", \
+            "AU44SR28/test-44/test-44_CORE.xyz": "au44SR28_NM.pdb", \
+            "AU68SR32/test-I1/test-I1_CORE.xyz": "au68SR32-I1_NM.pdb", \
+            "AU68SR32/test-I2/test-I2_CORE.xyz": "au68SR32-I2_NM.pdb", \
+            "AU68SR32/test-I3/test-I3_CORE.xyz": "au68SR32-I3_NM.pdb", \
+            "AU68SR32/test-I4/test-I4_CORE.xyz": "au68SR32-I4_NM.pdb", \
             "AU68SR34/test-I1/test-I1_CORE.xyz": "au68SR34-I1_NM.pdb", \
             "AU68SR34/test-I2/test-I2_CORE.xyz": "au68SR34-I2_NM.pdb", \
             "AU68SR34/test-I3/test-I3_CORE.xyz": "au68SR34-I3_NM.pdb", \
@@ -456,14 +506,15 @@ core_dic = {"AU25SR18/test-25/test-25_CORE.xyz": "au25SR18_NM.pdb", \
             "AU144SR60/test-144/test-144_CORE.xyz": "au144SR60_NM.pdb", \
             "AU314SR96/test-314/test-314_CORE.xyz": "au314SR96_NM.pdb", \
 }
-"""
+
 for i in core_dic:
     xyz_core, names_core = read_Au68SR34(i)
     staples_core = classify_staples(xyz_core, names_core)
     write_pdb(xyz_core, names_core, staples_core, core_dic[i])
-"""
 
+"""
 #AU102SR44 (190 atoms, Pohjolainen/Hakkinen, JCTC, 2016)
 xyz_Au102SR44, names_Au102SR44 = read_Au102SR44("AU102SR44/au102_pmba44.gro")
 staples_Au102SR44 = classify_staples(xyz_Au102SR44, names_Au102SR44)
 write_pdb(xyz_Au102SR44, names_Au102SR44, staples_Au102SR44, "au102SR44_NM.pdb")
+"""
