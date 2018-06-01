@@ -93,7 +93,7 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
                 cons = 460.24
                 zero = 100.0
             else:
-                sys.exit("There was a problem recognizing the staple type when trying to write an Au - S - Au angle.")
+                raise Exception("There was a problem recognizing the staple type when trying to write an Au - S - Au angle.")
             angles.write("{:>6} {:>6} {:>6} {:>6}".format(b.Au[0]+1, b.S+1, b.Au[1]+1, func_type)+" {:>13.4e} {:>13.4e}".format(zero, cons)+" ;     {:3} - {:3} - {:3}\t{}\n".format(names_sys_func[b.Au[0]], names_sys_func[b.S], names_sys_func[b.Au[1]], signature))
 
         #AuL - S - AuS

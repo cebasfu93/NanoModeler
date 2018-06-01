@@ -2,11 +2,11 @@ import numpy as np
 
 def check_VAR(VAR):
     if VAR["LIG1_FRAC"] < 0 or VAR["LIG1_FRAC"] > 1.0:
-        sys.exit("LIG1_FRAC must be between 0 and 1.")
+        raise Exception("LIG1_FRAC must be between 0 and 1.")
     if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe":
-        sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings.")
+        raise Exception("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings.")
     if VAR["STRIPES"] < 1:
-        sys.exit("The number of stripes must be at least one.")
+        raise Exception("The number of stripes must be at least one.")
 
 def check_mol2(mol2, log):
     MOLECULE = False
@@ -21,11 +21,11 @@ def check_mol2(mol2, log):
             BOND = True
 
     if not MOLECULE:
-        sys.exit("Keyword '@<TRIPOS>MOLECULE' not found in mol2 file.")
+        raise Exception("Keyword '@<TRIPOS>MOLECULE' not found in mol2 file.")
     if not ATOM:
-        sys.exit("Keyword '@<TRIPOS>ATOM' not found in mol2 file.")
+        raise Exception("Keyword '@<TRIPOS>ATOM' not found in mol2 file.")
     if not BOND:
-        sys.exit("Keyword '@<TRIPOS>BOND' not found in mol2 file.")
+        raise Exception("Keyword '@<TRIPOS>BOND' not found in mol2 file.")
 
     N_lig_file=len(mol2)
     ATOM=False
@@ -49,7 +49,7 @@ def check_mol2(mol2, log):
 
     log += "\tChecking if there is only one residue in the input structure...\n"
     if len(atoms)!=np.unique(np.array(res_names), return_counts=True)[1][0]:
-        sys.exit("There seems to be more than one residue type in the input mol2 file")
+        raise Exception("There seems to be more than one residue type in the input mol2 file")
     return log
 
 def check_frcmod(fname, log):

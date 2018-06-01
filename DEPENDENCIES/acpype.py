@@ -336,7 +336,7 @@ def imprDihAngle(a, b, c, d):
 def invalidArgs(text = None):
     if text:
         print('ERROR: ' + text)
-    sys.exit(1)
+    raise Exception("acpype exit unexpectedly.")
 
 # verNum = string.split(sys.version)[0]
 verNum = re.sub('[^0-9\.]', '', sys.version.split()[0])
@@ -617,7 +617,7 @@ class AbstractTopol(object):
         if drift > diffTol:
             self.printError("Net charge drift '%3.5f' bigger than tolerance '%3.5f'" % (drift, diffTol))
             if not self.force:
-                sys.exit(1)
+                raise Exception("acpype exit unexpectedly.")
         self.chargeVal = str(charge2)
         self.printMess("... charge set to %i" % charge2)
         os.chdir(localDir)
@@ -668,7 +668,7 @@ class AbstractTopol(object):
         if len(residues) > 1:
             self.printError("more than one residue detected '%s'" % str(residues))
             self.printError("verify your input file '%s'. Aborting ..." % self.inputFile)
-            sys.exit(1)
+            raise Exception("acpype exit unexpectedly.")
 
         dups = ""
         shortd = ""
@@ -721,7 +721,7 @@ class AbstractTopol(object):
             else:
                 self.printError("Use '-f' option if you want to proceed anyway. Aborting ...")
                 rmtree(self.tmpDir)
-                sys.exit(1)
+                raise Exception("acpype exit unexpectedly.")
 
         resname = list(residues)[0].strip()
         newresname = resname
@@ -1719,7 +1719,7 @@ a        """
                 phase = int(phaseRaw) # in degree
                 if period > 4 and not self.gmx45:
                     self.printError("Likely trying to convert ILDN to RB, use option '-r' for GMX45")
-                    sys.exit(1)
+                    raise Exception("acpype exit unexpectedly.")
                 if phase in [0, 180]:
                     properDihedralsGmx45.append([item[0].atoms, phaseRaw, kPhi, period])
                     if not self.gmx45:
@@ -3102,7 +3102,7 @@ class ACTopol(AbstractTopol):
             if self.ext != '.mol2' and self.ext != '.mdl': # and self.ext != '.mol':
                 self.printError("no 'babel' executable; you need it if input is PDB")
                 self.printError("otherwise use only MOL2 or MDL file as input ... aborting!")
-                sys.exit(1)
+                raise Exception("acpype exit unexpectedly.")
             else:
                 self.printWarn("no 'babel' executable, no PDB file as input can be used!")
         acBase = base + '_AC'
@@ -3504,7 +3504,7 @@ if __name__ == '__main__':
                 hint2 = "HINT2: is 'antechamber' in your $PATH?\n    What 'which antechamber' in your terminal says?\n    'alias' doesn't work for ACPYPE."
                 molecule.printMess(hint1)
                 molecule.printMess(hint2)
-                sys.exit(1)
+                raise Exception("acpype exit unexpectedly.")
 
             molecule.createACTopol()
             molecule.createMolTopol()
@@ -3533,6 +3533,6 @@ if __name__ == '__main__':
 
     try: rmtree(molecule.tmpDir)
     except: pass
-    if acpypeFailed: sys.exit(1)
+    if acpypeFailed: raise Exception("acpype exit unexpectedly.")
     try: os.chdir(molecule.rootDir)
     except: pass
