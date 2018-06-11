@@ -194,10 +194,10 @@ def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pi
         trans_lig=np.dot(trans_matrix, xyz_lig_conv).T[:,:3]    #Transforms the ligand
         trans_lig = trans_lig[:-1] #Discards the S atom
 
-        if lig_s == 0 or elong:     #If the S was not initially present or elong is set to True, rotates along the COM-C axis to maximize the minimum distance with the rest of the system (including the current S atom)
-            trans_lig, log = solve_clashes(np.append(xyz_coated_tmp, [xyz_stones_tmp[i,-1,:]], axis=0), trans_lig, xyz_stones_now[0,:], last_res_num+i+1, log)
+        #if lig_s == 0 or elong:     #If the S was not initially present or elong is set to True, rotates along the COM-C axis to maximize the minimum distance with the rest of the system (including the current S atom)
+        trans_lig, log = solve_clashes(np.append(xyz_coated_tmp, [xyz_stones_tmp[i,-1,:]], axis=0), trans_lig, xyz_stones_now[0,:], last_res_num+i+1, log)
 
-        else:       #If there was an S atom, no rotation is allowed, but we look for clashes
+        """else:       #If there was an S atom, no rotation is allowed, but we look for clashes
             D_clash = distance.cdist(trans_lig, xyz_coated_tmp)
             clash_dis = np.min(D_clash)
             if clash_dis < 0.1:
@@ -205,7 +205,7 @@ def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pi
                 log += "\tThere are no degrees of freedom available to prevent clashes...\n"
                 log += "\tClashes were found while placing residue {}...\n".format(last_res_num+i+1)
                 log += "\tConsider parametrizing the ligand without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
-
+                """
         trans_lig = np.append(trans_lig, [xyz_stones_tmp[i,-1,:]], axis=0)      #The cooridnates of the S (in the core) are added to the ligand
         xyz_coated_tmp=np.append(xyz_coated_tmp, trans_lig, axis=0)
         names_coated_tmp=np.append(names_coated_tmp, names_lig_tmp, axis=0)
