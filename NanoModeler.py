@@ -1,4 +1,4 @@
-def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=666, STRIPES=1, LIG2_FILE=None, CAP2=[], LIG2_C=0, LIG2_S=0, FRCMOD=None, CORE=None, ELONGATED=False):
+def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=None, STRIPES=1, LIG2_FILE=None, CAP2=[], LIG2_C=0, LIG2_S=0, FRCMOD=None, CORE=None, ELONGATED=False):
     VAR = {
     "LIG1_FILE" : LIG1_FILE,   #ByteArray of the mol2 of ligand1
     "CAP1" : CAP1,		    #List of atom numbers (as in the mol2, likely to start in 1) to remove
@@ -225,7 +225,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", zip_path]      #List of files of delete at the end of the run (including the zip file)
     for i in bye:
         os.remove(i)
-    shutil.rmtree(TMP)     #Deletes the temporary folder
+    #shutil.rmtree(TMP)     #Deletes the temporary folder
 
     log += "\"Señoras y señores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
@@ -233,22 +233,22 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     return (1, log, zip_data)
 
 if __name__ == "__main__":
-    NanoModeler(LIG1_FILE=open("Mol-ia1_m1-c2.mol2"),
+    NanoModeler(LIG1_FILE=open("LIG2.mol2"),
         CAP1=[],
-        LIG1_C=38,
+        LIG1_C=1,
         LIG1_S=0,
 
-        LIG1_FRAC=1.0,
+        LIG1_FRAC=0.5,
         MORPHOLOGY="random",
-        RSEED=666,
+        RSEED=None,
         STRIPES=1,
 
-        LIG2_FILE=None, #open("LIG3.mol2"),
+        LIG2_FILE=open("LIG3.mol2"),
         CAP2=[],
         LIG2_C=1,
         LIG2_S=0,
 
-        FRCMOD=open("NP2.frcmod"),
+        FRCMOD=None, #open("NP2.frcmod"),
 
-        CORE=open("CORES/au144SR60_NM.pdb"),
+        CORE=open("CORES/au25SR18_NM.pdb"),
         ELONGATED=False)
