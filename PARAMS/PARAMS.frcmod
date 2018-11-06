@@ -1,26 +1,35 @@
 PARAMETERS FROM JCTC 2016, 12, 1342-1350
 MASS
-AU        196.96700
-AUL        196.96700
-AUS        196.96700
+S           32.06000	DEFAULT AMBER
+AU         196.96700	DEFAULT AMBER
+AUL        196.96700	DEFAULT AMBER
+AUS        196.96700	DEFAULT AMBER
 
 BOND
-CA-S    237.0     1.75
-CT-S    118.443   1.84
+CA-S    237.0     1.75	POHJOLAINEN
+CT-S    118.443   1.84	POHJOLAINEN
 
 ANGLE
-CA-C -OH   70.0   112.0
-CA-C -O    70.0   126.0
-CA-CA-S    50.0   120.0
-S -CT-HC   50.0   107.0
-H1-CT-CA   50.0   109.0
+CA-C -OH   70.0   112.0	POHJOLAINEN
+CA-C -O    70.0   126.0	POHJOLAINEN
+CA-CA-S    50.0   120.0 POHJOLAINEN
+S -CT-HC   50.0   107.0 POHJOLAINEN
+H1-CT-CA   50.0   109.0	POHJOLAINEN
+CT-CT-S    61.300     110.270   same as c3-c3-ss, penalty score=  0.0 DEFAULT AMBER
 
 DIHE
-X -X -CA-S    4   4.4   180.0   2
-C -CA-CA-CA   4   4.4   180.0   2
+CA-CA-CA-S    4   14.500       180.000           2.000      same as X -ca-ca-X , penalty score=  0.0 DEFAULT AMBER
+HA-CA-CA-S    4   14.500       180.000           2.000      same as X -ca-ca-X , penalty score=  0.0 DEFAULT AMBER
+X -X -CA-S    4   4.4   180.0   2	POHJOLAINEN
+C -CA-CA-CA   4   4.4   180.0   2	POHJOLAINEN
+HC-CT-CT-S    9    1.400         0.000           3.000      same as X -c3-c3-X , penalty score=  0.0 DEFAULT AMBER
+CT-CT-CT-S    9    1.400         0.000           3.000      same as X -c3-c3-X , penalty score=  0.0 DEFAULT AMBER
+
+IMPROPER
+CA-CA-CA-S          1.1          180.0         2.0          Using the default value DEFAULT AMBER
 
 NONBON
-AU             1.4755  5.2900
-AUL             1.4755  5.2900
-AUS             1.4755  5.2900
-S               2.00  0.2500
+AU              1.4755  5.2900	POHJOLAINEN
+AUL             1.4755  5.2900	POHJOLAINEN
+AUS             1.4755  5.2900	POHJOLAINEN
+S               2.0000  0.2500	POHJOLAINEN

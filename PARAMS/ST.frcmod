@@ -2,11 +2,16 @@ remark goes here
 MASS
 S              32.06
 
+BOND
+CT-S   215.90   1.839
+
 ANGLE
+HC-CT-S    42.060     108.760   same as hc-c3-ss, penalty score=  0.0
+CT-CT-S    61.300     110.270   same as c3-c3-ss, penalty score=  0.0
 
 DIHE
-
-IMPROPER
+HC-CT-CT-S    9    1.400         0.000           3.000      same as X -c3-c3-X , penalty score=  0.0
+CT-CT-CT-S    9    1.400         0.000           3.000      same as X -c3-c3-X , penalty score=  0.0
 
 NONBON
 S             2.00  0.2500

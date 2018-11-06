@@ -88,7 +88,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
         two_lig = (VAR["LIG1_FRAC"] < 1.0)
     log += "Imported options:\n"
     for i in VAR:
-        if (i == "LIG1_FILE" or i == "LIG2_FILE"or i == "CORE" or i == "FRCMOD") and VAR[i]:
+        if (i == "LIG1_FILE" or i == "LIG2_FILE" or i == "CORE" or i == "FRCMOD") and VAR[i]:
             if VAR[i]:
                 log += "\t{:<20}{:>20}\n".format(i, str(VAR[i].name))
         else:
@@ -151,7 +151,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     log += "Writing pdb of the coated nanoparticle...\n"
     print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, TMP+"/NP.pdb")      #Writes pdb of the nanoparticle
 
-    ################################################################
+    ###########################Parameters (parmchk2, tleap, acpype)#####################################
 
     log += "Running parmchk2 for ligand1...\n"
     os.system("parmchk2 -i {}/LIG1.mol2 -f mol2 -o {}/LIG1.frcmod -a y".format(TMP, TMP))       #Generated frcmod of the ligand (includes parameters with the S atom)
@@ -227,28 +227,28 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
         os.remove(i)
     #shutil.rmtree(TMP)     #Deletes the temporary folder
 
-    log += "\"Señoras y señores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.\n"
+    log += "\"Senoras y senores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
     print(log)
     return (1, log, zip_data)
 
 if __name__ == "__main__":
-    NanoModeler(LIG1_FILE=open("LIG2.mol2"),
+    NanoModeler(LIG1_FILE=open("LIGANDS/LIGCA.mol2"),
         CAP1=[],
         LIG1_C=1,
         LIG1_S=0,
 
-        LIG1_FRAC=0.5,
+        LIG1_FRAC=1.0,
         MORPHOLOGY="random",
-        RSEED=None,
-        STRIPES=1,
+        RSEED=666,
+        STRIPES=4,
 
-        LIG2_FILE=open("LIG3.mol2"),
+        LIG2_FILE=None, #open("Tests/lig2.mol2"),
         CAP2=[],
-        LIG2_C=1,
+        LIG2_C=0,
         LIG2_S=0,
 
-        FRCMOD=None, #open("NP2.frcmod"),
+        FRCMOD=None, #open("Tests/frcMod-AP3.frcmod"),
 
-        CORE=open("CORES/au25SR18_NM.pdb"),
+        CORE=open("CORES/au144SR60_NM.pdb"),
         ELONGATED=False)
