@@ -245,7 +245,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     bye = ["ANTECHAMBER.FRCMOD", "leap.log", "md.mdp", "em.mdp", zip_path]      #List of files of delete at the end of the run (including the zip file)
     for i in bye:
         os.remove(i)
-    #shutil.rmtree(TMP)     #Deletes the temporary folder
+    shutil.rmtree(TMP)     #Deletes the temporary folder
 
     logger.info("\"Señoras y señores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.")
     logger.info("NanoModeler terminated normally. Que gracias.")
