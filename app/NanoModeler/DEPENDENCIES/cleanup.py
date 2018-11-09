@@ -4,7 +4,9 @@ import logging
 logger = logging.getLogger('nanomodeler')
 logger.addHandler(logging.NullHandler())
 
-def cleanup_error(TMP, rep):
+report = logging.getLogger('report')
+
+def cleanup_error(TMP, rfile):
     logger.warning('Cleaning up...')
     bye = ['ANTECHAMBER.FRCMOD', 'leap.log', 'md.mdp', 'em.mdp']
     for i in bye:
@@ -14,9 +16,11 @@ def cleanup_error(TMP, rep):
             except OSError as e:
                 rm_txt = "ATTENTION! An error occurred while removing file: {} (details: {})".format(i,str(e))
                 logger.error(rm_txt)
-                rep.write(rm_txt + "\n")
+                report.error(rm_txt)
     err_txt = "NanoModeler terminated with errors."
     logger.warning(err_txt)
-    rep.write(err_txt + "\n")
-    rep.close()
+    report.warning(err_txt)
+
+    report.handlers[0].flush()
+    rfile.close()
     return (0,0)

@@ -77,7 +77,7 @@ def write_bonds(blocks_list, fname, xyz_sys_func, names_sys_func):
             bonds.write("{:>6} {:>6} {:>3}".format(b.S+1, b.Au[j]+1, func_type)+" {:>13.4e} {:>13.4e}".format(zero, cons)+" ;     {:3} - {:3}\t{}\n".format(names_sys_func[b.S], names_sys_func[b.Au[j]], signature))
     bonds.close()
 
-def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, rep):
+def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
     angles = open(fname, 'w')
     func_type = str(1)
     Au_taken = []       #List to save the AUL indexes of the atoms whose AUL - S - AUL parameters have already been written for
@@ -94,7 +94,7 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func, rep):
                 zero = 100.0
             else:
                 excp_txt = "ATTENTION! There was a problem recognizing the staple type when trying to write an Au - S - Au angle."
-                rep.write(excp_txt + "\n")
+                report.error(excp_txt)
                 raise Exception(excp_txt)
             angles.write("{:>6} {:>6} {:>6} {:>6}".format(b.Au[0]+1, b.S+1, b.Au[1]+1, func_type)+" {:>13.4e} {:>13.4e}".format(zero, cons)+" ;     {:3} - {:3} - {:3}\t{}\n".format(names_sys_func[b.Au[0]], names_sys_func[b.S], names_sys_func[b.Au[1]], signature))
 

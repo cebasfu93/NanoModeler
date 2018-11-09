@@ -4,21 +4,23 @@ import logging
 logger = logging.getLogger('nanomodeler')
 logger.addHandler(logging.NullHandler())
 
-def check_VAR(VAR, rep):
+report = logging.getLogger('report')
+
+def check_VAR(VAR):
     if VAR["LIG1_FRAC"] < 0 or VAR["LIG1_FRAC"] > 1.0:
         excp_txt = "ATTENTION! LIG1_FRAC must be between 0 and 1."
-        rep.write(excp_txt + "\n")
+        report.error(excp_txt)
         raise Exception(excp_txt)
     if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe":
         excp_txt = "ATTENTION! Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings."
-        rep.write(excp_txt + "\n")
+        report.error(excp_txt)
         raise Exception(excp_txt)
     if VAR["STRIPES"] < 1:
         excp_txt = "ATTENTION! The number of stripes must be at least one."
-        rep.write(excp_txt + "\n")
+        report.error(excp_txt)
         raise Exception(excp_txt)
 
-def check_mol2(mol2, rep):
+def check_mol2(mol2):
     MOLECULE = False
     ATOM = False
     BOND = False
@@ -32,15 +34,15 @@ def check_mol2(mol2, rep):
 
     if not MOLECULE:
         excp_txt = "ATTENTION! Keyword '@<TRIPOS>MOLECULE' not found in mol2 file."
-        rep.write(excp_txt + "\n")
+        report.error(excp_txt)
         raise Exception(excp_txt)
     if not ATOM:
         excp_txt = "ATTENTION! Keyword '@<TRIPOS>ATOM' not found in mol2 file."
-        rep.write(excp_txt + "\n")
+        report.error(excp_txt)
         raise Exception(excp_txt)
     if not BOND:
         excp_txt = "ATTENTION! Keyword '@<TRIPOS>BOND' not found in mol2 file."
-        rep.write(excp_txt + "\n")
+        report.write(excp_txt)
         raise Exception(excp_txt)
 
     N_lig_file=len(mol2)
@@ -66,11 +68,11 @@ def check_mol2(mol2, rep):
     logger.info("\tChecking if there is only one residue in the input structure...")
     if len(atoms)!=np.unique(np.array(res_names), return_counts=True)[1][0]:
         excp_txt = "ATTENTION! There seems to be more than one residue type in the input mol2 file"
-        rep.write(excp_txt + "\n")
+        report.error(excp_txt)
         raise Exception(excp_txt)
     return True
 
-def check_frcmod(fname, rep):
+def check_frcmod(fname):
     frcmod = np.genfromtxt(fname, delimiter="\n", dtype='str')
     errors = []
     for i in range(len(frcmod)):
@@ -78,14 +80,14 @@ def check_frcmod(fname, rep):
             errors.append(frcmod[i])
     if errors:
         warn_txt = "\tATTENTION! The following parameters in the ligand were impossible to obtain..."
-        rep.write(warn_txt + "\n")
+        report.warning(warn_txt + "\n")
         logger.warning(warn_txt)
         warn_txt = "\tConsider adding you own frcmod file with the missing parameters..."
-        rep.write(warn_txt + "\n")
+        report.info(warn_txt + "\n")
         logger.info(warn_txt)
         for i in range(len(errors)):
             err_txt = "\t{}".format(errors[i])
-            rep.write(err_txt + "\n")
+            report.info(err_txt + "\n")
             logger.info(err_txt)
     return True
 

@@ -85,11 +85,15 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
 
     logger.info("Creating temporary folder...")
     TMP = tempfile.mkdtemp(dir="./")
-    report = open(TMP + "/report.log", "w")
-    atexit.register(cleanup_error, TMP, report)    #From this point, the cleanup_error will be excecuted after NanoModeler finishes (or crashes)
+
+    rf = open(TMP + "/report.log", "w")
+    report = logging.getLogger('report')
+    report.setLevel(logging.INFO)
+    report.addHandler(logging.StreamHandler(stream = rf))
+    atexit.register(cleanup_error, TMP, rf)    #From this point, the cleanup_error will be excecuted after NanoModeler finishes (or crashes)
 
     logger.info("Checking input options...")
-    check_VAR(VAR, report)      #Checks validity of values in the variables
+    check_VAR(VAR)      #Checks validity of values in the variables
 
     #Based on the morphology, number of stripes, and fraction of ligand1, it is decided if there are one or two ligands
     if (VAR["MORPHOLOGY"] == "stripe"):
@@ -101,23 +105,23 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
         two_lig = (VAR["LIG1_FRAC"] < 1.0)
 
     logger.info("Imported options:")
-    report.write("Imported options:\n")
+    report.info("Imported options:")
     for i in VAR:
         if (i == "LIG1_FILE" or i == "LIG2_FILE"or i == "CORE" or i == "FRCMOD") and VAR[i]:
             if VAR[i]:
                 op_txt = "\t{:<20}{:>20}".format(i, str(VAR[i].name))
                 logger.info(op_txt)
-                report.write(op_txt + "\n")
+                report.info(op_txt + "\n")
         else:
             op_txt = "\t{:<20}{:>20}".format(i, str(VAR[i]))
             logger.info(op_txt)
-            report.write(op_txt + "\n")
+            report.info(op_txt)
 
     logger.info("One ligand was found...")
     logger.info("Checking ligand1 mol2 file...")
     LIG1_MOL2 = VAR["LIG1_FILE"].readlines()        #Read lines and eliminates the \n character from them
     LIG1_MOL2 = [s.replace("\n", "") for s in LIG1_MOL2]
-    check_mol2(LIG1_MOL2, report)
+    check_mol2(LIG1_MOL2)
     logger.info("Rewriting ligand1 file...")
     VAR["LIG1_C"] = rewrite_mol2(LIG1_MOL2, VAR["CAP1"], VAR["LIG1_S"], VAR["LIG1_C"], TMP+"/LIG1.mol2", VAR["ELONGATED"])        #Writes new mol2 without capping, S atom at the end, and properly numbered
 
@@ -165,7 +169,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
         xyz_stones2 = []
 
     logger.info("Coating nanoparticle...")  #Merges xyz coordinates and names of the core and the ligands into one coated NP
-    xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2, VAR["LIG1_S"], VAR["LIG2_S"], VAR["ELONGATED"], report)
+    xyz_coated_NP, names_coated_NP, res_coated_NP = coat_NP(xyz_core, names_core, xyz_lig1, names_lig1, xyz_pillars1, xyz_stones1, xyz_lig2, names_lig2, xyz_pillars2, xyz_stones2, res_lig1, res_lig2, VAR["LIG1_S"], VAR["LIG2_S"], VAR["ELONGATED"])
 
     logger.info("Writing pdb of the coated nanoparticle...")
     print_NP_pdb(xyz_coated_NP, names_coated_NP, res_coated_NP, xyz_anchors1, xyz_anchors2, xyz_lig1, xyz_lig2, TMP+"/NP.pdb")      #Writes pdb of the nanoparticle
@@ -175,7 +179,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     logger.info("Running parmchk2 for ligand1...")
     os.system("parmchk2 -i {}/LIG1.mol2 -f mol2 -o {}/LIG1.frcmod -a y".format(TMP, TMP))       #Generated frcmod of the ligand (includes parameters with the S atom)
     logger.info("Checking parameters for ligand1...")
-    check_frcmod(TMP+"/LIG1.frcmod", report)         #If parameters could not be assigned, they are shown in the log file
+    check_frcmod(TMP+"/LIG1.frcmod")         #If parameters could not be assigned, they are shown in the log file
     if two_lig:
         logger.info("Running parmchk2 for ligand2...")
         os.system("parmchk2 -i {}/LIG2.mol2 -f mol2 -o {}/LIG2.frcmod -a y".format(TMP, TMP))       #Generated frcmod of the ligand (includes parameters with the S atom)
@@ -218,13 +222,14 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     logger.info("Writing bonds parameters...")
     write_bonds(blocks, TMP+"/bonds.top", xyz_sys, names_sys)
     logger.info("Writing angles parameters...")
-    write_angles(blocks, TMP+"/angles.top", xyz_sys, names_sys, report)
+    write_angles(blocks, TMP+"/angles.top", xyz_sys, names_sys)
     logger.info("Writing final topology file...")
     write_topology(TMP+"/NP.top", TMP+"/bonds.top", TMP+"/angles.top")
     #############################################################
 
     atexit.unregister(cleanup_error)        #If NanoModeler crashes, now it wont run anything after
-    report.close()
+    report.handlers[0].flush()
+    rf.close()
 
     logger.info("Compressing final files...")
 

@@ -9,6 +9,7 @@ import logging
 logger = logging.getLogger('nanomodeler')
 logger.addHandler(logging.NullHandler())
 
+report = logging.getLogger('report')
 
 def rot_mat(p, u, t):
     #Rotates vector p, around vector u for an angle t
@@ -161,7 +162,7 @@ def get_stones(xyz_core_func, names_core_func, xyz_anchorsi_func, xyz_pillarsi_f
 
     return xyz_stones
 
-def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, rep):
+def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
     n_clash_iter = 100
     thresh = 0.1
     D_clash = distance.cdist(trans_lig_tmp, xyz_coated_tmp)
@@ -184,20 +185,15 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, rep):
             clash_dis = np.min(D_clash)
             trans_lig_best = trans_lig_try
         if theta >= 6.28 and clash_dis < thresh:
-            warn_txt = "\tATTENTION! It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...".format(resnum, clash_dis)
-            rep.write(warn_txt + "\n")
-            logger.warning(warn_txt)
-            warn_txt = "\tRevise the final geometry..."
-            rep.write(warn_txt + "\n")
+            warn_txt = "\tATTENTION! It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...\n\tRevise the final Geometry...".format(resnum, clash_dis)
+            report.warning(warn_txt)
             logger.warning(warn_txt)
         if theta >= 6.28 and clash_dis > thresh and CLASH:
-            warn_txt = "\tThe clash was solved, i.e., the minimum distance between atoms is at least {} nm...".format(thresh)
-            rep.write(warn_txt + "\n")
-            logger.info(warn_txt)
+            logger.info("\tThe clash was solved, i.e., the minimum distance between atoms is at least {} nm...".format(thresh))
 
     return trans_lig_best
 
-def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pillars_tmp, xyz_coated_tmp, names_coated_tmp, res_coated_tmp, last_res_num, lig_s, elong, rep):
+def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pillars_tmp, xyz_coated_tmp, names_coated_tmp, res_coated_tmp, last_res_num, lig_s, elong):
     xyz_lig_conv=np.insert(xyz_lig_tmp, 3, 1, axis=1).T  #Addas a row with a 1 to transform as quaternion
     for i in range(len(xyz_stones_tmp[:,0,0])):     #The for is to go over all anchors
         xyz_stones_now = xyz_stones_tmp[i,:-1,:]    #Takes the stones of the current anchor
@@ -206,7 +202,7 @@ def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pi
         trans_lig = trans_lig[:-1] #Discards the S atom
 
         #if lig_s == 0 or elong:     #If the S was not initially present or elong is set to True, rotates along the COM-C axis to maximize the minimum distance with the rest of the system (including the current S atom)
-        trans_lig = solve_clashes(np.append(xyz_coated_tmp, [xyz_stones_tmp[i,-1,:]], axis=0), trans_lig, xyz_stones_now[0,:], last_res_num+i+1, rep)
+        trans_lig = solve_clashes(np.append(xyz_coated_tmp, [xyz_stones_tmp[i,-1,:]], axis=0), trans_lig, xyz_stones_now[0,:], last_res_num+i+1)
 
         """else:       #If there was an S atom, no rotation is allowed, but we look for clashes
             D_clash = distance.cdist(trans_lig, xyz_coated_tmp)
@@ -224,7 +220,7 @@ def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pi
 
     return xyz_coated_tmp, names_coated_tmp, res_coated_tmp
 
-def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func, lig1_s, lig2_s, elong, rep):
+def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func, lig1_s, lig2_s, elong):
     #Saves the gold atoms as in the core file
     keep_rows=[]
     for i in range(len(names_core_func)):
@@ -236,11 +232,11 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
 
     #Transforms and appends rototranslated ligand 1
     logger.info("\tPlacing ligand 1 around the core...")
-    xyz_coated_func, names_coated_func, res_coated_func = place_ligand(xyz_lig1_func, names_lig1_func, res_lig1_func, xyz_stones1_func, xyz_pillars1_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows), lig1_s, elong, rep)
+    xyz_coated_func, names_coated_func, res_coated_func = place_ligand(xyz_lig1_func, names_lig1_func, res_lig1_func, xyz_stones1_func, xyz_pillars1_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows), lig1_s, elong)
     if len(xyz_lig2_func)!=0:
         #Transforms and appends rototranslated ligand
         logger.info("\tPlacing ligand 2 around the core...")
-        xyz_coated_func, names_coated_func, res_coated_func = place_ligand(xyz_lig2_func, names_lig2_func, res_lig2_func, xyz_stones2_func, xyz_pillars2_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows)+len(xyz_stones1_func[:,0,0]), lig2_s, elong, rep)
+        xyz_coated_func, names_coated_func, res_coated_func = place_ligand(xyz_lig2_func, names_lig2_func, res_lig2_func, xyz_stones2_func, xyz_pillars2_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows)+len(xyz_stones1_func[:,0,0]), lig2_s, elong)
 
     return xyz_coated_func, names_coated_func, res_coated_func
 
