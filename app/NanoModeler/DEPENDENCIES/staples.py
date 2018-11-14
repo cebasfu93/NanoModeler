@@ -130,6 +130,8 @@ def write_angles(blocks_list, fname, xyz_sys_func, names_sys_func):
 
 def write_topology(fname, bonds, angles):
     #Copies the previous topology file writen by acpype.py and inserts the new bond and angles at the beggining of their respective sections
+    tmp_dir = fname[:-4] #Corresponds to TMP/NP
+
     top_file = open(fname, "r")
     cont_top_file = top_file.readlines()
     top_file.close()
@@ -139,6 +141,9 @@ def write_topology(fname, bonds, angles):
     final_top=open(fname, "a")
 
     for i in range(len(cont_top_file)):
+        if tmp_dir in cont_top_file[i]:
+            cont_top_file[i] = cont_top_file[i].replace(tmp_dir, "NP")
+
         final_top.writelines(cont_top_file[i])
         if ";   ai     aj funct   r             k" in cont_top_file[i]:
             bonds_file=open(bonds,"r")
@@ -152,3 +157,23 @@ def write_topology(fname, bonds, angles):
             angles_file.close()
             for j in range(len(angles_contents)):
                 final_top.writelines(angles_contents[j])
+    final_top.close()
+
+def change_gro_mol_name(fname):
+    #Changes the name of the molecule in NP.gro to NP
+    tmp_dir = fname[:-4]
+
+    gro_file = open(fname, "r")
+    gro_lines = gro_file.readlines()
+    gro_file.close()
+
+    final_gro = open(fname, "w")
+    final_gro.close()
+    final_gro = open(fname, "a")
+
+    for i in range(len(gro_lines)):
+        if tmp_dir in gro_lines[i]:
+            gro_lines[i] = gro_lines[i].replace(tmp_dir, "NP")
+        final_gro.writelines(gro_lines[i])
+
+    final_gro.close()

@@ -71,7 +71,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     logger.info("Importing NP_builder dependency...")
     from DEPENDENCIES.NP_builder import init_lig_mol2, init_core_pdb, get_ligand_pill, assign_morph, get_stones, coat_NP, print_NP_pdb
     logger.info("Importing staples dependency...")
-    from DEPENDENCIES.staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology
+    from DEPENDENCIES.staples import load_gro, load_top, get_ndxs, make_blocks, write_bonds, write_angles, write_topology, change_gro_mol_name
     logger.info("Importing default function dependency...")
     from DEPENDENCIES.defaults import check_VAR, check_mol2, check_frcmod, write_leap
     logger.info("Importing transformations dependency...")
@@ -225,6 +225,8 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     write_angles(blocks, TMP+"/angles.top", xyz_sys, names_sys)
     logger.info("Writing final topology file...")
     write_topology(TMP+"/NP.top", TMP+"/bonds.top", TMP+"/angles.top")
+    logger.info("Making nicer the results...")
+    change_gro_mol_name(TMP+"/NP.gro")
     #############################################################
 
     atexit.unregister(cleanup_error)        #If NanoModeler crashes, now it wont run anything after
