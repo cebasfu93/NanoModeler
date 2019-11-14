@@ -77,7 +77,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
 
     log += "Checking input options...\n"
     check_VAR(VAR)      #Checks validity of values in the variables
-
+    
     #Based on the morphology, number of stripes, and fraction of ligand1, it is decided if there are one or two ligands
     if (VAR["MORPHOLOGY"] == "stripe"):
         if VAR["STRIPES"] == 1:
@@ -86,6 +86,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
             two_lig = True
     else:
         two_lig = (VAR["LIG1_FRAC"] < 1.0)
+    
     log += "Imported options:\n"
     for i in VAR:
         if (i == "LIG1_FILE" or i == "LIG2_FILE" or i == "CORE" or i == "FRCMOD") and VAR[i]:
@@ -93,7 +94,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
                 log += "\t{:<20}{:>20}\n".format(i, str(VAR[i].name))
         else:
             log += "\t{:<20}{:>20}\n".format(i, str(VAR[i]))
-
+    
     log += "\nOne ligand was found...\n"
     log += "Checking ligand1 mol2 file...\n"
     LIG1_MOL2 = VAR["LIG1_FILE"].readlines()        #Read lines and eliminates the \n character from them
@@ -110,7 +111,6 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
         log = check_mol2(LIG2_MOL2, log)
         log += "Rewriting ligand2 file...\n"
         VAR["LIG2_C"], log = rewrite_mol2(LIG2_MOL2, VAR["CAP2"], VAR["LIG2_S"], VAR["LIG2_C"], TMP+"/LIG2.mol2", VAR["ELONGATED"], log)        #Writes new mol2 without capping, S atom at the end, and properly numbered
-
     ##############################NP_builder########################
 
     log += "Initializing core...\n"
@@ -177,6 +177,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     acpype_system.writeGromacsTopolFiles(amb2gmx = True)
 
     ##############################Staples########################
+
     log += "Reading gro file of the coated nanoparticle...\n"
     xyz_sys, names_sys = load_gro(TMP+"/NP.gro")        #Reads gro file without velocities
 
@@ -184,13 +185,12 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     types_sys, res_sys = load_top(TMP+"/NP.top")        #Saves types and residue name of all atoms in the system
 
     log += "Looking for anchoring carbon atoms for ligand1...\n"
-    ndx_C1 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig1)     #Get indexes of all the C atoms
+    ndx_C1 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig1, xyz_anchors1)     #Get indexes of all the C atoms
     if two_lig:
         log += "Looking for anchoring carbon atoms for ligand2...\n"
-        ndx_C2 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig2)      #Get indexes of all the C atoms
+        ndx_C2 = get_ndxs(xyz_sys, names_sys, types_sys, res_sys, res_lig2, xyz_anchors2)      #Get indexes of all the C atoms
     else:
         ndx_C2 = [], []
-
     blocks = make_blocks(xyz_sys, names_sys, names_core, res_core, ndx_C1)      #Makes list of blocks consisting of 1C, 1S and 2Au atoms
     if two_lig:
         blocks = blocks + make_blocks(xyz_sys, names_sys, names_core, res_core, ndx_C2)     #Appends list of blocks consisting of 1C, 1S and 2Au atoms
@@ -203,7 +203,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     log += "Writing final topology file...\n"
     write_topology(TMP+"/NP.top", TMP+"/bonds.top", TMP+"/angles.top")
     #############################################################
-
+    
     atexit.unregister(cleanup_error)        #If NanoModeler crashes, not it wont run anything after
 
     log += "Compressing final files...\n"
@@ -229,26 +229,26 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
 
     log += "\"Senoras y senores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
-    print(log)
+    #print(log)
     return (1, log, zip_data)
 
 if __name__ == "__main__":
-    NanoModeler(LIG1_FILE=open("LIGANDS/LIGCA.mol2"),
+    NanoModeler(LIG1_FILE=open("LIGANDS/LIG2.mol2"),
         CAP1=[],
         LIG1_C=1,
         LIG1_S=0,
 
-        LIG1_FRAC=1.0,
-        MORPHOLOGY="random",
+        LIG1_FRAC=0.5,
+        MORPHOLOGY="janus",
         RSEED=666,
         STRIPES=4,
 
-        LIG2_FILE=None, #open("Tests/lig2.mol2"),
+        LIG2_FILE=open("LIGANDS/LIG3.mol2"),
         CAP2=[],
-        LIG2_C=0,
+        LIG2_C=1,
         LIG2_S=0,
 
-        FRCMOD=None, #open("Tests/frcMod-AP3.frcmod"),
+        FRCMOD=None, #open("LIGANDS/usr5.frcmod"),
 
-        CORE=open("CORES/au144SR60_NM.pdb"),
+        CORE=open("CORES/au25SR18_NM.pdb"),
         ELONGATED=False)
