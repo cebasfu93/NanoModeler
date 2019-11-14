@@ -47,7 +47,7 @@ def make_blocks(xyz_sys_func, names_sys_func, names_core_func, res_core_func, nd
     ndx_S = np.where(names_sys_func=="ST")[0]
     ndx_Au = np.where(np.logical_or(names_sys_func=="AUS", names_sys_func=="AUL"))[0]
     D_S_C = distance.cdist(xyz_sys_func[ndx_S], xyz_sys_func[ndx_C_func])
-    D_S_Au = distance.cdist(xyz_sys_func[ndx_S], xyz_sys_func[ndx_Au])
+    #D_S_Au = distance.cdist(xyz_sys_func[ndx_S], xyz_sys_func[ndx_Au])
 
     blocks = []
     for i in range(len(ndx_C_func)):
