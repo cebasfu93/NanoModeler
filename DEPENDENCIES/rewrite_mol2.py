@@ -138,13 +138,14 @@ def find_C(mol2, cap, lig_s):
     BOND = False
     for i in range(len(mol2)):
         if BOND:
-            at1 = int(mol2[i].split()[1])
-            at2 = int(mol2[i].split()[2])
-            if at1 not in cap and at2 not in cap:
-                if at1 == lig_s:
-                    found_c = at2
-                elif at2 == lig_s:
-                    found_c = at1
+            if mol2[i].split() != []:
+                at1 = int(mol2[i].split()[1])
+                at2 = int(mol2[i].split()[2])
+                if at1 not in cap and at2 not in cap:
+                    if at1 == lig_s:
+                        found_c = at2
+                    elif at2 == lig_s:
+                        found_c = at1
             if "@<TRIPOS>" in mol2[i+1]:
                 break
         if "@<TRIPOS>BOND" in mol2[i]:
