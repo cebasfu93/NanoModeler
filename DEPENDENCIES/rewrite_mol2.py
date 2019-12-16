@@ -83,19 +83,23 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     old_at_num.append(len(atoms))
     old_at_num = np.array(old_at_num, dtype='int')
 
+    N_at = len(atoms) + 1 #+1 includes the S atom that is placed in the following if statement
+    N_bo = len(bonds) + 1 #+1 includes the S-C bond that is placed after the following if statement
     #The S atom is added to the atoms list
     if not lig_s:
+        charge_per_atom = np.sum(charge_cap)/(N_at-1)   #The charge of the capping atom is divided in the rest of the atoms (excluding the S atom)
+        for atom in atoms:
+            atom[8] = str(float(atom[8])+charge_per_atom)
         atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', atoms[0][6], atoms[0][7], "0.0"])
     else:
-        atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]])
+        charge_per_atom = np.sum(charge_cap)/(N_at)   #The charge of the capping atom is divided in the rest of the atoms (including the S atom)
+        for atom in atoms:
+            atom[8] = str(float(atom[8])+charge_per_atom)
+        atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]+charge_per_atom])
     bonds.append(['0', str(len(atoms)), str(np.where(old_at_num==lig_c)[0][0]+1), 1])       #The S atom is bonded to the C atom
 
-    N_at = len(atoms)
-    N_bo = len(bonds)
-    charge_per_atom = np.sum(charge_cap)/(N_at-1)   #The charge of the capping atom is divided in the rest of the atoms (including the S atom)
-
-    log += "\tThe capping group has a total charge of {:.3f}...\n".format(np.sum(charge_cap))
-    log += "\tA charge of {:.3f} will be added to all atoms in the ligand...\n".format(charge_per_atom)
+    log += "\tThe capping group has a total charge of {:.4f}...\n".format(np.sum(charge_cap))
+    log += "\tA charge of {:.4f} will be added to all atoms in the ligand...\n".format(charge_per_atom)
     log += "\tWriting @<TRIPOS>MOLECULE section...\n"
     out.write("@<TRIPOS>MOLECULE\n{}\n\t{}\t{}\t1\nSMALL\nUSER_CHARGES\n".format(mol_name, N_at, N_bo))
 
@@ -105,12 +109,8 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     #The atoms are renumbered and written in the format of mol2 file (format from internet)
     for atom in atoms:
         at+=1
-        if at != len(atoms):
-            out.write("{0:>4} {1:>4} {2:>13.4f} {3:>9.4f} {4:>9.4f} {5:>4} {6} {7} {8:>7.4f}\n".format(\
-            at, atom[1], xyz[at-1,0], xyz[at-1,1], xyz[at-1,2], atom[5], atom[6], atom[7], float(atom[8])+charge_per_atom))
-        else:
-            out.write("{0:>4} {1:>4} {2:>13.4f} {3:>9.4f} {4:>9.4f} {5:>4} {6} {7} {8:>7.4f}\n".format(\
-            at, atom[1], xyz[at-1,0], xyz[at-1,1], xyz[at-1,2], atom[5], atom[6], atom[7], float(atom[8])+charge_per_atom))
+        out.write("{0:>4} {1:>4} {2:>13.4f} {3:>9.4f} {4:>9.4f} {5:>4} {6} {7} {8:>7.4f}\n".format(\
+        at, atom[1], xyz[at-1,0], xyz[at-1,1], xyz[at-1,2], atom[5], atom[6], atom[7], float(atom[8])))
 
     log += "\tWriting @<TRIPOS>BOND section...\n"
     out.write("@<TRIPOS>BOND\n")
