@@ -28,7 +28,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
         elif "@<TRIPOS>BOND" in mol2[i]:
             log += "\tReading @<TRIPOS>BOND section...\n"
             BOND=True
-            ATOM=False
+            #ATOM=False
         elif BOND:
             if mol2[i].split() != []:
                 at1 = int(mol2[i].split()[1])
@@ -42,18 +42,21 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
             log += "\tReading @<TRIPOS>ATOM section...\n"
             ATOM=True
         elif ATOM:
-            at = int(mol2[i].split()[0])
-            if at == lig_c:
-                anch_name = mol2[i].split()[1]   #Saves the C atom
-            if at == lig_s:
-                s_atom = np.array(mol2[i].split())    #Saves the S atom
-            elif at not in cap:
-                #Saves atoms not in the capping group
-                old_at_num.append(at)
-                res_names.append(mol2[i].split()[7])
-                atoms.append(np.array(mol2[i].split()))
-            else:
-                charge_cap.append(float(mol2[i].split()[8]))   #Saves the charge of the atoms in the capping group
+            if mol2[i].split() != []:
+                at = int(mol2[i].split()[0])
+                if at == lig_c:
+                    anch_name = mol2[i].split()[1]   #Saves the C atom
+                if at == lig_s:
+                    s_atom = np.array(mol2[i].split())    #Saves the S atom
+                elif at not in cap:
+                    #Saves atoms not in the capping group
+                    old_at_num.append(at)
+                    res_names.append(mol2[i].split()[7])
+                    atoms.append(np.array(mol2[i].split()))
+                else:
+                    charge_cap.append(float(mol2[i].split()[8]))   #Saves the charge of the atoms in the capping group
+            elif "@<TRIPOS>" in mol2[i+1]:
+                ATOM=False
 
     xyz = []
     names = np.array([])

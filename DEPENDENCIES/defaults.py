@@ -36,9 +36,10 @@ def check_mol2(mol2, log):
         if ATOM:
             if "@<TRIPOS>" in mol2[i]:
                 break
-            atoms.append(mol2[i].split())
-            names.append(mol2[i].split()[1])
-            res_names.append(mol2[i].split()[7])
+            if mol2[i].split() != []:
+                atoms.append(mol2[i].split())
+                names.append(mol2[i].split()[1])
+                res_names.append(mol2[i].split()[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
             ATOM = True
     log += "\t{} atoms were found in the mol2 file...\n".format(len(atoms))
