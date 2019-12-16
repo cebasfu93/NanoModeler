@@ -30,11 +30,12 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
             BOND=True
             ATOM=False
         elif BOND:
-            at1 = int(mol2[i].split()[1])
-            at2 = int(mol2[i].split()[2])
-            if at1 not in cap and at2 not in cap and at1 != lig_s and at2 != lig_s:
-                #Saves all the atoms that dont involve capping atoms or the S atom
-                bonds.append(np.array(mol2[i].split()))
+            if mol2[i].split() != []:
+                at1 = int(mol2[i].split()[1])
+                at2 = int(mol2[i].split()[2])
+                if at1 not in cap and at2 not in cap and at1 != lig_s and at2 != lig_s:
+                    #Saves all the atoms that dont involve capping atoms or the S atom
+                    bonds.append(np.array(mol2[i].split()))
             if "@<TRIPOS>" in mol2[i+1]:
                 BOND=False
         elif "@<TRIPOS>ATOM" in mol2[i]:
