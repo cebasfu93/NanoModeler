@@ -55,7 +55,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
                     atoms.append(np.array(mol2[i].split()))
                 else:
                     charge_cap.append(float(mol2[i].split()[8]))   #Saves the charge of the atoms in the capping group
-            elif "@<TRIPOS>" in mol2[i+1]:
+            if "@<TRIPOS>" in mol2[i+1]:
                 ATOM=False
 
     xyz = []
