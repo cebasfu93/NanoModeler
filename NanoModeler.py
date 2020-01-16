@@ -1,4 +1,5 @@
 def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORPHOLOGY="random", RSEED=None, STRIPES=1, LIG2_FILE=None, CAP2=[], LIG2_C=0, LIG2_S=0, FRCMOD=None, CORE=None, ELONGATED=False):
+    version="1.0.4"
     VAR = {
     "LIG1_FILE" : LIG1_FILE,   #ByteArray of the mol2 of ligand1
     "CAP1" : CAP1,		    #List of atom numbers (as in the mol2, likely to start in 1) to remove
@@ -19,7 +20,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     "ELONGATED" : ELONGATED    #If set to true, the first carbon of the cores will be ignored and placed 1.8A away from the S atoms along the O-S axis
     }
 
-    log = "WELCOME TO NANOMODELER\n\n"
+    log = "WELCOME TO NANOMODELER v{}\n\n".format(version)
     log += "Importing sys library...\n"
     import sys
     log += "Importing numpy library...\n"
@@ -77,7 +78,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
 
     log += "Checking input options...\n"
     check_VAR(VAR)      #Checks validity of values in the variables
-    
+
     #Based on the morphology, number of stripes, and fraction of ligand1, it is decided if there are one or two ligands
     if (VAR["MORPHOLOGY"] == "stripe"):
         if VAR["STRIPES"] == 1:
@@ -86,7 +87,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
             two_lig = True
     else:
         two_lig = (VAR["LIG1_FRAC"] < 1.0)
-    
+
     log += "Imported options:\n"
     for i in VAR:
         if (i == "LIG1_FILE" or i == "LIG2_FILE" or i == "CORE" or i == "FRCMOD") and VAR[i]:
@@ -94,7 +95,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
                 log += "\t{:<20}{:>20}\n".format(i, str(VAR[i].name))
         else:
             log += "\t{:<20}{:>20}\n".format(i, str(VAR[i]))
-    
+
     log += "\nOne ligand was found...\n"
     log += "Checking ligand1 mol2 file...\n"
     LIG1_MOL2 = VAR["LIG1_FILE"].readlines()        #Read lines and eliminates the \n character from them
@@ -203,7 +204,7 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
     log += "Writing final topology file...\n"
     write_topology(TMP+"/NP.top", TMP+"/bonds.top", TMP+"/angles.top")
     #############################################################
-    
+
     atexit.unregister(cleanup_error)        #If NanoModeler crashes, not it wont run anything after
 
     log += "Compressing final files...\n"
@@ -229,26 +230,26 @@ def NanoModeler(LIG1_FILE=None, CAP1=[], LIG1_C=0, LIG1_S=0, LIG1_FRAC=1.0, MORP
 
     log += "\"Senoras y senores, bienvenidos al party, agarren a su pareja (de la cintura) y preparense porque lo que viene no esta facil, no esta facil no.\"\n\tIvy Queen.\n"
     log += "NanoModeler terminated normally. Que gracias.\n"
-    #print(log)
+    print(log)
     return (1, log, zip_data)
 
 if __name__ == "__main__":
-    NanoModeler(LIG1_FILE=open("LIGANDS/LIG2.mol2"),
+    NanoModeler(LIG1_FILE=open("LIGANDS/L22.mol2"),
         CAP1=[],
         LIG1_C=1,
         LIG1_S=0,
 
-        LIG1_FRAC=0.5,
-        MORPHOLOGY="janus",
+        LIG1_FRAC=1.0,
+        MORPHOLOGY="random",
         RSEED=666,
         STRIPES=4,
 
-        LIG2_FILE=open("LIGANDS/LIG3.mol2"),
+        LIG2_FILE=None, #open("LIGANDS/LIG3.mol2"),
         CAP2=[],
         LIG2_C=1,
         LIG2_S=0,
 
         FRCMOD=None, #open("LIGANDS/usr5.frcmod"),
 
-        CORE=open("CORES/au25SR18_NM.pdb"),
+        CORE=open("CORES/au144SR60_NM.pdb"),
         ELONGATED=False)
