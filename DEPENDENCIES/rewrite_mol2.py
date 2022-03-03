@@ -13,7 +13,6 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
     if lig_s != 0:
         #Reads bonds section and stays with the atom bonded to the S atom that is not in the capping group
         lig_c = find_C(mol2, cap, lig_s)
-
     ATOM=False
     BOND=False
     atoms = []
@@ -95,7 +94,7 @@ def rewrite_mol2(mol2, cap, lig_s, lig_c, oname, elong, log):
         charge_per_atom = np.sum(charge_cap)/(N_at)   #The charge of the capping atom is divided in the rest of the atoms (including the S atom)
         for atom in atoms:
             atom[8] = str(float(atom[8])+charge_per_atom)
-        atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], s_atom[8]+charge_per_atom])
+        atoms.append(['0', 'ST', str(new_pt[0]), str(new_pt[1]), str(new_pt[2]), 'S', s_atom[6], s_atom[7], float(s_atom[8])+charge_per_atom])
     bonds.append(['0', str(len(atoms)), str(np.where(old_at_num==lig_c)[0][0]+1), 1])       #The S atom is bonded to the C atom
 
     log += "\tThe capping group has a total charge of {:.4f}...\n".format(np.sum(charge_cap))
