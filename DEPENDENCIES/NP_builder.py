@@ -4,6 +4,12 @@ import random
 from scipy.spatial import distance
 from sklearn.decomposition import PCA
 import math
+import logging
+
+logger = logging.getLogger('nanomodeler')
+logger.addHandler(logging.NullHandler())
+
+report = logging.getLogger('nanomodeler.report')
 
 def rot_mat(p, u, t):
     #Rotates vector p, around vector u for an angle t
@@ -70,7 +76,7 @@ def init_core_pdb(pdb, elong):
         xyz_core_func[names_core_func=="C"] = xyz_C_new
     return xyz_core_func/10., names_core_func, res_core_func
 
-def get_ligand_pill(xyz_lig_func, lig_c, lig_s, log):
+def get_ligand_pill(xyz_lig_func, lig_c, lig_s):
     #Runs a PCA and takes the first eigenvector as the best fitting line.
     N_at = len(xyz_lig_func)
     pca = PCA(n_components=3)
@@ -83,8 +89,8 @@ def get_ligand_pill(xyz_lig_func, lig_c, lig_s, log):
         pca1=-pca1
     var1 = pca.explained_variance_[0]/np.sum(pca.explained_variance_)*100
 
-    log += "\tPCA1 explains: {:.1f}% of the points' variance...\n".format(var1)
-    log += "\tConsider this is a measure on how linear the input ligand is. The lower this value, the more likely it will be to get clashes in the final structure.\n"
+    logger.info("\tPCA1 explains: {:.1f}% of the points' variance...".format(var1))
+    logger.info("\tConsider this is a measure on how linear the input ligand is. The lower this value, the more likely it will be to get clashes in the final structure.")
 
     #Randomly takes 2 other atoms in the ligand and project their positions in PCA1. The 2 atoms cant be the C or S atoms
     random.seed(666)
@@ -95,27 +101,27 @@ def get_ligand_pill(xyz_lig_func, lig_c, lig_s, log):
     pillars_func = [xyz_lig_func[lig_c-1]]
     for p in pillars_ndx:
         pillars_func = np.append(pillars_func, np.array([np.dot(xyz_lig_func[p], pca1) * pca1]), axis=0)
-    return pillars_func, log
+    return pillars_func
 
-def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func, log):
+def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, morph_func, stripes_func):
     xyz_anchors_func = xyz_core_func[names_core_func=='C',:]
     N_anchors = len(xyz_anchors_func)
     for_lig1 = round(N_anchors*frac_lig1_func)  #Number of ligands 1 to put
     indexes = list(range(N_anchors))        #List of indexes to distribute between ligand 1 and 2
     if morph_func == "random":
-        log += "\tAssigning a random distribution of the ligands...\n"
+        logger.info("\tAssigning a random distribution of the ligands...")
         random.seed(rseed_func)
         random.shuffle(indexes)         #Mixes the indexes list
         lig1_ndx = indexes[:for_lig1]
         lig2_ndx = indexes[for_lig1:]
     elif morph_func == "janus":
-        log += "\tAssigning a janus distribution for the ligands...\n"
+        logger.info("\tAssigning a janus distribution for the ligands...")
         bottom = xyz_anchors_func[np.argsort(xyz_anchors_func[:,2])[0]]     #xyz of the lowest anchor
         D_bottom_anch = distance.cdist([bottom], xyz_anchors_func)
         lig1_ndx = D_bottom_anch[0].argsort()[:for_lig1]        #Takes the closest anchors to the initial one
         lig2_ndx = list(set(indexes) - set(lig1_ndx))       #The rest are for ligand 2
     elif morph_func == "stripe":
-        log += "\tAssigning a striped distribution for the ligands...\n"
+        logger.info("\tAssigning a striped distribution for the ligands...")
         phis = np.arccos(np.divide(xyz_anchors_func[:,2], np.linalg.norm(xyz_anchors_func, axis=1))) #phi position for all the anchors
         dphi = (math.pi+0.00001)/stripes_func       #Delta phi used to classify regions. The 0.00001 is for boundary purposes
         lig1_ndx = []
@@ -126,11 +132,11 @@ def assign_morph(xyz_core_func, names_core_func, frac_lig1_func, rseed_func, mor
             elif phi(xyz_anchors_func[i])//dphi%2 == 1:
                 lig2_ndx.append(i)
 
-    log += "\tThe nanoparticle will have {} of ligand 1...\n".format(len(lig1_ndx))
-    log += "\tThe nanoparticle will have {} of ligand 2...\n".format(len(lig2_ndx))
+    logger.info("\tThe nanoparticle will have {} of ligand 1...".format(len(lig1_ndx)))
+    logger.info("\tThe nanoparticle will have {} of ligand 2...".format(len(lig2_ndx)))
     xyz_anchors1_func=xyz_anchors_func[lig1_ndx]
     xyz_anchors2_func=xyz_anchors_func[lig2_ndx]
-    return xyz_anchors1_func, xyz_anchors2_func, log
+    return xyz_anchors1_func, xyz_anchors2_func
 
 def get_stones(xyz_core_func, names_core_func, xyz_anchorsi_func, xyz_pillarsi_func, lig_s):
     #Gives an array in which the first stone is the C atom (from the core), the 2 and 3 are the projections ofrom pillars 2 and 3, and 4 is the S atom (from the core)
@@ -156,7 +162,7 @@ def get_stones(xyz_core_func, names_core_func, xyz_anchorsi_func, xyz_pillarsi_f
 
     return xyz_stones
 
-def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
+def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum):
     n_clash_iter = 100
     thresh = 0.1
     D_clash = distance.cdist(trans_lig_tmp, xyz_coated_tmp)
@@ -166,8 +172,8 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
     CLASH = False
     if clash_dis < thresh:
         CLASH = True
-        log += "\tClashes were found while placing residue {}...\n".format(resnum)
-        log += "\tTrying to solve the clashes...\n"
+        logger.info("\tClashes were found while placing residue {}...".format(resnum))
+        logger.info("\tTrying to solve the clashes...")
 
     while theta < 6.28:
         theta += 2*math.pi/n_clash_iter
@@ -179,14 +185,15 @@ def solve_clashes(xyz_coated_tmp, trans_lig_tmp, xyz_stone_act, resnum, log):
             clash_dis = np.min(D_clash)
             trans_lig_best = trans_lig_try
         if theta >= 6.28 and clash_dis < thresh:
-            log += "\tIt was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...\n".format(resnum, clash_dis)
-            log += "\tRevise the final geometry...\n"
+            warn_txt = "\tATTENTION! It was not possible to solve all the clashes. Residue {} has a close contact of {:.2f} nm...\n\tRevise the final Geometry...".format(resnum, clash_dis)
+            report.warning(warn_txt)
+            logger.warning(warn_txt)
         if theta >= 6.28 and clash_dis > thresh and CLASH:
-            log += "\tThe clash was solved, i.e., the minimum distance between atoms is at least {} nm...\n".format(thresh)
+            logger.info("\tThe clash was solved, i.e., the minimum distance between atoms is at least {} nm...".format(thresh))
 
-    return trans_lig_best, log
+    return trans_lig_best
 
-def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pillars_tmp, xyz_coated_tmp, names_coated_tmp, res_coated_tmp, last_res_num, lig_s, elong, log):
+def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pillars_tmp, xyz_coated_tmp, names_coated_tmp, res_coated_tmp, last_res_num, lig_s, elong):
     xyz_lig_conv=np.insert(xyz_lig_tmp, 3, 1, axis=1).T  #Addas a row with a 1 to transform as quaternion
     for i in range(len(xyz_stones_tmp[:,0,0])):     #The for is to go over all anchors
         xyz_stones_now = xyz_stones_tmp[i,:-1,:]    #Takes the stones of the current anchor
@@ -195,25 +202,25 @@ def place_ligand(xyz_lig_tmp, names_lig_tmp, res_lig_tmp, xyz_stones_tmp, xyz_pi
         trans_lig = trans_lig[:-1] #Discards the S atom
 
         #if lig_s == 0 or elong:     #If the S was not initially present or elong is set to True, rotates along the COM-C axis to maximize the minimum distance with the rest of the system (including the current S atom)
-        trans_lig, log = solve_clashes(np.append(xyz_coated_tmp, [xyz_stones_tmp[i,-1,:]], axis=0), trans_lig, xyz_stones_now[0,:], last_res_num+i+1, log)
+        trans_lig = solve_clashes(np.append(xyz_coated_tmp, [xyz_stones_tmp[i,-1,:]], axis=0), trans_lig, xyz_stones_now[0,:], last_res_num+i+1)
 
         """else:       #If there was an S atom, no rotation is allowed, but we look for clashes
             D_clash = distance.cdist(trans_lig, xyz_coated_tmp)
             clash_dis = np.min(D_clash)
             if clash_dis < 0.1:
-                log += "\tThe sulphur atom was given in the mol2 file of the ligand...\n"
-                log += "\tThere are no degrees of freedom available to prevent clashes...\n"
-                log += "\tClashes were found while placing residue {}...\n".format(last_res_num+i+1)
-                log += "\tConsider parametrizing the ligand without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...\n"
-                """
+                logger.info("\tThe sulphur atom was given in the mol2 file of the ligand...")
+                logger.info("\tThere are no degrees of freedom available to prevent clashes...")
+                logger.info("\tClashes were found while placing residue {}...".format(last_res_num+i+1))
+                logger.info("\tConsider parametrizing the ligand without the thiol sulphur atom, then NanoModeler will try to find a conformation without clashes...")
+        """
         trans_lig = np.append(trans_lig, [xyz_stones_tmp[i,-1,:]], axis=0)      #The cooridnates of the S (in the core) are added to the ligand
         xyz_coated_tmp=np.append(xyz_coated_tmp, trans_lig, axis=0)
         names_coated_tmp=np.append(names_coated_tmp, names_lig_tmp, axis=0)
         res_coated_tmp=np.append(res_coated_tmp, res_lig_tmp, axis=0)
 
-    return xyz_coated_tmp, names_coated_tmp, res_coated_tmp, log
+    return xyz_coated_tmp, names_coated_tmp, res_coated_tmp
 
-def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func, lig1_s, lig2_s, elong, log):
+def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_pillars1_func, xyz_stones1_func, xyz_lig2_func, names_lig2_func, xyz_pillars2_func, xyz_stones2_func, res_lig1_func, res_lig2_func, lig1_s, lig2_s, elong):
     #Saves the gold atoms as in the core file
     keep_rows=[]
     for i in range(len(names_core_func)):
@@ -224,14 +231,14 @@ def coat_NP(xyz_core_func, names_core_func, xyz_lig1_func, names_lig1_func, xyz_
     res_coated_func=names_core_func[keep_rows]
 
     #Transforms and appends rototranslated ligand 1
-    log += "\tPlacing ligand 1 around the core...\n"
-    xyz_coated_func, names_coated_func, res_coated_func, log = place_ligand(xyz_lig1_func, names_lig1_func, res_lig1_func, xyz_stones1_func, xyz_pillars1_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows), lig1_s, elong, log)
+    logger.info("\tPlacing ligand 1 around the core...")
+    xyz_coated_func, names_coated_func, res_coated_func = place_ligand(xyz_lig1_func, names_lig1_func, res_lig1_func, xyz_stones1_func, xyz_pillars1_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows), lig1_s, elong)
     if len(xyz_lig2_func)!=0:
         #Transforms and appends rototranslated ligand
-        log += "\tPlacing ligand 2 around the core...\n"
-        xyz_coated_func, names_coated_func, res_coated_func, log = place_ligand(xyz_lig2_func, names_lig2_func, res_lig2_func, xyz_stones2_func, xyz_pillars2_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows)+len(xyz_stones1_func[:,0,0]), lig2_s, elong, log)
+        logger.info("\tPlacing ligand 2 around the core...")
+        xyz_coated_func, names_coated_func, res_coated_func = place_ligand(xyz_lig2_func, names_lig2_func, res_lig2_func, xyz_stones2_func, xyz_pillars2_func, xyz_coated_func, names_coated_func, res_coated_func, len(keep_rows)+len(xyz_stones1_func[:,0,0]), lig2_s, elong)
 
-    return xyz_coated_func, names_coated_func, res_coated_func, log
+    return xyz_coated_func, names_coated_func, res_coated_func
 
 def print_NP_pdb(xyz_coated_func, names_coated_func, res_coated_func, xyz_anchors1_func, xyz_anchors2_func, xyz_lig1_func, xyz_lig2_func, out_fname):
     xyz_coated_func = xyz_coated_func*10
