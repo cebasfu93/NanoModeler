@@ -1,98 +1,178 @@
 import numpy as np
+import logging
+import tempfile
+import io
+
+logger = logging.getLogger("nanomodeler")
+logger.addHandler(logging.NullHandler())
+
+report = logging.getLogger("nanomodeler.report")
+
 
 def check_VAR(VAR):
-    print("Checking input options...")
-    if float(VAR["LIG1_FRAC"]) < 0 or float(VAR["LIG1_FRAC"]) > 1.0:
-        sys.exit("LIG1_FRAC must be between 0 and 1.")
-    if VAR["MORPHOLOGY"] != "random" and VAR["MORPHOLOGY"] != "janus" and VAR["MORPHOLOGY"] != "stripe" and float(VAR["LIG1_FRAC"]) >= 0 and float(VAR["LIG1_FRAC"]) <= 1.0:
-        sys.exit("Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings.")
-    if int(VAR["STRIPES"]) < 1:
-        sys.exit("The number of stripes must be at least one.")
+    if VAR["LIG1_FRAC"] < 0 or VAR["LIG1_FRAC"] > 1.0:
+        excp_txt = "ATTENTION! LIG1_FRAC must be between 0 and 1."
+        report.error(excp_txt)
+        raise Exception(excp_txt)
+    if (
+        VAR["MORPHOLOGY"] != "random"
+        and VAR["MORPHOLOGY"] != "janus"
+        and VAR["MORPHOLOGY"] != "stripe"
+    ):
+        excp_txt = "ATTENTION! Unsupported morphology. So far we support 'random', 'janus', and 'stripe' coatings."
+        report.error(excp_txt)
+        raise Exception(excp_txt)
+    if VAR["STRIPES"] < 1:
+        excp_txt = "ATTENTION! The number of stripes must be at least one."
+        report.error(excp_txt)
+        raise Exception(excp_txt)
 
-def check_mol2(fname):
-    mol2 = np.genfromtxt(fname, delimiter='\n', dtype='str')
 
-    found_MOLECULE = False
-    found_ATOM = False
-    found_BOND = False
-    found_CONNECT = False
-    for i in mol2:
+def check_mol2(mol2):
+    MOLECULE = False
+    ATOM = False
+    BOND = False
+
+    for i in mol2:  # Looks for needed keywords in the mol2 file
         if "@<TRIPOS>MOLECULE" in i:
-            found_MOLECULE = True
+            MOLECULE = True
         elif "@<TRIPOS>ATOM" in i:
-            found_ATOM = True
+            ATOM = True
         elif "@<TRIPOS>BOND" in i:
-            found_BOND = True
-        elif "@<TRIPOS>RESIDUECONNECT" in i:
-            found_CONNECT = True
+            BOND = True
 
-    if not found_MOLECULE:
-        sys.exit("Keyword '@<TRIPOS>MOLECULE' not found in mol2 file.")
-    if not found_ATOM:
-        sys.exit("Keyword '@<TRIPOS>ATOM' not found in mol2 file.")
-    if not found_BOND:
-        sys.exit("Keyword '@<TRIPOS>BOND' not found in mol2 file.")
-    if not found_CONNECT:
-        sys.exit("Keyword '@<TRIPOS>RESIDUECONNECT' not found in mol2 file.")
+    if not MOLECULE:
+        message = "Keyword '@<TRIPOS>MOLECULE' not found in mol2 file."
+        report.error(message)
+        raise Exception(message)
+    if not ATOM:
+        message = "Keyword '@<TRIPOS>ATOM' not found in mol2 file."
+        report.error(message)
+        raise Exception(message)
+    if not BOND:
+        message = "Keyword '@<TRIPOS>BOND' not found in mol2 file."
+        report.error(message)
+        raise Exception(message)
 
-    N_lig_file=len(mol2)
-    found_ATOM=False
+    N_lig_file = len(mol2)
+
+    ATOM = False
     atoms = []
     names = []
+    res_names = []
+
     for i in range(N_lig_file):
-        if found_ATOM:
+        if ATOM:
             if "@<TRIPOS>" in mol2[i]:
                 break
-            atoms.append(mol2[i].split())
-            names.append(mol2[i].split()[1])
+            if mol2[i].split() != []:
+                atoms.append(mol2[i].split())
+                names.append(mol2[i].split()[1])
+                res_names.append(mol2[i].split()[7])
         elif "@<TRIPOS>ATOM" in mol2[i]:
-            found_ATOM = True
-    print("{} atoms were found in the mol2 file...".format(len(atoms)))
+            ATOM = True
 
-    print("Checking if columns 3, 4, and 5 correspond to floating numbers...")
+    report.info("\t{} atoms were found in the mol2 file...".format(len(atoms)))
+    report.info("\tChecking if columns 3, 4, and 5 correspond to floating numbers...")
+
     for i in range(len(atoms)):
         float(atoms[i][2]), float(atoms[i][3]), float(atoms[i][4])
 
-    for i in range(N_lig_file):
-        if "@<TRIPOS>RESIDUECONNECT" in mol2[i]:
-            connect = mol2[i+1].split()[1]
-            print("The name found for the connecting atom in the mol2 file is '{}'...".format(connect))
-    names = np.array(names)
-    ndx_con = np.where(names==connect)[0][0]
-    print("The connecting atom was identified to be atom {}...".format(ndx_con+1))
+    report.info("\tChecking if there is only one residue in the input structure...")
 
-def read_resname(lig_fname):
-    mol2 = np.genfromtxt(lig_fname, delimiter="\n", dtype='str')
+    if len(atoms) != np.unique(np.array(res_names), return_counts=True)[1][0]:
+        message = "There seems to be more than one residue type in the input mol2 file"
+        report.error(message)
+        raise Exception(message)
+
+    return True
+
+
+def check_frcmod(fname):
+    frcmod = np.genfromtxt(fname, delimiter="\n", dtype="str")
+    errors = []
+    for i in range(len(frcmod)):
+        if "ATTN, need revision" in frcmod[i]:
+            errors.append(frcmod[i])
+    if errors:
+        warn_txt = "\tATTENTION! The following parameters in the ligand were impossible to obtain..."
+        report.warning(warn_txt + "\n")
+        logger.warning(warn_txt)
+        warn_txt = (
+            "\tConsider adding you own frcmod file with the missing parameters..."
+        )
+        report.info(warn_txt + "\n")
+        logger.info(warn_txt)
+        for i in range(len(errors)):
+            err_txt = "\t{}".format(errors[i])
+            report.info(err_txt + "\n")
+            logger.info(err_txt)
+    return True
+
+
+def read_resname(fname):
+    mol2 = np.genfromtxt(fname, delimiter="\n", dtype="str")
     for i in range(len(mol2)):
         if "@<TRIPOS>ATOM" in mol2[i]:
-            resname = mol2[i+1].split()[7]
+            resname = mol2[i + 1].split()[7]
     return resname
 
-def write_leap(VAR, fname, two_lig_func):
-    msj = "source leaprc.gaff \n\n"
-    msj += "loadamberparams " + "TMP/"+VAR["LIG1_FILE"][:-5]+".frcmod\n"
 
-    msj += read_resname(VAR["LIG1_FILE"]) + " = loadmol3 " + "TMP/"+VAR["LIG1_FILE"]+"\n"
-    msj += "check " + read_resname(VAR["LIG1_FILE"]) + "\n"
-    msj += "saveoff " + read_resname(VAR["LIG1_FILE"]) + " " + "TMP/"+VAR["LIG1_FILE"][:-5]+".lib\n\n"
+def write_leap(VAR, TMP, two_lig_func):
+    msj = "source leaprc.gaff2 \n\n"
+
+    # Loads parameters of the ligands
+    msj += "loadamberparams {}/LIG1.frcmod\n".format(TMP)
     if two_lig_func:
-        msj += "loadamberparams " + "TMP/"+VAR["LIG2_FILE"][:-5]+".frcmod\n"
-        msj += read_resname(VAR["LIG2_FILE"]) + " = loadmol3 " + "TMP/"+VAR["LIG2_FILE"]+"\n"
-        msj += "check " + read_resname(VAR["LIG2_FILE"]) + "\n"
-        msj += "saveoff " + read_resname(VAR["LIG2_FILE"]) + " " + "TMP/"+VAR["LIG2_FILE"][:-5]+".lib\n\n"
+        msj += "loadamberparams {}/LIG2.frcmod\n".format(TMP)
+    # Loads parameters corrections of Hakkinen
+    msj += "loadamberparams PARAMS/PARAMS.frcmod\n\n"
 
-    msj += "loadamberparams " + VAR["DEPENDS"]+"/AU.frcmod\n"
-    msj += "loadamberparams " + VAR["DEPENDS"]+"/ST.frcmod\n"
-    msj += "AU = loadmol3 " + VAR["DEPENDS"]+"/AU.mol2\n"
-    msj += "ST = loadmol3 " + VAR["DEPENDS"]+"/ST.mol2\n\n"
+    frcmod_file = VAR["FRCMOD"]
+    # If the user gave an frcmod in overwrites all the previous ones
+    if frcmod_file:
+        # if frcmod_file is an instance of StringIO I need to create a temporary file
+        if isinstance(frcmod_file, io.StringIO):
+            frcmod_tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=TMP)
+            report.info(
+                "creating frcmod temporary file: '{}'".format(frcmod_tmp_file.name)
+            )
+            frcmod_tmp_file.write(frcmod_file.read().encode("utf-8"))
+            frcmod_tmp_file.flush()
+            frcmod_file.close()
 
-    msj += "loadoff " + "TMP/"+VAR["LIG1_FILE"][:-5]+".lib\n"
+            frcmod_file = frcmod_tmp_file
+
+        msj += "loadamberparams {}\n".format(frcmod_file.name)
+
+    # Loads structures of the gold atoms
+    msj += "AU = loadmol3 PARAMS/AU.mol2\n"
+    msj += "AUS = loadmol3 PARAMS/AUS.mol2\n"
+    msj += "AUL = loadmol3 PARAMS/AUL.mol2\n"
+
+    # Loads structures of the ligands
+    msj += "{} = loadmol3 {}/LIG1.mol2\n".format(read_resname(TMP + "/LIG1.mol2"), TMP)
+    msj += "check {}\n".format(read_resname(TMP + "/LIG1.mol2"))
+    msj += "saveoff {} {}/LIG1.lib\n\n".format(read_resname(TMP + "/LIG1.mol2"), TMP)
     if two_lig_func:
-        msj += "loadoff " + "TMP/"+VAR["LIG2_FILE"][:-5]+".lib\n"
+        msj += "{} = loadmol3 {}/LIG2.mol2\n".format(
+            read_resname(TMP + "/LIG2.mol2"), TMP
+        )
+        msj += "check {}\n".format(read_resname(TMP + "/LIG2.mol2"))
+        msj += "saveoff {} {}/LIG2.lib\n\n".format(
+            read_resname(TMP + "/LIG2.mol2"), TMP
+        )
 
-    msj += VAR["NAME"] + " = loadpdb " + "TMP/"+VAR["NAME"]+".pdb \n"
-    msj += "saveamberparm " +  VAR["NAME"] + " " + "TMP/"+VAR["NAME"]+".prmtop" + " " + "TMP/"+VAR["NAME"]+".inpcrd \n"
+    # Loads libraries of the ligands
+    msj += "loadoff {}/LIG1.lib\n".format(TMP)
+    if two_lig_func:
+        msj += "loadoff {}/LIG2.lib\n".format(TMP)
+
+    # Loads pdb and saves parameters to amber files
+    msj += "NP = loadpdb {}/NP.pdb\n".format(TMP)
+    msj += "saveamberparm NP {}/NP.prmtop {}/NP.inpcrd\n".format(TMP, TMP)
     msj += "quit"
-    out = open(fname, "w")
+
+    out = open(TMP + "/TLeap.in", "w")
     out.write(msj)
     out.close()

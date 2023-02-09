@@ -1,0 +1,19 @@
+Remark line goes here
+MASS
+AL  196.967
+AS  196.967
+S   32.060
+
+BOND
+AS-S     74.964   2.41
+AL-S     74.964   2.33
+
+ANGLE
+AS-S -AL    55.0    91.3
+S -AL-S     55.0    172.4
+AL-S -AL    55.0    100.0     , parameters for STC. For STV -> (347.0, 119.0)
+
+NONBON
+AL    1.4755  5.2900
+AS    1.4755  5.2900
+S     2.00    0.2500
